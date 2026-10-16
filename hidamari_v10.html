@@ -28,13 +28,14 @@ button{font-family:inherit}
 .top{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;justify-content:space-between}
 h1{margin:0;font:400 clamp(1.7rem,6vw,2.5rem)/1.1 var(--f-display);color:var(--amber);letter-spacing:.02em}
 .sub{margin:4px 0 0;color:var(--mute);font-size:.85rem}
-.hud{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:flex-end}
-.stat{display:grid;gap:2px;min-width:0}
-.stat b{font:400 1.4rem/1.1 var(--f-display);font-variant-numeric:tabular-nums;color:var(--fg)}
-.stat[hidden]{display:none}
-.stat.main b{font-size:2rem;color:var(--rose)}
+.hud{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.stat{display:grid;gap:2px;align-content:center;box-sizing:border-box;width:108px;min-height:56px;padding:6px 10px;border:1px solid var(--line);border-radius:12px;background:#ffffff08;min-width:0;overflow:hidden}
+.stat.main{width:150px}.stat.wide{width:158px}
+.stat b{display:block;overflow:hidden;white-space:nowrap;font:400 1.25rem/1.15 var(--f-display);font-variant-numeric:tabular-nums;color:var(--fg)}
+.stat[hidden]{display:grid;visibility:hidden}
+.stat.main b{font-size:1.9rem;color:var(--rose)}
 .stat.rush b{color:var(--amber)}
-.stat span{font-size:.7rem;letter-spacing:.1em;color:var(--mute)}
+.stat span{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:.7rem;letter-spacing:.04em;color:var(--mute)}
 .hrt{width:.9em;height:.9em;fill:currentColor;vertical-align:-.1em}
 .stat.main .hrt{fill:var(--rose)}
 .snd{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:6px 12px;font-size:.78rem;cursor:pointer}
@@ -120,14 +121,13 @@ h2{margin:6px 0 0;font:400 1rem/1.3 var(--f-display);color:var(--mute);letter-sp
 .visitor[hidden]{display:none}
 .visitor .vface{display:block;width:34px;height:34px;border-radius:50%;overflow:hidden;background:#ffe3ef;flex:0 0 auto}
 .visitor .vface svg{display:block;width:100%;height:100%}
-.swarm{position:absolute;inset:0;z-index:9;pointer-events:none}
+.swarm{position:relative;z-index:9;height:250px;margin:8px 10px 0;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#ff7aa238,#ffc66b24);border:1px solid #ffffff33}
 .swarm[hidden]{display:none}
 .swbar{position:absolute;left:12px;right:12px;top:10px;height:8px;border-radius:4px;background:#0006;overflow:hidden}
 .swbar i{display:block;height:100%;width:100%;background:var(--amber)}
 .swmsg{position:absolute;left:0;right:0;top:22px;text-align:center;font:400 .85rem/1.3 var(--f-display);color:#fff;text-shadow:0 1px 4px #000a}
 .swc{position:absolute;width:58px;border:0;background:none;padding:0;cursor:pointer;pointer-events:auto;animation:wob .8s ease-in-out infinite alternate;-webkit-tap-highlight-color:transparent}
 .swc svg{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 6px #0007)}
-.swc::after{content:"💗";position:absolute;top:-4px;right:-2px;font-size:.9rem}
 @keyframes wob{to{transform:translateY(-6px)}}
 .pager{display:flex;gap:12px;align-items:center;justify-content:center;padding:6px 0}
 .stage .pager .role{color:#fff;text-shadow:0 1px 3px #0009}
@@ -153,6 +153,7 @@ h2{margin:6px 0 0;font:400 1rem/1.3 var(--f-display);color:var(--mute);letter-sp
 .zcard.lock .face svg{filter:brightness(0) invert(.2)}
 .io{width:100%;min-height:110px;background:var(--bg2);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:10px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;resize:vertical}
 input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
+.nmwrap{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-top:6px}.nmwrap .nmrow{margin-top:0}.nmwrap .snd{padding:4px 12px;font-size:.74rem;color:var(--mute)}
 .nmrow{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:.78rem;color:var(--mute)}
 .nmrow input{background:var(--bg2);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font:inherit;font-size:.88rem;width:9.5em;max-width:46vw}
 .crowdcap{text-align:center;font-size:.74rem;color:#fff;text-shadow:0 1px 3px #0009;margin-top:6px}
@@ -182,7 +183,7 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
 .mgr:active .mgrsvg{transform:scale(.95)}
 .swc{width:46px}
 @media(max-width:600px){.swc{width:40px}}
-.swfs{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:65;pointer-events:auto;border:0;border-radius:999px;padding:10px 22px;background:linear-gradient(90deg,#ff7aa2,#ffc66b);color:#3a1022;font-weight:700;font-size:.95rem;box-shadow:0 4px 14px #0008;cursor:pointer;font-family:inherit;white-space:nowrap}
+.swfs{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;z-index:3;pointer-events:auto;border:0;border-radius:999px;padding:10px 22px;background:linear-gradient(90deg,#ff7aa2,#ffc66b);color:#3a1022;font-weight:700;font-size:.95rem;box-shadow:0 4px 14px #0008;cursor:pointer;font-family:inherit;white-space:nowrap}
 .swfs:disabled{opacity:.6;cursor:not-allowed}
 .modal{position:fixed;inset:0;z-index:50;background:#0a0818d0;display:grid;place-items:center;padding:16px;overflow-y:auto}
 .modal[hidden]{display:none}
@@ -233,7 +234,7 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
       <h1>ひだまり喫茶</h1>
       <p class="sub" id="subline">マスターに惚れた250人の女の子が、ウェイトレス志望で集まってくる喫茶店。</p>
       <p class="titleline" id="titleline"></p>
-      <label class="nmrow">店長の名前<input id="nameIn" type="text" maxlength="12" autocomplete="off" spellcheck="false" placeholder="マスター" aria-label="店長の名前"></label>
+      <div class="nmwrap"><label class="nmrow">店長の名前<input id="nameIn" type="text" maxlength="12" autocomplete="off" spellcheck="false" placeholder="マスター" aria-label="店長の名前"></label><button class="snd" id="sndbtn" data-act="sound" aria-pressed="true">音 ON</button></div>
     </div>
     <div class="hud">
       <div class="stat main"><b id="hearts">0</b><span>円</span></div>
@@ -243,9 +244,8 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
       <div class="stat"><b id="tk">0</b><span>チケット</span></div>
       <div class="stat"><b id="fans">0</b><span>フォロワー</span></div>
       <div class="stat"><b id="qn">0</b><span>行列(人)</span></div>
-      <div class="stat"><b id="ms">0</b><span id="mrank">モテ度</span></div>
+      <div class="stat wide"><b id="ms">0</b><span id="mrank">モテ度</span></div>
       <div class="stat rush" id="buffstat" hidden><b id="buff">0</b><span>常連ラッシュ</span></div>
-      <button class="snd" id="sndbtn" data-act="sound" aria-pressed="true">音 ON</button>
     </div>
   </header>
 
@@ -254,11 +254,11 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
     <div id="seatpager"></div>
     <div class="crowdcap" id="crowdcap"></div>
     <div class="crowd" id="crowd" aria-label="店の前に並んでいる行列"></div>
+    <div class="swarm" id="swarm" hidden></div>
     <div class="mote"><span id="motetxt"></span><div class="buzzbar"><i id="motefill"></i></div></div>
     <div class="ent" id="ent" aria-label="マスターを囲む女の子たち"></div>
     <div class="feed" id="feed" aria-label="SNSのタイムライン"><div class="feedhead"><b>SNS タイムライン</b><span id="buzztxt"></span></div><div class="buzzbar"><i id="buzzfill"></i></div><div class="posts" id="posts"></div></div>
     <button class="visitor" id="visitor" data-act="visitor" hidden>推しに貢ぎに来た!</button>
-    <div class="swarm" id="swarm" hidden></div>
     <div class="counter">
       <div class="mgrrow">
         <button class="mgr" data-act="brew" id="mgr" aria-label="店長(タップでコーヒーを淹れる)"><span class="mgrsvg" id="mgrsvg"></span><span class="mgrname" id="mgrname"></span></button>
@@ -295,6 +295,11 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
   <section class="panel" id="p-zukan" hidden></section>
   <section class="panel" id="p-renew" hidden></section>
   <section class="panel" id="p-data" hidden>
+    <h2>アプリ化</h2>
+    <p class="note">ホーム画面やデスクトップに追加すると、ブラウザのバーのない、アプリのような画面で遊べます。</p>
+    <div class="acts"><button class="btn" id="installBtn" data-act="install">アプリとしてインストール</button></div>
+    <p class="note" id="installNote" aria-live="polite"></p>
+    <h2>セーブ</h2>
     <p class="note">進行データは、このブラウザの中に保存されています。ブラウザのデータを消したり、別の端末で遊んだりすると引き継がれないので、ときどき書き出して保管してください。</p>
     <div class="sum"><span>最後の書き出し <b id="lastExport">まだありません</b></span></div>
     <div class="acts"><button class="btn" data-act="export">ファイルに保存</button><button class="btn ghost" data-act="copy">コードをコピー</button></div>
@@ -329,6 +334,7 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
 <script>
 (function(){
 'use strict';
+const HK=(window.HIDAMARI_HOOKS=window.HIDAMARI_HOOKS||{}); /* 拡張ファイル hidamari_harem.js との連携口 */
 const KEY='hidamari-kissa-v5', KEY4='hidamari-kissa-v4', OLD='hidamari-kissa-none', MAXLV=12, GROW=1.32, BOND_MAX=10;
 /* 経済のものさし: 店内の時間は60倍速(現実の1秒=店内の1分)。コーヒー1杯500円(原価150円→粗利350円)、時給は1,200円〜、採用費は求人・制服・研修で数万円〜 */
 const CK=100,TS=60,BREW=350,COGS=0.30,BACK=0.06,START=30000,HG=1.12,GI=1.003,GU=1.12,R0=2e8,LVG=0.25;
@@ -1345,7 +1351,7 @@ function addMote(v){
 }
 function startMote(){
   moteDur=20000+2000*pk('p_mote');moteUntil=Date.now()+moteDur;S.mote=100;S.stats.motes++;
-  toast('💗 モテモテタイム!女の子たちがマスターに群がっています(収入×1.5・20秒)');sfx.trend();
+  toast('💗 モテモテタイム!女の子たちがマスターに群がっています(収入×1.5・20秒)');if(HK.moteStart)HK.moteStart();else sfx.trend();
 }
 function puffHearts(el,n){
   if(document.hidden||!el)return;
@@ -1357,6 +1363,7 @@ function puffHearts(el,n){
   }
 }
 function moteBurst(){
+  if(HK.moteBurst&&HK.moteBurst())return;
   const l=ownedList().filter(h=>!onDate(h.id));if(!l.length)return;
   const h=l[Math.floor(Math.random()*l.length)];
   say(h.id,MOTEL[Math.floor(Math.random()*MOTEL.length)],true);
@@ -1364,7 +1371,7 @@ function moteBurst(){
   if(Math.random()<0.2){S.bond[h.id]=Math.min(BOND_MAX*10,(S.bond[h.id]||0)+2);toast(given(h)+'から告白された!ふれあい+2');}
 }
 function moteTick(dt){
-  if(moteUntil&&!moteOn()){moteUntil=0;S.mote=0;toast('モテモテタイム終了。また盛り上げよう');}
+  if(moteUntil&&!moteOn()){moteUntil=0;S.mote=0;toast('モテモテタイム終了。また盛り上げよう');if(HK.moteEnd)HK.moteEnd();}
   else if(!moteOn())S.mote=Math.max(0,(S.mote||0)-0.8*dt);
   moteAcc+=dt;
   if(moteOn()&&moteAcc>=0.8){moteAcc=0;if(!document.hidden)moteBurst();}
@@ -1654,7 +1661,7 @@ function menuPanel(){
 }
 function datePanel(){
   const free=slots()-S.dates.length;
-  const act=S.dates.map(d=>{
+  const act=S.dates.filter(d=>!d.f).map(d=>{
     const h=HM[d.id],c=COURSES[d.k];
     return '<div class="dline" style="--c:'+h.c+'"><div class="face">'+av(h,S.owned[h.id]||1,true)+'</div><div style="min-width:0"><b>'+h.name+'</b> <span class="role">'+c.n+'</span><div class="bar" data-dend="'+d.end+'" data-dtot="'+c.sec+'"><i></i></div></div><span class="tl" data-dtl="'+d.end+'"></span></div>';
   }).join('');
@@ -1664,7 +1671,7 @@ function datePanel(){
     return '<article class="card" style="--c:'+h.c+'"><div class="face">'+av(h,S.owned[h.id],true)+'</div><div><h3>'+h.name+'</h3><div class="role">ふれあい ★'+br+(br>=BOND_MAX?'(最大)':' ・ '+(pts%10)+'/10')+(away?' ・ デート中':'')+'</div></div><div class="acts">'+btns+'</div></article>';
   }).join('');
   return '<p class="note">デートに出かけると、円のごほうびと「ふれあい」が貯まります。ふれあい★1つごとに、その子の収入が10%増えます。</p>'+
-    '<div class="sum"><span>デート枠 <b>'+(S.dates.length)+'/'+slots()+'</b></span><span>これまでのデート <b>'+S.stats.dates+'回</b></span></div>'+
+    '<div class="sum"><span>デート枠 <b>'+(S.dates.filter(d=>!d.f).length)+'/'+slots()+'</b></span><span>これまでのデート <b>'+S.stats.dates+'回</b></span></div>'+
     (act?'<div class="gathers">'+act+'</div>':'')+pagerHTML('date',ownedList().length)+'<div class="list">'+rows+'</div>'+pagerHTML('date',ownedList().length);
 }
 function achPanel(){
@@ -1708,7 +1715,7 @@ function bizPanel(){
 }
 const TABS=['heroine','biz','fan','daily','menu','hall','date','cos','zukan','renew','data'];
 const PANEL={heroine:()=>heroinePanel(),biz:()=>bizPanel(),fan:()=>fanPanel(),daily:()=>dailyPanel(),menu:()=>menuPanel(),hall:()=>hallPanel(),date:()=>datePanel(),cos:()=>costumePanel(),zukan:()=>zukanPanel(),renew:()=>renewPanel()};
-function renderPanel(t){const f=PANEL[t];if(f)$('p-'+t).innerHTML=mth(f());}
+function renderPanel(t){const f=PANEL[t];if(f)$('p-'+t).innerHTML=mth(f());if(HK.panel)HK.panel(t);}
 function setTab(t,skip){
   tab=t;
   TABS.forEach(k=>{
@@ -2088,13 +2095,15 @@ function checkDates(){
   const now=Date.now(),done=[];
   S.dates=S.dates.filter(d=>{if(d.end<=now){done.push(d);return false;}return true;});
   if(!done.length)return;
+  let gsum=0,gn=0;
   done.forEach(d=>{
-    const h=HM[d.id],c=COURSES[d.k],g=perSec()*c.mult*upMult('date');
+    const h=HM[d.id],c=COURSES[d.k],g=perSec()*c.mult*upMult('date')*(d.f||1);
     gain(g);
     S.bond[d.id]=Math.min(BOND_MAX*10,(S.bond[d.id]||0)+c.pt);
     S.stats.dates++;
-    toast(given(h)+'とのデート完了 +'+fmt(g)+' 円');
+    if(d.f){gsum+=g;gn++;}else toast(given(h)+'とのデート完了 +'+fmt(g)+' 円');
   });
+  if(gn)toast('全員デートから'+gn+'人が帰ってきました +'+fmt(gsum)+' 円');
   sfx.dDone();
   render();save();
   const h2=HM[done[done.length-1].id];setTimeout(()=>say(h2.id,randVoice(h2)),80);
@@ -2144,7 +2153,7 @@ function tapCust(e,b){
   gain(g);S.taps++;dq('tap',1);S.fans+=1;addBuzz(0.3);
   S.q=Math.max(0,(S.q||0)-k);S.stats.served+=k;crowdShown=crowdN();addMote(1.5);
   floatText(e,b,rate(g));sfx.voice({i:3+ci});
-  bubbleOn(b,CUSTL[Math.floor(Math.random()*CUSTL.length)]);
+  bubbleOn(b,(HK.custLine&&HK.custLine())||CUSTL[Math.floor(Math.random()*CUSTL.length)]);
   b.classList.remove('hop');void b.offsetWidth;b.classList.add('hop');
   setTimeout(()=>{if(b.parentNode)b.parentNode.removeChild(b);},650); /* 接客した人は列から抜ける */
   hud();checkAch();
@@ -2160,7 +2169,7 @@ function startSwarm(){
   let h='<div class="swbar"><i id="swfill"></i></div><div class="swmsg" id="swmsg">貢ぎ物を持った女の子が殺到!</div>';
   for(let i=0;i<n;i++){
     const c=custH(Math.floor(Math.random()*48));
-    h+='<button class="swc" data-act="swserve" data-i="'+i+'" style="left:'+(2+Math.random()*86).toFixed(1)+'%;top:'+(14+Math.random()*64).toFixed(1)+'%;animation-delay:-'+Math.random().toFixed(2)+'s" aria-label="ファンを接客">'+c.svg+'</button>';
+    h+='<button class="swc" data-act="swserve" data-i="'+i+'" style="left:'+(3+Math.random()*84).toFixed(1)+'%;top:'+(24+Math.random()*24).toFixed(1)+'%;animation-delay:-'+Math.random().toFixed(2)+'s" aria-label="ファンを接客">'+c.svg+'</button>';
   }
   h+='<button class="swfs" id="swfs" data-act="swfs">貢ぎ物をまとめて受け取る</button>';
   $('swarm').innerHTML=h;$('swarm').hidden=false;
@@ -2405,6 +2414,8 @@ document.addEventListener('click',function(e){
   }else if(act==='title'){
     const tt=TITLES.filter(x=>x.id===id)[0];
     if(tt&&tt.f()){S.title=id;render();save();}
+  }else if(act==='install'){
+    installApp();
   }else if(act==='export'){
     exportFile();
   }else if(act==='copy'){
@@ -2540,6 +2551,11 @@ ACH.push({id:'hr1',n:'囲まれる店長',d:'ハーレム大騒動を経験す�
  {id:'gf5',n:'貢がれ体質',d:'貢ぎ物を5個もらう',f:()=>cnt9(S.gift)>=5},{id:'gf10',n:'貢ぎ物の山',d:'貢ぎ物を10個もらう',f:()=>cnt9(S.gift)>=10},{id:'gf20',n:'貢ぎ物コンプリート',d:'貢ぎ物を全てもらう',f:()=>cnt9(S.gift)>=GIFT9.length},
  {id:'hm5',n:'ご褒美上手',d:'人数ご褒美を5つ受け取る',f:()=>cnt9(S.hms)>=5},{id:'hm10',n:'ご褒美コンプリート',d:'人数ご褒美を全て受け取る',f:()=>cnt9(S.hms)>=HMS9.length},{id:'sg1',n:'看板ウェイトレス',d:'看板ウェイトレスを決める',f:()=>!!S.sign});
 
+window.HIDAMARI={S:()=>S,H:H,HM:HM,N:N,ACH:ACH,MOTER:MOTER,BOND_MAX:BOND_MAX,$:$,esc:esc,mt:mt,NM:NM,fmt:fmt,rate:rate,given:given,dkey:dkey,
+  ownedList:ownedList,onDate:onDate,bondRank:bondRank,perSec:perSec,tapGain:tapGain,gain:gain,toast:toast,say:say,feedPush:feedPush,puffHearts:puffHearts,
+  moteOn:moteOn,moteScore:moteScore,moteRank:moteRank,addMote:addMote,custH:custH,av:av,avatar:avatar,mgrSVG:mgrSVG,
+  sfx:sfx,ac:ac,tone:tone,noise:noise,bell:bell,noteHz:noteHz,setBuff:ms=>{buffUntil=Math.max(buffUntil,Date.now()+ms);},
+  save:save,render:render,checkAch:checkAch,slots:slots,COURSES:COURSES,dq:dq};
 ensureDay();
 $('mgrsvg').innerHTML=mgrSVG(true);
 $('nameIn').value=S.name||'';
@@ -2552,10 +2568,88 @@ checkMiles();
 checkAch();
 scheduleVisitor(true);
 setTimeout(()=>{if(!S.tg.namehint){S.tg.namehint=true;toast('店長の名前は、画面上部の欄からいつでも変えられます');save();}},2500);
+/* ---- アプリ化(ホーム画面・デスクトップへのインストール) ---- */
+let installEv=null;
+const isStandalone=()=>(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+function iconURL(sz){
+  const c=document.createElement('canvas');c.width=c.height=sz;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,sz,sz);g.addColorStop(0,'#ff7aa2');g.addColorStop(1,'#ffc66b');
+  x.fillStyle=g;x.fillRect(0,0,sz,sz);
+  x.fillStyle='#fff';x.font='700 '+Math.round(sz*0.62)+'px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('ひ',sz/2,sz/2+sz*0.03);
+  return c.toDataURL('image/png');
+}
+function setupPWA(){
+  try{
+    const add=(tag,attrs)=>{const e=document.createElement(tag);Object.keys(attrs).forEach(k=>e.setAttribute(k,attrs[k]));document.head.appendChild(e);};
+    add('meta',{name:'theme-color',content:'#1a1530'});
+    add('meta',{name:'apple-mobile-web-app-capable',content:'yes'});
+    add('meta',{name:'mobile-web-app-capable',content:'yes'});
+    add('meta',{name:'apple-mobile-web-app-title',content:'ひだまり喫茶'});
+    add('link',{rel:'apple-touch-icon',href:iconURL(180)});
+    const url=location.href.split('#')[0];
+    const man={name:'ひだまり喫茶',short_name:'ひだまり',start_url:url,scope:url.replace(/[^\/]*$/,''),display:'standalone',background_color:'#1a1530',theme_color:'#1a1530',lang:'ja',icons:[{src:iconURL(192),sizes:'192x192',type:'image/png',purpose:'any'},{src:iconURL(512),sizes:'512x512',type:'image/png',purpose:'any'}]};
+    if(/^https?:$/.test(location.protocol))add('link',{rel:'manifest',href:URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/manifest+json'}))}); /* file:// では読み込めないため、公開先(https)でのみ有効 */
+  }catch(e){}
+}
+function updInstall(){
+  const b=$('installBtn'),n=$('installNote');if(!b)return;
+  if(isStandalone()){b.disabled=true;b.textContent='インストール済み(アプリとして起動中)';n.textContent='';return;}
+  b.disabled=false;b.textContent='アプリとしてインストール';
+  n.textContent=installEv?'このブラウザから、そのままインストールできます。':'';
+}
+async function installApp(){
+  if(isStandalone())return;
+  if(installEv){
+    const ev=installEv;installEv=null;
+    try{ev.prompt();const r=await ev.userChoice;toast(r&&r.outcome==='accepted'?'インストールを開始しました':'インストールをキャンセルしました');}catch(e){}
+    updInstall();return;
+  }
+  const ua=navigator.userAgent||'';let msg;
+  if(location.protocol==='file:')msg='このファイルをそのまま開いている場合は、アプリ化できません。https で公開した場所(GitHub Pages など)から開いてください。';
+  else if(/iPhone|iPad|iPod/.test(ua))msg='Safari で開き、共有ボタン→「ホーム画面に追加」を選んでください。';
+  else if(/Android/.test(ua))msg='ブラウザのメニュー(︙)→「アプリをインストール」または「ホーム画面に追加」を選んでください。';
+  else msg='Chrome や Edge では、アドレスバー右側のインストールアイコン、またはメニュー→「インストール」から追加できます。';
+  $('installNote').textContent=msg;
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEv=e;updInstall();});
+window.addEventListener('appinstalled',()=>{installEv=null;toast('アプリとしてインストールしました');updInstall();});
+setupPWA();updInstall();
+/* ---- プレゼントの絵文字(🎁)を、どこで生成されても表示しない ---- */
+(function(){
+  const GIFT=/\u{1F381}/gu,HAS=/\u{1F381}/u,KEEP=/^(BUTTON|A|LABEL|INPUT|TEXTAREA|SELECT|BODY|HTML)$/;
+  function scrubText(t){
+    if(!HAS.test(t.nodeValue))return;
+    const only=!t.nodeValue.replace(GIFT,'').trim(),p=t.parentNode;
+    t.nodeValue=t.nodeValue.replace(GIFT,'');
+    if(only&&p&&p.nodeType===1&&!p.id&&p.children.length===0&&!KEEP.test(p.tagName))p.parentNode&&p.parentNode.removeChild(p);
+  }
+  function scrub(n){
+    if(n.nodeType===3){scrubText(n);return;}
+    if(n.nodeType!==1||!n.textContent||!HAS.test(n.textContent))return;
+    const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT),list=[];
+    while(w.nextNode())list.push(w.currentNode);
+    list.forEach(scrubText);
+  }
+  function scrubCss(){
+    Array.prototype.forEach.call(document.styleSheets,sh=>{
+      let rules;try{rules=sh.cssRules;}catch(e){return;}
+      Array.prototype.forEach.call(rules||[],r=>{if(r.style&&HAS.test(r.style.content||''))r.style.setProperty('content','none');});
+    });
+  }
+  scrub(document.body);scrubCss();
+  new MutationObserver(ms=>{ms.forEach(m=>{
+    if(m.type==='characterData')scrubText(m.target);
+    else m.addedNodes.forEach(scrub);
+  });}).observe(document.body,{childList:true,subtree:true,characterData:true});
+  new MutationObserver(()=>scrubCss()).observe(document.head,{childList:true,subtree:true,characterData:true});
+  setTimeout(scrubCss,1500);window.addEventListener('load',scrubCss);
+})();
 setTimeout(()=>{if(S.login.total>=3&&Date.now()-(S.lastExport||0)>7*86400000)toast('セーブの書き出しをおすすめします(データタブ)');},3000);
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
 setTimeout(()=>{if(S.owned.hinata)say('hinata',randVoice(HM.hinata));},700);
 })();
 </script>
+<script src="hidamari_harem.js" defer></script>
+<script src="hidamari_harem2.js" defer></script>
 </body>
 </html>
