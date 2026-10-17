@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ff7aa2">
+<title>ひだまりトーク</title>
+<style>
+:root{--pk:#ff7aa2;--pk2:#ffb3c7;--bg:#fff7f3;--card:#fff;--ink:#3b2d3f;--mute:#9a8794;--line:#f2dfe4;--ok:#43c59e;--r:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#2a2036;color:var(--ink);font-family:"Hiragino Sans","Yu Gothic UI","Noto Sans JP",system-ui,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+#app{position:relative;max-width:480px;height:100%;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 0 40px #0006}
+.top{display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;background:linear-gradient(135deg,#ff7aa2,#ffa07a);color:#fff}
+.top .back{color:#fff;text-decoration:none;font-size:.78rem;opacity:.95;white-space:nowrap}
+.top .ttl{flex:1;min-width:0}
+.top .ttl b{display:block;font-size:1.05rem;letter-spacing:.04em}
+.top .ttl span{font-size:.7rem;opacity:.9}
+.top .btn{background:#ffffff33;border:0;border-radius:999px;padding:6px 12px;color:#fff;font-size:.78rem}
+.hero{padding:12px 14px;background:#fff;border-bottom:1px solid var(--line)}
+.hero .big{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.hero .big b{font-size:1.9rem;color:var(--pk);line-height:1;font-variant-numeric:tabular-nums}
+.hero .big span{font-size:.78rem;color:var(--mute)}
+.hero .rk{margin-top:4px;font-size:.78rem;color:var(--mute)}
+.hero .rk b{color:var(--ink)}
+.wave{margin-top:6px;font-size:.78rem;color:#c2476f;background:#ffe9ef;border-radius:10px;padding:6px 10px}
+.wave[hidden]{display:none}
+.acts{display:flex;gap:8px;margin-top:10px}
+.acts .btn{flex:1;border:0;border-radius:12px;padding:10px 6px;font-size:.8rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#ff7aa2,#ff9d7a);box-shadow:0 3px 0 #e0577f}
+.acts .btn.b2{background:linear-gradient(135deg,#8c7cf0,#b58cf5);box-shadow:0 3px 0 #6a5bd0}
+.acts .btn:active{transform:translateY(2px);box-shadow:0 1px 0 #e0577f}
+#views{flex:1;min-height:0;position:relative}
+.view{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;display:none;padding-bottom:8px}
+.view.on{display:block}
+.row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border-bottom:1px solid var(--line);cursor:pointer;width:100%;text-align:left;border-left:0;border-right:0;border-top:0}
+.row:active{background:#fff0f3}
+.av{position:relative;flex:none;width:46px;height:46px;border-radius:50%;background:#ffe3ef;overflow:hidden;box-shadow:0 0 0 2px #fff,0 0 0 3px var(--line)}
+.av img{display:block;width:100%;height:100%}
+.av.big{width:54px;height:54px}
+.dot{position:absolute;right:0;bottom:0;width:11px;height:11px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 2px #fff}
+.rbody{flex:1;min-width:0}
+.rbody .nm{display:flex;justify-content:space-between;gap:8px;font-size:.9rem;font-weight:700}
+.rbody .nm i{font-style:normal;font-weight:400;font-size:.7rem;color:var(--mute);white-space:nowrap}
+.rbody .pv{font-size:.8rem;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.bd{flex:none;min-width:22px;padding:2px 7px;border-radius:999px;background:var(--pk);color:#fff;font-size:.72rem;font-weight:700;text-align:center;font-variant-numeric:tabular-nums}
+.bd.z{display:none}
+.bd.big{background:#e0452f}
+.sec{padding:10px 14px 6px;font-size:.74rem;color:var(--mute);font-weight:700;letter-spacing:.06em;background:var(--bg)}
+.pg{display:flex;justify-content:center;gap:10px;align-items:center;padding:10px;font-size:.8rem;color:var(--mute)}
+.pg button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px}
+.pg button:disabled{opacity:.4}
+/* ファン */
+.fcount{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 14px}
+.fcount div{background:#fff;border-radius:12px;padding:8px;text-align:center;box-shadow:0 1px 0 var(--line)}
+.fcount b{display:block;font-size:1.05rem;color:var(--pk);font-variant-numeric:tabular-nums}
+.fcount span{font-size:.68rem;color:var(--mute)}
+.fm{display:flex;gap:10px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line);animation:fin .35s ease}
+.fm .av{width:38px;height:38px}
+.fm .tx{flex:1;min-width:0;font-size:.84rem;line-height:1.5;word-break:break-word}
+.fm .who{font-size:.72rem;color:var(--mute);margin-bottom:2px}
+.fm .who em{font-style:normal;background:#ffe9ef;color:#c2476f;border-radius:6px;padding:0 6px;margin-left:4px}
+.fm.letter{background:#fffaf0}
+.fm.letter .tx{font-size:.8rem;color:#6b4a3a}
+.fm.confess{background:#fff0f5}
+.fm.confess .who em{background:#ff7aa2;color:#fff}
+@keyframes fin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+/* まとめ */
+.card{margin:12px 14px;background:#fff;border-radius:var(--r);padding:14px;box-shadow:0 1px 0 var(--line)}
+.card h3{margin:0 0 8px;font-size:.88rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kv{background:#fff7f3;border-radius:12px;padding:10px;text-align:center}
+.kv b{display:block;font-size:1.2rem;color:var(--pk);font-variant-numeric:tabular-nums}
+.kv span{font-size:.7rem;color:var(--mute)}
+.bar{height:8px;background:#f5e6ea;border-radius:99px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#ff7aa2,#ffb27a);width:0}
+.top5 .row{padding:8px 0;border-bottom:1px solid var(--line);background:none;cursor:default}
+.note{font-size:.76rem;color:var(--mute);line-height:1.6;padding:6px 14px}
+/* タブ */
+.tabs{display:flex;background:#fff;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs button{flex:1;border:0;background:none;padding:14px 2px 8px;font-size:.7rem;color:var(--mute);position:relative}
+.tabs button.on{color:var(--pk);font-weight:700}
+.tabs button .tb{position:absolute;top:1px;left:50%;min-width:18px;padding:0 5px;border-radius:99px;background:#e0452f;color:#fff;font-size:.6rem;line-height:15px;white-space:nowrap}
+.tabs button .tb.z{display:none}
+/* バナー */
+#banners{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:min(440px,96vw);z-index:90;pointer-events:none;display:flex;flex-direction:column;gap:6px}
+.bn{display:flex;gap:10px;align-items:center;background:#fffffff0;border-radius:16px;padding:8px 12px;box-shadow:0 6px 18px #0003;animation:bin .3s ease;pointer-events:none}
+.bn .av{width:36px;height:36px}
+.bn .t{min-width:0;font-size:.8rem}
+.bn .t b{display:block;font-size:.78rem}
+.bn .t span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--mute)}
+.bn.out{opacity:0;transform:translateY(-14px);transition:.3s}
+@keyframes bin{from{opacity:0;transform:translateY(-14px) scale(.96)}to{opacity:1;transform:none}}
+/* トーク画面 */
+.thread{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;max-width:480px;margin:0 auto;background:#fdeef0}
+.thread[hidden]{display:none}
+.th-head{display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px;background:#fff;border-bottom:1px solid var(--line)}
+.th-head .bk{border:0;background:none;font-size:1.5rem;color:var(--pk);padding:0 6px}
+.th-head .av{width:40px;height:40px}
+.th-head b{display:block;font-size:.95rem}
+.th-head span{font-size:.7rem;color:var(--ok)}
+.th-msgs{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:8px;overscroll-behavior:contain}
+.m{display:flex;gap:8px;max-width:88%;align-items:flex-end;animation:fin .25s ease}
+.m .av{width:30px;height:30px;box-shadow:none}
+.m .b{background:#fff;border-radius:16px 16px 16px 4px;padding:8px 12px;font-size:.88rem;line-height:1.55;box-shadow:0 1px 0 #f0d6dc;word-break:break-word}
+.m .nmx{font-size:.66rem;color:var(--mute);margin-bottom:2px}
+.m.me{align-self:flex-end;flex-direction:row-reverse}
+.m.me .b{background:linear-gradient(135deg,#ff9bb8,#ffa07a);color:#fff;border-radius:16px 16px 4px 16px}
+.m .rd{font-size:.6rem;color:var(--mute);align-self:flex-end}
+.m.love .b{background:#fff0f5;border:1px solid #ffb3c7}
+.typing{padding:2px 14px 6px;font-size:.72rem;color:var(--mute)}
+.typing[hidden]{display:none}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 10px calc(10px + env(safe-area-inset-bottom,0px));background:#fff;border-top:1px solid var(--line)}
+.chips button{flex:none;border:1px solid var(--pk2);background:#fff7f9;color:#c2476f;border-radius:999px;padding:8px 14px;font-size:.82rem;font-weight:700}
+.chips button.mo{border-style:dashed;color:var(--mute);border-color:var(--line)}
+/* ダイアログ */
+.dlg{position:fixed;inset:0;z-index:100;background:#0008;display:flex;align-items:center;justify-content:center;padding:16px}
+.dlg[hidden]{display:none}
+.dlg .box{width:min(440px,100%);max-height:92vh;overflow-y:auto;background:#fff;border-radius:20px;padding:18px}
+.dlg h2{margin:0 0 8px;font-size:1.05rem}
+.dlg p{font-size:.82rem;line-height:1.7;color:#5a4a5e;margin:6px 0}
+.dlg textarea{width:100%;height:84px;border:1px solid var(--line);border-radius:10px;padding:8px;font:inherit;font-size:.78rem}
+.dlg .acts{margin-top:12px}
+.seg{display:flex;gap:6px;margin:6px 0 10px}
+.seg button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 4px;font-size:.78rem}
+.seg button.on{background:var(--pk);border-color:var(--pk);color:#fff;font-weight:700}
+.lk{display:block;color:var(--pk);font-size:.8rem;margin-top:6px;background:none;border:0;padding:0;text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.fm,.m,.bn{animation:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <a class="back" id="backLink" href="hidamari_v17.html">‹ ひだまり喫茶</a>
+    <div class="ttl"><b>ひだまりトーク</b><span id="onl">オンライン -</span></div>
+    <button class="btn" id="setBtn">設定</button>
+  </header>
+  <div class="hero">
+    <div class="big"><b id="unr">0</b><span>件 未読</span></div>
+    <div class="rk" id="rk"></div>
+    <div class="wave" id="wave" hidden></div>
+    <div class="acts">
+      <button class="btn" id="allH">ヒロイン全員に返信</button>
+      <button class="btn b2" id="allF">ファンみんなに返信</button>
+    </div>
+  </div>
+  <main id="views">
+    <section class="view on" id="v-inbox"></section>
+    <section class="view" id="v-h"></section>
+    <section class="view" id="v-g"></section>
+    <section class="view" id="v-f">
+      <div class="fcount"><div><b id="fc1">0</b><span>未読のファン</span></div><div><b id="fc2">0</b><span>きょうの受信</span></div><div><b id="fc3">0</b><span>ラブレター</span></div></div>
+      <div id="ff"></div>
+    </section>
+    <section class="view" id="v-s"></section>
+  </main>
+  <nav class="tabs" id="tabs">
+    <button class="on" data-v="inbox">受信<span class="tb z" id="tb-inbox"></span></button>
+    <button data-v="h">ヒロイン<span class="tb z" id="tb-h"></span></button>
+    <button data-v="g">グループ<span class="tb z" id="tb-g"></span></button>
+    <button data-v="f">ファン<span class="tb z" id="tb-f"></span></button>
+    <button data-v="s">まとめ</button>
+  </nav>
+</div>
+<div id="banners" aria-live="polite"></div>
+
+<div class="thread" id="thread" hidden>
+  <div class="th-head"><button class="bk" id="thBack" aria-label="もどる">‹</button><div class="av" id="thAv"></div><div><b id="thName"></b><span id="thSub"></span></div></div>
+  <div class="th-msgs" id="thMsgs"></div>
+  <div class="typing" id="thTyp" hidden></div>
+  <div class="chips" id="thChips"></div>
+</div>
+
+<div class="dlg" id="dlgSet" hidden><div class="box">
+  <h2>設定</h2>
+  <p>通知の勢い</p>
+  <div class="seg" id="segInt"><button data-v="0">ゆったり</button><button data-v="1">ふつう</button><button data-v="2">止まらない</button></div>
+  <p>通知バナー・音</p>
+  <div class="seg" id="segBn"><button data-v="1">バナー あり</button><button data-v="0">バナー なし</button></div>
+  <div class="seg" id="segSnd"><button data-v="0">音 なし</button><button data-v="1">音 あり</button></div>
+  <button class="lk" id="reloadSave">ひだまり喫茶のセーブを読み込み直す</button>
+  <button class="lk" id="pasteSave">セーブコードを貼り付けて読み込む</button>
+  <button class="lk" id="resetStats">まとめの数字をリセット</button>
+  <div class="acts"><button class="btn" id="setClose">とじる</button></div>
+</div></div>
+
+<div class="dlg" id="dlgConn" hidden><div class="box">
+  <h2>ひだまり喫茶とつなぐ</h2>
+  <p>ひだまり喫茶のセーブが、このブラウザに見つかりませんでした。解放した女の子とフォロワーの数が、このトークに反映されます。</p>
+  <p>ひだまり喫茶を先に遊んでから開くか、ひだまり喫茶の「データ」タブの書き出しコードを、下に貼り付けてください。</p>
+  <textarea id="connTxt" placeholder="書き出しコード、またはセーブファイルの中身を貼り付け"></textarea>
+  <p id="connMsg" style="color:#c2476f"></p>
+  <div class="acts"><button class="btn" id="connOk">読み込む</button><button class="btn b2" id="connDemo">お試しで見る</button></div>
+</div></div>
+
+<script src="hidamari_roster.js"></script>
+<script src="hidamari_talk_data.js"></script>
+<script>
+(function(){
+'use strict';
+const R=window.HIDAMARI_ROSTER,TD=window.HIDAMARI_TALK;
+const $=id=>document.getElementById(id);
+if(!R||!TD){document.body.innerHTML='<p style="padding:24px;color:#fff">hidamari_roster.js と hidamari_talk_data.js を、このHTMLと同じフォルダに置いてください。</p>';return;}
+const rnd=Math.random,pick=a=>a[Math.floor(rnd()*a.length)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function fmt(n){
+  n=Math.floor(n);if(!(n>=1e4))return Math.max(0,n).toLocaleString('ja-JP');
+  const U=[[1e16,'京'],[1e12,'兆'],[1e8,'億'],[1e4,'万']];
+  for(let i=0;i<U.length;i++){if(n>=U[i][0]){const x=n/U[i][0];return String(parseFloat(x>=100?Math.floor(x):x.toPrecision(3)))+U[i][1];}}
+  return String(n);
+}
+/* ---------- 画像キャッシュ(顔アイコン) ---------- */
+const IMG={};
+function svgURL(k,svg){return IMG[k]||(IMG[k]=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'})));}
+const custURL=i=>svgURL('c'+i,R.cust(i).face);
+function faceURL(o){return svgURL(o.h.id+'|'+o.lv+'|'+(o.cos||''),R.avatar(o.h,o.lv,true,o.cos));}
+const imgTag=u=>'<img src="'+u+'" alt="" width="46" height="46" decoding="async" draggable="false">';
+/* ---------- 状態 ---------- */
+let master='マスター',fans=0,demo=false;
+const OWN=[],OWNM={};
+let ST=loadST();
+function loadST(){
+  const d={day:'',today:{recv:0,love:0,letter:0,reply:0,per:{}},total:{recv:0,love:0,letter:0,reply:0},ms:-1,intensity:2,banner:1,sound:0};
+  try{const j=JSON.parse(localStorage.getItem('hidamari-talk-v1')||'null');if(j)Object.keys(j).forEach(k=>{d[k]=j[k];});}catch(e){}
+  return d;
+}
+function saveST(){try{localStorage.setItem('hidamari-talk-v1',JSON.stringify(ST));}catch(e){}}
+function dayKey(){const t=new Date();return t.getFullYear()+'-'+(t.getMonth()+1)+'-'+t.getDate();}
+function rollDay(){if(ST.day!==dayKey()){ST.day=dayKey();ST.today={recv:0,love:0,letter:0,reply:0,per:{}};}}
+const mm=t=>String(t).split('{m}').join(master).split('マスター').join(master);
+const arch=h=>h.arch||TD.baseArch[h.id]||'genki';
+const given=h=>h.giv||(h.name.split(' ')[1])||h.name;
+const hour=()=>new Date().getHours();
+function kindNow(){const h=hour();return h>=5&&h<=10?'morning':h>=11&&h<=16?'daily':h>=17&&h<=20?'evening':'night';}
+/* ---------- セーブの読み込み ---------- */
+function parseSave(txt){
+  txt=String(txt||'').trim();if(!txt)return null;
+  let j=null;
+  try{j=JSON.parse(txt.charAt(0)==='{'?txt:decodeURIComponent(escape(atob(txt))));}catch(e){return null;}
+  if(j&&j.data)j=j.data;
+  return(j&&j.owned&&typeof j.fans==='number')?j:null;
+}
+function readSave(){try{return parseSave(localStorage.getItem('hidamari-kissa-v5'));}catch(e){return null;}}
+function demoSave(){const o={},b={};R.H.slice(0,30).forEach((h,i)=>{o[h.id]=3+(i%9);b[h.id]=i*3;});return{owned:o,bond:b,cos:{},fans:480000,name:''};}
+function newThread(){return{msgs:[],unread:0,t:0,cnt:0};}
+function applySave(s){
+  fans=Math.max(0,s.fans||0);master=((s.name||'')+'').trim()||'マスター';
+  const first=OWN.length===0;
+  R.H.forEach(h=>{
+    if(!s.owned[h.id])return;
+    const lv=(s.owned[h.id]|0)||1,bond=(s.bond&&s.bond[h.id])||0,cos=(s.cos&&s.cos[h.id]&&s.cos[h.id].wear)||null;
+    const tier=(lv>=9||bond>=40)?2:(lv>=4?1:0);
+    let o=OWNM[h.id];
+    if(!o){o=OWNM[h.id]={h:h,lv:lv,bond:bond,tier:tier,cos:cos,th:newThread()};OWN.push(o);if(!first)setTimeout(()=>heroineSay(o,pick(TD.hello)),1200+rnd()*3000);}
+    else{o.lv=lv;o.bond=bond;o.tier=tier;o.cos=cos;}
+  });
+}
+/* ---------- 台詞の生成 ---------- */
+function line(o,kind){
+  const h=o.h,HP=TD.heroine[arch(h)]||TD.heroine.genki,P=TD.personal[h.id]||{};
+  let base;
+  if(kind==='love')base=pick([].concat(HP.love,P.love||[]));
+  else if(kind==='react')base=pick(HP.react);
+  else{const arr=[].concat(HP[kind]||HP.daily,P[kind]||[]);if(kind==='daily')Array.prototype.push.apply(arr,h.voice||[]);base=pick(arr);}
+  let pre='',suf='';
+  if(kind!=='love'&&kind!=='react'){const T=TD.tier[o.tier];if(rnd()<0.35)pre=pick(T.pre);if(rnd()<0.4)suf=pick(T.suf);}
+  return mm(pre+base+suf);
+}
+/* ---------- 画面の状態 ---------- */
+let cur=null;      // 開いているトーク {type:'h'|'g',id}
+let curTab='inbox';
+let surgeUntil=0,fanUnread=0,fanAcc=0,fanFeed=[];
+const GR=[];
+function buildGroups(){
+  if(!GR.some(g=>g.id==='all'))GR.push({id:'all',arch:null,name:TD.groupName.all,msgs:[],unread:0,t:0});
+  const cnt={};OWN.forEach(o=>{const a=arch(o.h);cnt[a]=(cnt[a]||0)+1;});
+  Object.keys(cnt).forEach(a=>{if(cnt[a]>=3&&!GR.some(g=>g.id===a))GR.push({id:a,arch:a,name:TD.groupName[a]||a,msgs:[],unread:0,t:0});});
+}
+const members=g=>g.arch?OWN.filter(o=>arch(o.h)===g.arch):OWN;
+/* ---------- 受信処理 ---------- */
+function stat(o,kind){
+  rollDay();ST.today.recv++;ST.total.recv++;
+  if(o){ST.today.per[o.h.id]=(ST.today.per[o.h.id]||0)+1;}
+  if(kind==='love'){ST.today.love++;ST.total.love++;}
+}
+function heroineSay(o,text,isLove){
+  const th=o.th;
+  th.msgs.push({f:'her',t:text,love:!!isLove});if(th.msgs.length>60)th.msgs.shift();
+  th.t=Date.now();th.cnt++;
+  if(cur&&cur.type==='h'&&cur.id===o.h.id){appendMsg({f:'her',t:text,love:!!isLove},o);}
+  else th.unread++;
+  stat(o,isLove?'love':'');
+  banner(o,text);
+}
+function heroineMsg(o,kind){
+  let k=kind;
+  if(!k){const r=rnd();k=(o.tier>=1&&r<0.05*o.tier)?'love':(r<0.4?kindNow():'daily');}
+  heroineSay(o,line(o,k),k==='love');
+}
+function groupSay(g,who,text){
+  g.msgs.push({f:who,t:text});if(g.msgs.length>60)g.msgs.shift();g.t=Date.now();
+  if(cur&&cur.type==='g'&&cur.id===g.id)appendMsg({f:who,t:text},null,g);else g.unread++;
+}
+function groupTick(g){
+  const M=members(g);if(M.length<2)return;
+  const a=pick(M);
+  if(rnd()<0.28){
+    const P=pick(TD.pairs),b=pick(M.filter(x=>x!==a));
+    const r=t=>mm(t.split('{a}').join(given(a.h)).split('{b}').join(given(b.h)));
+    groupSay(g,a.h.id,r(P[0][1]));
+    setTimeout(()=>groupSay(g,b.h.id,r(P[1][1])),900+rnd()*700);
+  }else{
+    const t=rnd()<0.55?pick(TD.chat).split('{a}').join(given(pick(M).h)):line(a,'daily');
+    groupSay(g,a.h.id,mm(t));
+  }
+}
+function fanMsg(){
+  const F=TD.fan,r=rnd();
+  let type='dm';if(r<0.02)type='confess';else if(r<0.06)type='letter';else if(r<0.18)type='comment';
+  const text=type==='letter'?pick(F.letter):type==='confess'?pick(F.confess):type==='comment'?pick(F.comment):pick(F.open)+pick(F.body)+pick(F.close);
+  return{type:type,name:pick(F.fam)+pick(F.giv),tag:pick(F.tag),text:mm(text),face:Math.floor(rnd()*48)};
+}
+function addFan(){
+  const f=fanMsg();fanFeed.unshift(f);if(fanFeed.length>60)fanFeed.pop();
+  rollDay();if(f.type==='letter'){ST.today.letter++;ST.total.letter++;}if(f.type==='confess'){ST.today.love++;ST.total.love++;}
+  if(curTab==='f'&&!cur)prependFan(f);
+  if(rnd()<0.04)banner(null,f.text,f.name+'('+f.tag+')',f.face);
+}
+/* ---------- 通知バナー ---------- */
+let lastBn=0,audioCtx=null;
+function blip(){
+  if(!ST.sound)return;
+  try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=880+rnd()*300;
+    g.gain.value=0.04;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.18);o.stop(audioCtx.currentTime+0.2);}catch(e){}
+}
+function banner(o,text,title,fi){
+  if(!ST.banner)return;
+  const gap=[2300,1200,600][ST.intensity];
+  const now=Date.now();if(now-lastBn<gap)return;lastBn=now;
+  if(cur)return;
+  const box=$('banners');while(box.children.length>=2)box.removeChild(box.firstChild);
+  const el=document.createElement('div');el.className='bn';
+  const u=o?faceURL(o):custURL(fi||0);
+  el.innerHTML='<div class="av">'+imgTag(u)+'</div><div class="t"><b>'+esc(title||(o?o.h.name:''))+'</b><span>'+esc(text)+'</span></div>';
+  box.appendChild(el);blip();
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>{if(el.parentNode)el.parentNode.removeChild(el);},320);},3000);
+}
+/* ---------- 描画: 一覧 ---------- */
+function ago(t){if(!t)return '';const s=(Date.now()-t)/1000;return s<60?'いま':s<3600?Math.floor(s/60)+'分前':Math.floor(s/3600)+'時間前';}
+function rowH(o){
+  const th=o.th,last=th.msgs.length?th.msgs[th.msgs.length-1]:null;
+  return '<button class="row" data-open="h:'+o.h.id+'"><div class="av">'+imgTag(faceURL(o))+'<span class="dot"></span></div><div class="rbody"><div class="nm"><span>'+esc(o.h.name)+'</span><i>'+ago(th.t)+'</i></div><div class="pv">'+esc(last?(last.f==='me'?'あなた: ':'')+last.t:'(まだメッセージはありません)')+'</div></div><span class="bd'+(th.unread?'':' z')+'">'+th.unread+'</span></button>';
+}
+function rowG(g){
+  const last=g.msgs.length?g.msgs[g.msgs.length-1]:null,M=members(g),who=last&&OWNM[last.f]?given(OWNM[last.f].h)+': ':'';
+  return '<button class="row" data-open="g:'+g.id+'"><div class="av big" style="display:flex;align-items:center;justify-content:center;font-weight:700;color:#c2476f;font-size:.8rem">'+M.length+'人</div><div class="rbody"><div class="nm"><span>'+esc(g.name)+'</span><i>'+ago(g.t)+'</i></div><div class="pv">'+esc(last?(last.f==='me'?'あなた: ':who)+last.t:'(まだメッセージはありません)')+'</div></div><span class="bd'+(g.unread?' big':' z')+'">'+g.unread+'</span></button>';
+}
+function fanRowH(){
+  const f=fanFeed[0];
+  return '<button class="row" data-tab="f"><div class="av big">'+(f?imgTag(custURL(f.face)):'')+'</div><div class="rbody"><div class="nm"><span>ファンのみなさん</span><i>いま</i></div><div class="pv">'+esc(f?f.name+': '+f.text:'まもなく届きます')+'</div></div><span class="bd big">'+fmt(fanUnread)+'</span></button>';
+}
+function renderInbox(){
+  const hs=OWN.slice().sort((a,b)=>(b.th.unread>0)-(a.th.unread>0)||b.th.t-a.th.t).slice(0,30);
+  $('v-inbox').innerHTML=fanRowH()+GR.filter(g=>members(g).length>=2).slice(0,3).map(rowG).join('')+'<div class="sec">ヒロインからのメッセージ</div>'+hs.map(rowH).join('')+(OWN.length>30?'<p class="note">ほかの '+(OWN.length-30)+' 人は「ヒロイン」タブから見られます。</p>':'');
+}
+let hPage=0;const HP=40;
+function renderHeroines(){
+  const tot=Math.max(1,Math.ceil(OWN.length/HP));hPage=Math.min(hPage,tot-1);
+  const list=OWN.slice(hPage*HP,(hPage+1)*HP);
+  $('v-h').innerHTML=list.map(rowH).join('')+'<div class="pg"><button id="hPrev"'+(hPage?'':' disabled')+'>前へ</button><span>'+(hPage+1)+' / '+tot+'</span><button id="hNext"'+(hPage<tot-1?'':' disabled')+'>次へ</button></div>';
+}
+function renderGroups(){$('v-g').innerHTML=GR.map(rowG).join('')+'<p class="note">グループの中では、みんなが{m}の話をしています。タップして、会話に加わってみましょう。</p>'.split('{m}').join(esc(master));}
+function fanRowEl(f){
+  return '<div class="fm '+f.type+'"><div class="av">'+imgTag(custURL(f.face))+'</div><div class="tx"><div class="who">'+esc(f.name)+'<em>'+esc(f.tag)+'</em>'+(f.type==='letter'?'<em>ラブレター</em>':f.type==='confess'?'<em>告白</em>':'')+'</div>'+esc(f.text)+'</div></div>';
+}
+function renderFans(){$('ff').innerHTML=fanFeed.map(fanRowEl).join('');}
+function prependFan(f){const c=$('ff');c.insertAdjacentHTML('afterbegin',fanRowEl(f));while(c.children.length>60)c.removeChild(c.lastChild);}
+function harem(){let s=OWN.length*10;OWN.forEach(o=>{s+=o.lv*1.5+o.tier*3;});return Math.floor(s+Math.log10(1+fans)*60);}
+function renderSummary(){
+  rollDay();
+  const idx=harem(),rk=TD.rank;let ri=0;rk.forEach((r,i)=>{if(idx>=r[0])ri=i;});
+  const nx=rk[ri+1],pct=nx?Math.min(100,Math.floor((idx-rk[ri][0])/(nx[0]-rk[ri][0])*100)):100;
+  const per=Object.keys(ST.today.per).map(id=>[id,ST.today.per[id]]).filter(x=>OWNM[x[0]]).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  $('v-s').innerHTML=
+   '<div class="card"><h3>ハーレム指数</h3><div class="grid2"><div class="kv"><b>'+fmt(idx)+'</b><span>指数</span></div><div class="kv"><b style="font-size:.95rem">'+esc(rk[ri][1])+'</b><span>いまのランク</span></div></div>'+(nx?'<div class="bar"><i style="width:'+pct+'%"></i></div><div class="note" style="padding:6px 0 0">次のランク「'+esc(nx[1])+'」まで あと '+fmt(nx[0]-idx)+'</div>':'<div class="note" style="padding:6px 0 0">最高ランクに到達しています。</div>')+'</div>'+
+   '<div class="card"><h3>きょうのモテまとめ</h3><div class="grid2"><div class="kv"><b>'+fmt(ST.today.recv)+'</b><span>受信メッセージ</span></div><div class="kv"><b>'+fmt(ST.today.love)+'</b><span>告白・大好きの言葉</span></div><div class="kv"><b>'+fmt(ST.today.letter)+'</b><span>ラブレター</span></div><div class="kv"><b>'+fmt(ST.today.reply)+'</b><span>送った返信</span></div></div></div>'+
+   '<div class="card top5"><h3>きょう、いちばん話しかけてきた子</h3>'+(per.length?per.map((x,i)=>'<div class="row"><b style="width:18px;color:var(--pk)">'+(i+1)+'</b><div class="av">'+imgTag(faceURL(OWNM[x[0]]))+'</div><div class="rbody"><div class="nm"><span>'+esc(OWNM[x[0]].h.name)+'</span><i>'+fmt(x[1])+'件</i></div></div></div>').join(''):'<p class="note" style="padding:0">まだ集計中です。</p>')+'</div>'+
+   '<div class="card"><h3>これまでの合計</h3><div class="grid2"><div class="kv"><b>'+fmt(ST.total.recv)+'</b><span>受信メッセージ</span></div><div class="kv"><b>'+fmt(ST.total.love)+'</b><span>告白・大好き</span></div><div class="kv"><b>'+fmt(ST.total.letter)+'</b><span>ラブレター</span></div><div class="kv"><b>'+fmt(fans)+'</b><span>フォロワー</span></div></div></div>'+
+   '<p class="note">ひだまり喫茶で解放した女の子と、フォロワーの数に合わせて、通知が増えます。ここでは、遊ぶことは何もありません。ただ、好かれているのを味わってください。</p>';
+}
+function renderAll(){renderInbox();renderHeroines();renderGroups();renderFans();renderSummary();}
+/* ---------- 上部の数字 ---------- */
+function unreadTotal(){let n=fanUnread;OWN.forEach(o=>{n+=o.th.unread;});GR.forEach(g=>{n+=g.unread;});return n;}
+function renderTop(){
+  const u=unreadTotal();$('unr').textContent=fmt(u);
+  const hu=OWN.reduce((a,o)=>a+o.th.unread,0),gu=GR.reduce((a,g)=>a+g.unread,0);
+  const set=(id,v)=>{const e=$(id);e.textContent=v>99999?fmt(v):v;e.classList.toggle('z',!v);};
+  set('tb-inbox',Math.floor(u));set('tb-h',hu);set('tb-g',gu);set('tb-f',Math.floor(fanUnread));
+  const idx=harem(),rk=TD.rank;let ri=0;rk.forEach((r,i)=>{if(idx>=r[0])ri=i;});
+  $('rk').innerHTML='ハーレム指数 <b>'+fmt(idx)+'</b> ・ '+esc(rk[ri][1])+' ・ 女の子 <b>'+OWN.length+'</b>人 ・ フォロワー <b>'+fmt(fans)+'</b>人';
+  const on=Math.floor(OWN.length*0.3+Math.pow(fans,0.6)*0.8)+Math.floor(rnd()*4);
+  $('onl').textContent='いま '+fmt(Math.max(1,on))+'人がオンライン';
+  $('fc1').textContent=fmt(fanUnread);$('fc2').textContent=fmt(ST.today.recv);$('fc3').textContent=fmt(ST.today.letter);
+}
+/* ---------- トーク画面 ---------- */
+function bubble(m,o,g){
+  if(m.f==='me')return '<div class="m me"><div class="b">'+esc(m.t)+'</div><span class="rd">既読</span></div>';
+  const who=o||OWNM[m.f];
+  const av=who?'<div class="av">'+imgTag(faceURL(who))+'</div>':'';
+  return '<div class="m'+(m.love?' love':'')+'">'+av+'<div>'+(g&&who?'<div class="nmx">'+esc(given(who.h))+'</div>':'')+'<div class="b">'+esc(m.t)+'</div></div></div>';
+}
+function appendMsg(m,o,g){
+  const c=$('thMsgs'),near=c.scrollHeight-c.scrollTop-c.clientHeight<120;
+  c.insertAdjacentHTML('beforeend',bubble(m,o,g));
+  while(c.children.length>60)c.removeChild(c.firstChild);
+  if(near||m.f==='me')c.scrollTop=c.scrollHeight;
+}
+function seedHistory(o){
+  if(o.th.msgs.length>=6)return;
+  const old=[];
+  ['daily','daily','daily',kindNow()].forEach((k,i)=>{old.push({f:'her',t:line(o,k)});if(i<3)old.push({f:'me',t:pick(TD.stamps)});});
+  o.th.msgs=old.concat(o.th.msgs);
+  if(!o.th.t)o.th.t=Date.now();
+}
+function chips(){
+  const a=TD.stamps.slice().sort(()=>rnd()-0.5).slice(0,6);
+  $('thChips').innerHTML=a.map(s=>'<button data-st="'+esc(s)+'">'+esc(s)+'</button>').join('')+'<button class="mo" data-st="__more">もっと</button>';
+}
+function openThread(type,id){
+  const th=$('thread'),box=$('thMsgs');
+  cur={type:type,id:id};box.innerHTML='';
+  if(type==='h'){
+    const o=OWNM[id];if(!o)return;seedHistory(o);o.th.unread=0;
+    $('thAv').innerHTML=imgTag(faceURL(o));$('thName').textContent=o.h.name;$('thSub').textContent='オンライン';
+    box.innerHTML=o.th.msgs.map(m=>bubble(m,o)).join('');
+  }else{
+    const g=GR.filter(x=>x.id===id)[0];if(!g)return;g.unread=0;
+    if(!g.msgs.length)for(let i=0;i<5;i++)groupTickSilent(g);
+    $('thAv').innerHTML='<div style="display:flex;width:100%;height:100%;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#c2476f">'+members(g).length+'人</div>';
+    $('thName').textContent=g.name;$('thSub').textContent=members(g).length+'人が参加中';
+    box.innerHTML=g.msgs.map(m=>bubble(m,null,g)).join('');
+  }
+  th.hidden=false;chips();box.scrollTop=box.scrollHeight;
+}
+function groupTickSilent(g){const M=members(g);if(M.length<2)return;const a=pick(M);g.msgs.push({f:a.h.id,t:mm(pick(TD.chat).split('{a}').join(given(pick(M).h)))});g.t=Date.now();}
+function closeThread(){cur=null;$('thread').hidden=true;$('thTyp').hidden=true;renderInbox();renderHeroines();renderGroups();}
+function typing(name,on){const e=$('thTyp');e.hidden=!on;if(on)e.textContent=name+'が入力中…';}
+function sendStamp(text){
+  if(!cur)return;
+  rollDay();ST.today.reply++;ST.total.reply++;
+  const mine={f:'me',t:text};
+  if(cur.type==='h'){
+    const o=OWNM[cur.id];o.th.msgs.push(mine);appendMsg(mine,o);
+    typing(given(o.h),true);
+    setTimeout(()=>{typing('',false);if(!cur||cur.id!==o.h.id)return;heroineSay(o,line(o,'react'));
+      if(rnd()<0.6)setTimeout(()=>{if(cur&&cur.id===o.h.id){typing(given(o.h),true);setTimeout(()=>{typing('',false);if(cur&&cur.id===o.h.id)heroineSay(o,line(o,o.tier>=1&&rnd()<0.35?'love':'daily'),false);},700);}},900);
+    },700+rnd()*500);
+  }else{
+    const g=GR.filter(x=>x.id===cur.id)[0];g.msgs.push(mine);appendMsg(mine,null,g);
+    const M=members(g).slice().sort(()=>rnd()-0.5).slice(0,3+Math.floor(rnd()*6));
+    M.forEach((o,i)=>setTimeout(()=>{if(cur&&cur.id===g.id)groupSay(g,o.h.id,line(o,'react'));else groupSay(g,o.h.id,line(o,'react'));},500+i*(350+rnd()*500)));
+  }
+}
+/* ---------- 一括返信 ---------- */
+function replyAllHeroines(){
+  rollDay();let n=0;
+  OWN.forEach(o=>{if(o.th.unread>0){n++;o.th.msgs.push({f:'me',t:pick(TD.stamps)});o.th.unread=0;setTimeout(()=>heroineSay(o,line(o,'react')),800+rnd()*9000);}});
+  GR.forEach(g=>{if(g.unread>0){g.unread=0;members(g).slice().sort(()=>rnd()-0.5).slice(0,6).forEach(o=>setTimeout(()=>groupSay(g,o.h.id,line(o,'react')),1000+rnd()*6000));}});
+  ST.today.reply+=n;ST.total.reply+=n;
+  flash(n?n+'人に返信しました。まもなく、みんなから返事が届きます。':'いまは、未読の子はいません。');
+  renderAll();
+}
+function replyAllFans(){
+  const n=Math.floor(fanUnread);if(n<1){flash('ファンの未読は、まだありません。');return;}
+  fanUnread=0;surgeUntil=Date.now()+12000;
+  rollDay();ST.today.reply+=n;ST.total.reply+=n;
+  flash(fmt(n)+'人のファンに、まとめて返信しました。返事が殺到します。');
+  for(let i=0;i<4;i++)setTimeout(()=>{const f=fanMsg();f.type='dm';f.text=mm(pick(TD.fan.thanks));fanFeed.unshift(f);if(curTab==='f'&&!cur)prependFan(f);},600+i*900);
+}
+let flashT=0;
+function flash(t){const w=$('wave');w.textContent=t;w.hidden=false;clearTimeout(flashT);flashT=setTimeout(()=>{w.hidden=true;},6000);}
+/* ---------- 時間の流れ ---------- */
+let last=performance.now(),slow=0,saveT=0;
+function tick(){
+  const now=performance.now(),dt=Math.min(2.5,(now-last)/1000);last=now;
+  const mul=[0.5,1,1.8][ST.intensity|0];
+  const surge=Date.now()<surgeUntil?5:1;
+  // ファン
+  fanUnread+=(0.6+Math.pow(fans,0.9)*0.0005)*mul*surge*dt;
+  const recv=(0.6+Math.pow(fans,0.9)*0.0005)*mul*surge*dt;rollDay();ST.today.recv+=recv;ST.total.recv+=recv;
+  fanAcc+=Math.min(5,0.8+Math.log10(1+fans)*0.4)*mul*surge*dt;
+  let c=0;while(fanAcc>=1&&c<8){fanAcc--;c++;addFan();}if(fanAcc>8)fanAcc=0;
+  // ヒロイン
+  if(OWN.length){
+    const lam=Math.max(0.15,OWN.length*0.012)*mul*dt;let k=Math.floor(lam);if(rnd()<lam-k)k++;k=Math.min(k,10);
+    for(let i=0;i<k;i++)heroineMsg(pick(OWN));
+    GR.forEach(g=>{const M=members(g).length;if(M<2)return;const gl=(g.arch?0.05:0.45)*mul*dt;let n=Math.floor(gl);if(rnd()<gl-n)n++;for(let i=0;i<Math.min(n,3);i++)groupTick(g);});
+  }
+  // 画面
+  renderTop();
+  if(++slow%4===0&&!cur){
+    if(curTab==='inbox')renderInbox();
+    else if(curTab==='h')refreshHeroineRows();
+    else if(curTab==='g')renderGroups();
+    else if(curTab==='s')renderSummary();
+  }
+  if(slow%25===0){buildGroups();saveST();checkMilestone();
+    const s=demo?null:readSave();if(s){const f0=fans,n0=OWN.length;applySave(s);if(OWN.length!==n0||fans!==f0)buildGroups();}}
+}
+function refreshHeroineRows(){
+  document.querySelectorAll('#v-h .row[data-open]').forEach(el=>{
+    const o=OWNM[el.getAttribute('data-open').slice(2)];if(!o)return;
+    const th=o.th,last=th.msgs.length?th.msgs[th.msgs.length-1]:null;
+    el.querySelector('.pv').textContent=last?(last.f==='me'?'あなた: ':'')+last.t:'(まだメッセージはありません)';
+    el.querySelector('.nm i').textContent=ago(th.t);
+    const b=el.querySelector('.bd');b.textContent=th.unread;b.classList.toggle('z',!th.unread);
+  });
+}
+const MSL=[1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11,1e12];
+function checkMilestone(){
+  let k=-1;MSL.forEach((v,i)=>{if(fans>=v)k=i;});
+  if(ST.ms<0){ST.ms=k;return;}
+  if(k>ST.ms){ST.ms=k;surgeUntil=Date.now()+15000;flash('フォロワー '+fmt(MSL[k])+'人 突破!おめでとうメッセージが殺到しています!');}
+}
+function welcomeWave(){
+  const k=kindNow();
+  flash(mm(TD.wave[k]||TD.wave.daily));
+  OWN.forEach(o=>{setTimeout(()=>heroineMsg(o,k),200+rnd()*16000);});
+  surgeUntil=Date.now()+8000;
+}
+/* ---------- 入力 ---------- */
+function setTab(v){
+  curTab=v;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.getAttribute('data-v')===v));
+  document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
+  if(v==='inbox')renderInbox();else if(v==='h')renderHeroines();else if(v==='g')renderGroups();else if(v==='f')renderFans();else renderSummary();
+}
+document.addEventListener('click',function(e){
+  const t=e.target.closest('[data-open],[data-tab],[data-st],[data-v]');
+  if(!t)return;
+  if(t.hasAttribute('data-open')){const p=t.getAttribute('data-open').split(':');openThread(p[0],p.slice(1).join(':'));return;}
+  if(t.hasAttribute('data-tab')){setTab(t.getAttribute('data-tab'));return;}
+  if(t.hasAttribute('data-st')){const s=t.getAttribute('data-st');if(s==='__more'){chips();return;}sendStamp(s);return;}
+  if(t.parentNode&&t.parentNode.id==='tabs'){setTab(t.getAttribute('data-v'));return;}
+});
+$('thBack').addEventListener('click',closeThread);
+$('allH').addEventListener('click',replyAllHeroines);
+$('allF').addEventListener('click',replyAllFans);
+document.addEventListener('click',function(e){
+  if(e.target.id==='hPrev'){hPage=Math.max(0,hPage-1);renderHeroines();$('v-h').scrollTop=0;}
+  if(e.target.id==='hNext'){hPage++;renderHeroines();$('v-h').scrollTop=0;}
+});
+/* ---------- 設定・つなぎ込み ---------- */
+function segSync(){
+  document.querySelectorAll('#segInt button').forEach(b=>b.classList.toggle('on',+b.getAttribute('data-v')===(ST.intensity|0)));
+  document.querySelectorAll('#segBn button').forEach(b=>b.classList.toggle('on',+b.getAttribute('data-v')===(ST.banner?1:0)));
+  document.querySelectorAll('#segSnd button').forEach(b=>b.classList.toggle('on',+b.getAttribute('data-v')===(ST.sound?1:0)));
+}
+$('setBtn').addEventListener('click',()=>{segSync();$('dlgSet').hidden=false;});
+$('setClose').addEventListener('click',()=>{$('dlgSet').hidden=true;saveST();});
+$('segInt').addEventListener('click',e=>{const b=e.target.closest('button');if(b){ST.intensity=+b.getAttribute('data-v');segSync();saveST();}});
+$('segBn').addEventListener('click',e=>{const b=e.target.closest('button');if(b){ST.banner=+b.getAttribute('data-v');segSync();saveST();}});
+$('segSnd').addEventListener('click',e=>{const b=e.target.closest('button');if(b){ST.sound=+b.getAttribute('data-v');segSync();saveST();if(ST.sound)blip();}});
+$('reloadSave').addEventListener('click',()=>{const s=readSave();if(s){demo=false;applySave(s);buildGroups();renderAll();$('dlgSet').hidden=true;flash('ひだまり喫茶のセーブを読み込みました。');}else{$('dlgSet').hidden=true;$('dlgConn').hidden=false;}});
+$('pasteSave').addEventListener('click',()=>{$('dlgSet').hidden=true;$('dlgConn').hidden=false;});
+$('resetStats').addEventListener('click',()=>{ST.today={recv:0,love:0,letter:0,reply:0,per:{}};ST.total={recv:0,love:0,letter:0,reply:0};saveST();renderSummary();$('dlgSet').hidden=true;});
+function startWith(s,isDemo){
+  demo=!!isDemo;applySave(s);buildGroups();rollDay();
+  $('dlgConn').hidden=true;renderAll();welcomeWave();
+}
+$('connOk').addEventListener('click',()=>{const s=parseSave($('connTxt').value);if(!s){$('connMsg').textContent='読み込めませんでした。書き出しコードか、セーブファイルの中身を、そのまま貼り付けてください。';return;}
+  try{localStorage.setItem('hidamari-talk-save',JSON.stringify(s));}catch(e){}
+  startWith(s,false);});
+$('connDemo').addEventListener('click',()=>startWith(demoSave(),true));
+window.addEventListener('storage',e=>{if(e.key==='hidamari-kissa-v5'&&!demo){const s=readSave();if(s){applySave(s);buildGroups();}}});
+/* ---------- 起動 ---------- */
+(function init(){
+  const s=readSave()||(function(){try{return parseSave(localStorage.getItem('hidamari-talk-save'));}catch(e){return null;}})();
+  if(s)startWith(s,false);else{renderAll();$('dlgConn').hidden=false;}
+  setInterval(tick,400);
+})();
+})();
+</script>
+</body>
+</html>
