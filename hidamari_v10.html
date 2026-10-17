@@ -113,22 +113,21 @@ h2{margin:6px 0 0;font:400 1rem/1.3 var(--f-display);color:var(--mute);letter-sp
 
 .crowd{display:flex;flex-wrap:wrap;justify-content:center;padding:6px 0 8px;min-height:10px}
 .cust{position:relative;flex:0 0 auto;width:44px;margin:0 -7px;border:0;background:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.cust svg{display:block;width:100%;height:auto;transition:transform .15s}
-.cust:active svg{transform:translateY(2px) scale(.96)}
-.cust.hop svg{animation:bump .3s ease}
+.cust img{display:block;width:100%;height:auto;transition:transform .15s}
+.cust:active img{transform:translateY(2px) scale(.96)}
+.cust.hop img{animation:bump .3s ease}
 @media(max-width:600px){.cust{width:38px;margin:0 -9px}}
 .visitor{display:flex;align-items:center;gap:8px}
 .visitor[hidden]{display:none}
 .visitor .vface{display:block;width:34px;height:34px;border-radius:50%;overflow:hidden;background:#ffe3ef;flex:0 0 auto}
 .visitor .vface svg{display:block;width:100%;height:100%}
-.swarm{position:absolute;inset:0;z-index:9;pointer-events:none}
+.swarm{position:relative;z-index:9;height:250px;margin:8px 10px 0;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#ff7aa238,#ffc66b24);border:1px solid #ffffff33}
 .swarm[hidden]{display:none}
 .swbar{position:absolute;left:12px;right:12px;top:10px;height:8px;border-radius:4px;background:#0006;overflow:hidden}
 .swbar i{display:block;height:100%;width:100%;background:var(--amber)}
 .swmsg{position:absolute;left:0;right:0;top:22px;text-align:center;font:400 .85rem/1.3 var(--f-display);color:#fff;text-shadow:0 1px 4px #000a}
 .swc{position:absolute;width:58px;border:0;background:none;padding:0;cursor:pointer;pointer-events:auto;animation:wob .8s ease-in-out infinite alternate;-webkit-tap-highlight-color:transparent}
-.swc svg{display:block;width:100%;height:auto;filter:drop-shadow(0 4px 6px #0007)}
-.swc::after{content:"💗";position:absolute;top:-4px;right:-2px;font-size:.9rem}
+.swc img{display:block;width:100%;aspect-ratio:100/120;height:auto}
 @keyframes wob{to{transform:translateY(-6px)}}
 .pager{display:flex;gap:12px;align-items:center;justify-content:center;padding:6px 0}
 .stage .pager .role{color:#fff;text-shadow:0 1px 3px #0009}
@@ -161,9 +160,6 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
 .crowd{display:flex;flex-wrap:wrap;justify-content:center;padding:4px 0 24px}
 .cust{width:32px;margin:0 -5px -18px}
 @media(max-width:600px){.cust{width:28px;margin:0 -6px -16px}}
-.crowd.trend .cust svg{animation:cheer .5s ease-in-out infinite alternate}
-.crowd.trend .cust:nth-child(3n) svg{animation-delay:.15s}
-.crowd.trend .cust:nth-child(3n+1) svg{animation-delay:.3s}
 @keyframes cheer{to{transform:translateY(-5px)}}
 .feed{margin:2px 0 0;background:#150f2acc;border:1px solid #ffffff22;border-radius:14px;padding:8px 10px;color:#f6eefc}
 .feedhead{display:flex;justify-content:space-between;gap:8px;font-size:.72rem;color:#ffd7e6}
@@ -184,7 +180,7 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
 .mgr:active .mgrsvg{transform:scale(.95)}
 .swc{width:46px}
 @media(max-width:600px){.swc{width:40px}}
-.swfs{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:65;pointer-events:auto;border:0;border-radius:999px;padding:10px 22px;background:linear-gradient(90deg,#ff7aa2,#ffc66b);color:#3a1022;font-weight:700;font-size:.95rem;box-shadow:0 4px 14px #0008;cursor:pointer;font-family:inherit;white-space:nowrap}
+.swfs{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;z-index:3;pointer-events:auto;border:0;border-radius:999px;padding:10px 22px;background:linear-gradient(90deg,#ff7aa2,#ffc66b);color:#3a1022;font-weight:700;font-size:.95rem;box-shadow:0 4px 14px #0008;cursor:pointer;font-family:inherit;white-space:nowrap}
 .swfs:disabled{opacity:.6;cursor:not-allowed}
 .modal{position:fixed;inset:0;z-index:50;background:#0a0818d0;display:grid;place-items:center;padding:16px;overflow-y:auto}
 .modal[hidden]{display:none}
@@ -206,25 +202,33 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
 @keyframes fly{to{transform:translateY(-54px);opacity:0}}
 /* 行列(顔アイコン)・取り巻き・モテモテタイム */
 .crowd .cust{width:30px;margin:0 -3px -2px}
-.crowd .cust svg{border-radius:50%;background:#ffe3ef;box-shadow:0 0 0 2px #fff9}
+.crowd .cust img{aspect-ratio:1;border-radius:50%;background:#ffe3ef;box-shadow:0 0 0 2px #fff9}
 @media(max-width:600px){.crowd .cust{width:26px;margin:0 -3px -2px}}
 .mote{margin:4px 2px 0;font-size:.72rem;color:#ffd7e6;text-align:center}
 .mote .buzzbar i{background:linear-gradient(90deg,#ff7aa2,#ff3d85)}
 .ent{display:flex;flex-wrap:wrap;justify-content:center;padding:6px 0 2px}
 .ent-i{width:34px;height:34px;border-radius:50%;overflow:hidden;margin:0 -4px;box-shadow:0 0 0 2px #fff9;background:var(--c)}
-.ent-i svg{display:block;width:100%;height:100%}
+.ent-i img{display:block;width:100%;height:100%}
 .stage.moting{box-shadow:0 0 0 3px #ff7aa2,0 0 34px #ff7aa2aa}
-.stage.moting .ent-i{animation:cheer .45s ease-in-out infinite alternate}
-.stage.moting .ent-i:nth-child(2n){animation-delay:.2s}
 .sc-stage{position:relative}
 .sc-crowd{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .sc-crowd[hidden]{display:none}
 .sc-stage.crowd .sc-art{position:relative;z-index:2;height:min(300px,42vh)}
-.scf{position:absolute;transform:translate(-50%,-50%);border-radius:50%;overflow:hidden;background:#ffe3ef;box-shadow:0 0 0 1.5px #fffb;animation:scfp 1.4s ease-in-out infinite alternate}
-.scf:nth-child(3n){animation-delay:.4s}.scf:nth-child(3n+1){animation-delay:.8s}
-.scf svg{display:block;width:100%;height:100%}
+.scf{position:absolute;transform:translate(-50%,-50%);border-radius:50%;overflow:hidden;background:#ffe3ef;box-shadow:0 0 0 1.5px #fffb}
+.scf img{display:block;width:100%;height:100%}
 .scf.on{z-index:3;animation:none;transform:translate(-50%,-50%) scale(2.2);box-shadow:0 0 0 2px #fff,0 0 14px #ff7aa2}
 @keyframes scfp{from{transform:translate(-50%,-50%) scale(1)}to{transform:translate(-50%,-50%) scale(1.12)}}
+/* 軽量モード: 動きと影を減らす */
+body.lite .swc,body.lite .seat.lock.can svg,body.lite .post{animation:none!important}
+body.lite .stage.moting{box-shadow:none}
+.crowd,.ent,.feed{contain:content}
+.fimg{display:block}
+.gtag{font-size:.7rem;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:middle;font-family:inherit}
+.gtag.new{background:var(--rose);color:#fff}
+.gtag.ok{background:#ffffff22;color:var(--mute)}
+.gphoto{display:flex;align-items:center;flex-wrap:wrap;margin-top:8px}
+.gfimg{width:24px;height:24px;border-radius:50%;margin-right:-6px;box-shadow:0 0 0 2px #1c1633;background:#ffe3ef}
+.gphoto span{margin-left:14px;font-size:.75rem;color:var(--mute)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -233,7 +237,7 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
   <header class="top">
     <div>
       <h1>ひだまり喫茶</h1>
-      <p class="sub" id="subline">マスターに惚れた250人の女の子が、ウェイトレス志望で集まってくる喫茶店。</p>
+      <p class="sub" id="subline">マスターに惚れた300人の女の子が、ウェイトレス志望で集まってくる喫茶店。</p>
       <p class="titleline" id="titleline"></p>
       <div class="nmwrap"><label class="nmrow">店長の名前<input id="nameIn" type="text" maxlength="12" autocomplete="off" spellcheck="false" placeholder="マスター" aria-label="店長の名前"></label><button class="snd" id="sndbtn" data-act="sound" aria-pressed="true">音 ON</button></div>
     </div>
@@ -255,11 +259,11 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
     <div id="seatpager"></div>
     <div class="crowdcap" id="crowdcap"></div>
     <div class="crowd" id="crowd" aria-label="店の前に並んでいる行列"></div>
+    <div class="swarm" id="swarm" hidden></div>
     <div class="mote"><span id="motetxt"></span><div class="buzzbar"><i id="motefill"></i></div></div>
     <div class="ent" id="ent" aria-label="マスターを囲む女の子たち"></div>
     <div class="feed" id="feed" aria-label="SNSのタイムライン"><div class="feedhead"><b>SNS タイムライン</b><span id="buzztxt"></span></div><div class="buzzbar"><i id="buzzfill"></i></div><div class="posts" id="posts"></div></div>
     <button class="visitor" id="visitor" data-act="visitor" hidden>推しに貢ぎに来た!</button>
-    <div class="swarm" id="swarm" hidden></div>
     <div class="counter">
       <div class="mgrrow">
         <button class="mgr" data-act="brew" id="mgr" aria-label="店長(タップでコーヒーを淹れる)"><span class="mgrsvg" id="mgrsvg"></span><span class="mgrname" id="mgrname"></span></button>
@@ -273,6 +277,7 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
 
   <nav class="tabs" role="tablist" aria-label="メニュー">
     <button class="tab on" role="tab" id="t-heroine" data-act="tab" data-id="heroine">ヒロイン</button>
+    <button class="tab" role="tab" id="t-gather" data-act="tab" data-id="gather">集合</button>
     <button class="tab" role="tab" id="t-biz" data-act="tab" data-id="biz">経営</button>
     <button class="tab" role="tab" id="t-fan" data-act="tab" data-id="fan">推し活</button>
     <button class="tab" role="tab" id="t-daily" data-act="tab" data-id="daily">日課</button>
@@ -286,6 +291,7 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
   </nav>
 
   <section class="panel" id="p-heroine"></section>
+  <section class="panel" id="p-gather" hidden></section>
   <section class="panel" id="p-biz" hidden></section>
   <section class="panel" id="p-fan" hidden></section>
   <section class="panel" id="p-daily" hidden></section>
@@ -296,6 +302,14 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
   <section class="panel" id="p-zukan" hidden></section>
   <section class="panel" id="p-renew" hidden></section>
   <section class="panel" id="p-data" hidden>
+    <h2>アプリ化</h2>
+    <p class="note">ホーム画面やデスクトップに追加すると、ブラウザのバーのない、アプリのような画面で遊べます。</p>
+    <div class="acts"><button class="btn" id="installBtn" data-act="install">アプリとしてインストール</button></div>
+    <p class="note" id="installNote" aria-live="polite"></p>
+    <h2>軽量モード</h2>
+    <p class="note">行列の顔の数や動きを減らして、動作を軽くします。重いと感じたらオンにしてください。</p>
+    <div class="acts"><button class="btn ghost" id="liteBtn" data-act="lite">軽量モード: オン</button></div>
+    <h2>セーブ</h2>
     <p class="note">進行データは、このブラウザの中に保存されています。ブラウザのデータを消したり、別の端末で遊んだりすると引き継がれないので、ときどき書き出して保管してください。</p>
     <div class="sum"><span>最後の書き出し <b id="lastExport">まだありません</b></span></div>
     <div class="acts"><button class="btn" data-act="export">ファイルに保存</button><button class="btn ghost" data-act="copy">コードをコピー</button></div>
@@ -327,17 +341,25 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
 </div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
+<script src="hidamari_gather.js"></script>
 <script>
 (function(){
 'use strict';
+const CFG={lite:(function(){try{return localStorage.getItem('hidamari-lite')!=='0';}catch(e){return true;}})()};
+/* 顔アイコンは、1つずつSVGを埋め込まずに、画像(Blob URL)を使い回して軽くする */
+const FIMG={};
+function svgURL(key,svg){let u=FIMG[key];if(!u){u=FIMG[key]=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));}return u;}
+const _tc={};
+function setT(id,v){if(_tc[id]!==v){_tc[id]=v;document.getElementById(id).textContent=v;}}
+function setW(id,v){const k='w'+id;if(_tc[k]!==v){_tc[k]=v;document.getElementById(id).style.width=v;}}
 const HK=(window.HIDAMARI_HOOKS=window.HIDAMARI_HOOKS||{}); /* 拡張ファイル hidamari_harem.js との連携口 */
 const KEY='hidamari-kissa-v5', KEY4='hidamari-kissa-v4', OLD='hidamari-kissa-none', MAXLV=12, GROW=1.32, BOND_MAX=10;
 /* 経済のものさし: 店内の時間は60倍速(現実の1秒=店内の1分)。コーヒー1杯500円(原価150円→粗利350円)、時給は1,200円〜、採用費は求人・制服・研修で数万円〜 */
-const CK=100,TS=60,BREW=350,COGS=0.30,BACK=0.06,START=30000,HG=1.12,GI=1.003,GU=1.12,R0=2e8,LVG=0.25;
-const HC=i=>Math.round(650*CK*Math.pow(HG,i)); /* i人目の採用費。設備・SNS・メニューの値段もこのカーブに沿わせる */
+const CK=100,TS=60,BREW=350,COGS=0.30,BACK=0.06,START=30000,HG=1.12,HG2=1.09,GI=1.003,GU=1.12,R0=2e8,LVG=0.25;
+const HC=i=>Math.round(650*CK*Math.pow(HG,Math.min(i,200))*Math.pow(HG2,Math.max(0,i-200))); /* i人目の採用費。設備・SNS・メニューの値段もこのカーブに沿わせる */
 const HRT='<svg class="hrt" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>';
 
-/* ================= データ: ヒロイン250人(手書き20人+自動生成230人) ================= */
+/* ================= データ: ヒロイン300人(手書き20人+自動生成280人) ================= */
 const H=[
 {id:'hinata',name:'春日 ひなた',role:'幼なじみ',tag:'元気いっぱい',c:'#ff9d5c',hair:'#e8762f',eye:'#8a4b1f',uni:'#5aa7e8',style:'pony',acc:'band',
  voice:['おっはよー、マスター!今日もいい天気だね!','新作のケーキ、味見させて?','エプロン、似合ってる?'],
@@ -420,7 +442,7 @@ const H=[
  ev:[{lv:3,t:'店の灯り',l:[['n','夕暮れ。ランプの光の中に、ふわりと少女の姿が浮かんだ。'],['honoka','こんにちは。わたし、この店の灯りです。'],['m','灯り……?'],['honoka','あなたが皆さんを大切にするたび、わたしの光は強くなるんです。']]},
      {lv:8,t:'約束の灯火',l:[['n','閉店後、ほのかがランプの前でやさしく微笑んでいる。'],['honoka','この店は、あなたの優しさでできています。'],['honoka','だから、ひとつだけお願い。……これからも、たくさんの人を、あたためてあげてください。'],['n','ランプの灯りが、静かにやさしく揺れた。']]}]}
 ];
-/* ---- 自動生成ヒロイン(230人): 性格タイプごとの台詞テンプレートと、職業・持ちもの・場所から組み立てる ---- */
+/* ---- 自動生成ヒロイン(280人): 性格タイプごとの台詞テンプレートと、職業・持ちもの・場所から組み立てる ---- */
 const ARCH={
  genki:{tag:'元気いっぱい',st:['pony','short','twin'],ac:['band','heart','star'],
   v:['{it}のことなら、私に任せて!','今日もフルパワーでいくよ、マスター!','マスターがいると、毎日がお祭りみたい!'],
@@ -725,7 +747,57 @@ const NEWG=[
 ['星川','ぴあす','ピアス好きのギャル','ゴールドのピアス','ショップの試着室','gal'],
 ['姫野','ひめか','コスメ好きのギャル','限定リップ','コスメカウンター','gal'],
 ['蝶野','あげは','イベントのDJ','ターンテーブル','小さなステージ','gal'],
-['桃瀬','ぴんく','ネイルが得意なギャル','ラメのネイルチップ','原宿の路地','gal']
+['桃瀬','ぴんく','ネイルが得意なギャル','ラメのネイルチップ','原宿の路地','gal'],
+['熊谷','くまこ','キャンプ場の管理人','焚き火台','キャンプ場','genki'],
+['飛鳥','ひなせ','陸上部のマネージャー','ストップウォッチの紐','トラックの脇','genki'],
+['川端','せせら','川下りのガイド','オール','渓流','genki'],
+['鳩山','ぽっぽ','伝書鳩の世話係','鳩笛','屋上の鳩小屋','genki'],
+['白峰','ふぶき','雪山の救助隊員','ピッケルの鈴','山岳救助隊','tsun'],
+['黒田','くろえ','弁論部の部長','弁論台本','視聴覚ホール','tsun'],
+['朱里','あけみ','消防団の紅一点','ホース','消防団の詰所','tsun'],
+['雷','らいか','雷が苦手な剣士','木刀の鈴','道場の縁側','tsun'],
+['藤堂','とうこ','司法書士の卵','登記簿','司法書士事務所','cool'],
+['鏡','かがみ','鏡職人','手鏡','鏡工房','cool'],
+['氷室','せいら','氷彫刻師','彫刻刀','氷の工房','cool'],
+['玄野','しずな','古地図の研究者','古地図','資料室','cool'],
+['花咲','さきは','種まきが好きな少女','朝顔の種','小さな花壇','dere'],
+['小笠原','こまち','お弁当作りが好きな少女','二段のお弁当箱','屋上','dere'],
+['綾部','るみな','糸電話の少女','糸電話','校舎裏','dere'],
+['朝倉','あさぎ','早起きが得意な少女','目覚まし時計','朝の台所','dere'],
+['桜庭','はなむ','しおり作りが好きな少女','押し花のしおり','文芸部の窓辺','dere'],
+['柏木','かなえ','銭湯の女将','手ぬぐい','銭湯','onee'],
+['北条','みちる','料理研究家','圧力鍋','料理教室','onee'],
+['三浦','みさを','港の食堂の女将','大漁旗','港の食堂','onee'],
+['蘭','ともえ','薙刀の師範代','薙刀','武道場','onee'],
+['香坂','かおる','アロマ調香師','香水瓶','調香工房','onee'],
+['小林','ひよこ','新聞部の一年生','カメラ','新聞部の部室','imo'],
+['水野','みのり','園芸部の一年生','じょうろ','校庭の花壇','imo'],
+['石井','ことみ','手話サークルの新入生','手話の絵本','サークル棟','imo'],
+['森下','もね','美術部の一年生','スケッチブック','美術室','imo'],
+['岡本','ののり','合唱部の一年生','楽譜ファイル','音楽室','imo'],
+['蓮池','はすみ','日本画家の令嬢','絵筆','池のある庭','ojou'],
+['大鳥','ひとみ','航空会社の令嬢','金色のウィング','格納庫のラウンジ','ojou'],
+['龍ヶ崎','りゅうか','武家の令嬢','家宝の短刀','武家屋敷','ojou'],
+['白百合','ゆりえ','聖歌隊の令嬢','聖歌集','礼拝堂','ojou'],
+['星乃','ほしみ','流れ星を数える少女','星座盤','丘の天文台','tennen'],
+['春風','そよぎ','風船売りの少女','風船','広場','tennen'],
+['雪野','ゆきの','雪だるま作りが得意な少女','小さな雪だるま','雪の公園','tennen'],
+['眠井','うとり','昼寝の名人','ひざ掛け','陽だまりのベンチ','tennen'],
+['豆田','まめ','豆まきが大好きな少女','福豆','神社の境内','tennen'],
+['鷹野','はやせ','ハンググライダー乗り','ハーネス','崖の上の発射台','boku'],
+['砂川','さら','砂浜のライフセーバー','救命ブイ','海の家','boku'],
+['虎谷','とら','空手部の主将','道着の帯','空手道場','boku'],
+['熊野','ゆう','山登りの少女','小さな鈴','登山口','boku'],
+['朔','さく','新月の夜の占い師','星図','夜の路地','mist'],
+['雨音','うおん','雨の日の語り部','古い和傘','雨の縁側','mist'],
+['幽谷','ゆらぎ','提灯屋の看板娘','提灯','夜の参道','mist'],
+['霞','すいか','霧の朝の散歩人','古い懐中電灯','朝霧の河原','mist'],
+['小川','かなこ','税務署の窓口係','申告書','税務署','maji'],
+['丹羽','ともか','区役所の戸籍係','印鑑','区役所','maji'],
+['金子','ゆみこ','農協の事務員','出荷表','農協の事務所','maji'],
+['白鳥','ぴこ','ゆるふわ系ギャル','パステルのスマホケース','駅前のカフェ','gal'],
+['蜂谷','はにー','ハニーカフェの店員','はちみつ瓶','ハニーカフェ','gal'],
+['桃山','ももん','プリクラ好きのギャル','プリクラ帳','ゲームセンター','gal']
 ];
 function hsl(h,s,l){
   h=((h%360)+360)%360;s/=100;l/=100;
@@ -861,7 +933,7 @@ const EVENTS=[
   }
 })();
 (function(){
-  const SETS=[[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,25,30,35,40],[22,27,32,37,42],[45,50,55,60,65],[70,75,80,85,90],[95,100,105,110,115],[120,125,130,135,140],[101,106,111,116,121],[126,131,136,141,146],[150,155,160,165,170],[175,180,185,190,195],[200,205,210,215,220],[225,230,235,240,245],[151,156,161,166,171],[201,206,211,216,221]];
+  const SETS=[[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,25,30,35,40],[22,27,32,37,42],[45,50,55,60,65],[70,75,80,85,90],[95,100,105,110,115],[120,125,130,135,140],[101,106,111,116,121],[126,131,136,141,146],[150,155,160,165,170],[175,180,185,190,195],[200,205,210,215,220],[225,230,235,240,245],[151,156,161,166,171],[201,206,211,216,221],[250,255,260,265,270],[275,280,285,290,295],[251,256,261,266,271],[276,281,286,291,296]];
   const joy=h=>h.gen?ARCH[h.arch].win:h.voice[1];
   const claim=h=>h.gen?ARCH[h.arch].claim:h.voice[0];
   const lose=h=>h.gen?ARCH[h.arch].lose:h.voice[2];
@@ -916,7 +988,8 @@ function CHF(t,res,b,min,tag,rush,fans,buzz){const c=CH(t,res,b,min,tag,rush);c.
    [120,'百人を超える波','女の子の波が押し寄せる。{n}人がいっせいに、マスターの名前を呼んだ。'],
    [160,'マスターを探せ!','{n}人の女の子が店じゅうを探し回り、ついにマスターを見つけた。'],
    [200,'二百人の大行進','商店街まで続く女の子の列。先頭の子たちが、マスターに向かって走り出す。いまここにいるのは{n}人。'],
-   [250,'全員集合・ひだまりの頂点','{n}人、全員がそろった。ホールも外も、マスターを囲む輪でいっぱいだ。']
+   [250,'全員集合・ひだまりの頂点','{n}人が、そろった。ホールも外も、マスターを囲む輪でいっぱいだ。'],
+   [300,'ひだまりの大輪','{n}人。店の前の通りまで、マスターを囲む輪が何重にも広がっていた。']
   ];
   HAREM.forEach(function(t){
     EVENTS.push({id:'hr'+t[0],t:t[1],need:['hinata'],nOwned:t[0],harem:true,
@@ -974,96 +1047,18 @@ const TITLES=[
 ];
 
 
-/* ---- みんな集合イベント ---- */
-const GATHERS=[
-{id:'g1',t:'にぎやかな昼下がり',n:8,lv:3,main:'nonoka',c:'#ff9bb8',l:[
-['n','昼下がりのひだまり喫茶。気づけば、すべての席がにぎやかに埋まっていた。'],
-['nonoka','マスター、ケーキおかわりー!あ、みおちゃんの分も食べちゃった……'],
-['mio','ちょっとののか先輩!それ私のです!'],
-['rin','店内では静かに。……紅茶、冷めてしまうわよ。'],
-['hinata','マスターの隣は私の席だからね!……って、凛ちゃん、座ってる!'],
-['akari','はいはい、順番にね。みんなの分、ちゃんとあるから。'],
-['m','賑やかだな。……でも、悪くない。'],
-['kaguya','ええ。この騒がしさが、きっと幸せというものよ。']]},
-{id:'g2',t:'雨の日の貸切',n:14,lv:4,main:'luna',c:'#ff7ad9',l:[
-['n','土砂降りの午後。貸切の札を出した店内に、雨音とみんなの笑い声が響く。'],
-['luna','ねえねえ、せっかくだから即席ライブしない?マスターが観客ね!'],
-['kotori','いいね。ギター、持ってきてるよ。'],
-['sumire','わたくし、手拍子というものに挑戦しますわ!'],
-['yuzu','よーし、雨でも走り込み!……店の中は走るなって?はーい。'],
-['yuki','騒がしい……けど、嫌いじゃない。冷たいお茶、みんなに配るわ。'],
-['momiji','雨あがりの祈祷は任せてください。ご利益はたぶんあります!'],
-['m','この雨、止まなくてもいいかもな。'],
-['hinata','もう、マスターったら。じゃあ、ずっとここにいようよ。']]},
-{id:'g3',t:'ひだまりの夜',n:20,lv:5,main:'honoka',c:'#ffc66b',l:[
-['n','定休日の夜。閉めたはずの店の灯りが、ひとつ、またひとつと灯っていく。'],
-['honoka','ようこそ、みんなの居場所へ。……ずっと、この日を待っていました。'],
-['hinata','せーの、で言うよ!マスター、開店記念日おめでとう!'],
-['rin','準備したのは私よ。ケーキは、あかりさんだけど。'],
-['akari','みんなで作ったのよ。ののかちゃんは粉まみれだったけど。'],
-['nonoka','えへへー!でもおいしくできたよ!'],
-['mio','マスター先輩、早く早く!ろうそく消して!'],
-['luna','記念ライブ、やっちゃおう!センターはマスターね!'],
-['elena','Oh、これが日本の開店祝い!みんなでハッピーデス!'],
-['lily','願いごと、魔法で叶えてあげる!……失敗しても怒らないでね?'],
-['shino','……ずっと、後ろにいました。'],
-['sora','配達、間に合ったー!みんなの分の花束だよ!'],
-['kaguya','願い事は、決まった?'],
-['mina','ミナも、ここにいる。ずっと。'],
-['shizuku','みんなが、ここにいて、よかったです。'],
-['m','……ありがとう。この店は、みんなの席でいっぱいだ。'],
-['honoka','それが、この店のいちばんの明かり。これからも、あたたかい場所でいてくださいね。'],
-['n','ひだまり喫茶の灯りは、その夜、いつまでも消えなかった。']]}
-];
-(function(){
-  const GN=[
-    [30,6,'g4','増えつづける席','#ff9bb8','席がまたひとつ、ふたつと埋まり、店の外にまで笑い声が響くようになった。'],
-    [45,7,'g5','商店街の大宴会','#ffc66b','商店街じゅうを巻き込んだお祝いごとに。ひだまり喫茶の前に、長いテーブルが並んだ。'],
-    [60,8,'g6','星空のテラス','#a98cf0','屋根を開けた夜のテラス。満天の星の下、みんなが少しずつ集まってくる。'],
-    [80,9,'g7','満員御礼の夜','#7fe3c6','気づけば、店の前に長い行列。それでも誰も帰らず、みんなが待っていた。'],
-    [100,10,'g8','百人のひだまり','#ff7aa2','百人目の席が埋まった夜。店じゅうの灯りが、いっせいに灯った。'],
-    [125,10,'g9','季節がひとめぐり','#c7a6ff','季節がひとめぐりするあいだに、席はさらに増え、ひだまり喫茶は街の名所になっていた。'],
-    [150,11,'g10','百五十人のひだまり','#ffe08a','百五十人目の席が埋まった夜。店じゅうの灯りが、いっせいに灯った。'],
-    [200,11,'g11','二百人のひだまり','#9be7c4','二百人目の席が埋まった朝。街じゅうの人が、ひだまり喫茶の行列を見に来ていた。'],
-    [250,12,'g12','二百五十人のひだまり','#fff0a8','二百五十人目の席が埋まった夜。ひだまり喫茶は、みんなの帰る場所になった。']
-  ];
-  GN.forEach(function(q,j){
-    const ids=[];
-    for(let t=0;t<8;t++)ids.push(H[Math.min(H.length-1,Math.floor((t+1)*q[0]/9)-1)]);
-    const l=[['n',q[5]]];
-    ids.forEach(function(h,t){l.push([h.id,h.voice[(j+t)%3]]);});
-    l.push(['m',j>=4?'これからも、みんなで一緒に。ずっとここで待ってるよ。':'こんなに大勢で笑って、ごはんを食べて……夢みたいだ。']);
-    l.push(['n','今日も、ひだまり喫茶の灯りは、あたたかく夜を照らしていた。']);
-    GATHERS.push({id:q[2],t:q[3],n:q[0],lv:q[1],main:ids[0].id,c:q[4],l:l});
-  });
-})();
-GATHERS.push(
-{id:'gf1',t:'ファンクラブ会員第一号',n:5,lv:3,fans:1000,main:'hinata',c:'#ff9bb8',l:[
-['n','「店長ファンクラブ」の会員証が、初めて発行された日。店じゅうがざわついている。'],
-['hinata','会員番号1番は、常連の女の子なんだって!マスター、大人気だね!'],
-['rin','会員規約は私が作ったわ。第一条は「店長を困らせないこと」よ。'],
-['nonoka','ののかも入っていいー?会員番号は2番がいいなー!'],
-['mio','マスター先輩!私、公式ファンクラブの応援係になります!'],
-['kaguya','ふふ。みんな、あなたに会いに来るのね。……少し、妬けてしまうわ。'],
-['m','みんなが来てくれるのは嬉しい。でも、いちばん近くで支えてくれているのは、きみたちだよ。'],
-['hinata','……もう、そういうところだよ、マスター。'],
-['n','会員証を握りしめるファンの女の子たちの笑顔が、店の灯りに照らされていた。']]},
-{id:'gf2',t:'トレンド1位の夜',n:10,lv:4,fans:100000,main:'luna',c:'#ffc66b',l:[
-['n','閉店後。スマホの画面に、「店長」の名前がトレンド1位として光っている。'],
-['luna','すごい!世界中の人が、マスターの名前を検索してるよ!'],
-['hinata','なんか、遠い人になっちゃいそうで……ちょっとだけ、寂しいな。'],
-['rin','人気が出ても、やることは変わらないわ。帳簿はまだ私が見ているのだから。'],
-['nonoka','ファンのみんなにも、ケーキ焼いたよー!'],
-['mio','マスター先輩、サインの練習しましょう!'],
-['kaguya','運命の流れが、あなたを世界へ連れて行くのね。'],
-['mina','ミナは、バズっても関係ない。席は、ここにあるにゃ。'],
-['akari','頑張りすぎないでね。お姉さんは、ずっと味方よ。'],
-['shizuku','あの……私、物語に書き残します。この夜のこと、ぜんぶ。'],
-['sumire','わたくしたちは、いつもマスターの帰る場所ですわ。'],
-['m','ありがとう。どれだけ有名になっても、この店とみんなが、俺の居場所だ。'],
-['n','画面の光より、店の灯りのほうが、ずっとあたたかかった。']]}
-);
+/* ---- みんな集合イベント(データは hidamari_gather.js) ---- */
+const GD=(window.HIDAMARI_GATHER&&typeof window.HIDAMARI_GATHER==='object')?window.HIDAMARI_GATHER:null;
+const GCFG=Object.assign({firstMinutes:10,repeatMinutes:2,repeatCooldownMin:20,tickets:1,bond:1,incomePct:1,gaya:6,crowdCap:150,crowdLite:60,chorusIntro:'店じゅうのあちこちから、みんなの声が重なって聞こえてくる。'},(GD&&GD.config)||{});
+const GATHERS=[];
+((GD&&GD.events)||[]).forEach(function(e){
+  if(!e||!e.id)return;
+  const nd=e.need||{};
+  GATHERS.push({id:e.id,t:e.title||e.id,c:e.color||'#ff9bb8',n:nd.count||0,lv:nd.minLv||1,fans:nd.fans||0,who:nd.who||[],main:(e.main&&HM[e.main])?e.main:'hinata',e:e});
+});
 GATHERS.sort((a,b)=>a.n-b.n||(a.fans||0)-(b.fans||0));
+let gPctV=-1;
+const gatherPct=()=>{if(gPctV<0){gPctV=0;GATHERS.forEach(g=>{if(S.seen[g.id])gPctV+=(g.e.reward&&g.e.reward.income!=null)?g.e.reward.income:GCFG.incomePct;});}return gPctV;};
 const GM={}; GATHERS.forEach(function(g){GM[g.id]=g;});
 
 /* ---- メニュー開発 ---- */
@@ -1118,7 +1113,7 @@ const COURSES=[
 function fresh(){return {hearts:START,total:0,run:0,owned:{hinata:1},sign:'',mk:{},gift:{},hms:{},seen:{},t:Date.now(),taps:0,upg:{},bond:{},dates:[],
   stats:{dates:0,visitors:0,renewals:0,quests:0,omt:0,swarms:0,served:0,trends:0,lost:0,paid:0,qbest:0,motes:0},ach:{},stars:0,sound:true,
   tickets:0,tg:{},cos:{},heard:{},title:'t0',tu:{},lastExport:0,
-  name:'',fans:80,q:2,mote:0,buzz:0,fup:{},biz:{},sperk:{},spent:0,fmile:{},
+  name:'',fans:80,q:2,mote:0,buzz:0,fup:{},biz:{},sperk:{},spent:0,gcd:{},photos:{},fmile:{},
   daily:{date:'',bonus:false,q:[]},login:{last:'',claimed:'',streak:0,best:0,total:0},
   hap:{ready:0,next:0,seen:{},last:''},choice:{n:0,fair:0,per:{}}};}
 function normalize(j){
@@ -1176,11 +1171,11 @@ const FUP=[
 ];
 function SC(c){const x=Math.pow(10,2.5+0.135*(Math.log10(c)-2.5));const p=Math.pow(10,Math.floor(Math.log10(x))-1);return Math.round(x/p)*p;}
 U.forEach(u=>{u.cost=SC(u.cost);});
-FUP.forEach((u,k)=>{u.cost=R2(0.8*HC(Math.round(6+k*0.88*N/FUP.length)));if(['f6','f11','f17'].indexOf(u.id)>=0){u.val*=0.1;u.d=u.d.replace(/\+([\d,]+)人/,(m,a)=>'+'+(parseInt(a.replace(/,/g,''),10)*0.1).toLocaleString('ja-JP')+'人');}});
+FUP.forEach((u,k)=>{u.cost=R2(0.8*HC(Math.round(6+k*0.88*250/FUP.length)));if(['f6','f11','f17'].indexOf(u.id)>=0){u.val*=0.1;u.d=u.d.replace(/\+([\d,]+)人/,(m,a)=>'+'+(parseInt(a.replace(/,/g,''),10)*0.1).toLocaleString('ja-JP')+'人');}});
 U.push({id:'wuni',n:'おそろいの制服',d:'全体の収入 ×1.4',cost:2e4,type:'all',val:1.4},{id:'wpos',n:'POSレジ導入',d:'タップの収入 ×3',cost:3e5,type:'tap',val:3},{id:'wtrain',n:'ホール研修',d:'おもてなし1Lvごとのタップ強化 +0.5%',cost:5e6,type:'omt',val:0.005},{id:'wshift',n:'シフト最適化',d:'全体の収入 ×2',cost:2e8,type:'all',val:2});
 U.sort((a,b)=>a.cost-b.cost);
 function R2(x){const p=Math.pow(10,Math.floor(Math.log10(x))-1);return Math.round(x/p)*p;}
-U.forEach((u,k)=>{u.cost=R2(0.5*HC(Math.round(1+k*0.95*N/U.length)));if(u.type==='visit'||u.type==='date'){u.val=Math.pow(u.val,0.35);u.d=u.d.replace(/×([\d.]+)/,(m,a)=>'×'+(Math.round(Math.pow(parseFloat(a),0.35)*100)/100));}if(u.type==='all'||u.type==='tap'){u.val=Math.pow(u.val,0.3);u.d=u.d.replace(/×([\d.]+)/,(m,a)=>'×'+(Math.round(Math.pow(parseFloat(a),0.3)*100)/100));}});
+U.forEach((u,k)=>{u.cost=R2(0.5*HC(Math.round(1+k*0.95*250/U.length)));if(u.type==='visit'||u.type==='date'){u.val=Math.pow(u.val,0.35);u.d=u.d.replace(/×([\d.]+)/,(m,a)=>'×'+(Math.round(Math.pow(parseFloat(a),0.35)*100)/100));}if(u.type==='all'||u.type==='tap'){u.val=Math.pow(u.val,0.3);u.d=u.d.replace(/×([\d.]+)/,(m,a)=>'×'+(Math.round(Math.pow(parseFloat(a),0.3)*100)/100));}});
 const MILES=[[100,'地元で話題に'],[1e3,'SNSで拡散'],[1e4,'ご当地ニュースに登場'],[1e5,'テレビ取材が来た!'],[1e6,'ドラマ化のオファーが届く'],[1e7,'国民的アイドル店長'],[1e8,'世界が注目する店長'],[1e9,'伝説の店長']];
 /* ================= 何度でも強化できる仕組み ================= */
 U.forEach(u=>{u.max=u.type==='slot'?1:0;u.gr={all:2.4,tap:2.2,omt:2.3,visit:2.2,date:2.2,slot:1}[u.type]||2.3;});
@@ -1283,12 +1278,12 @@ function checkMiles(){
 }
 function hudFan(){
   const on=trendOn();
-  $('fans').textContent=fmt(S.fans);
+  setT('fans',fmt(S.fans));
   $('feed').classList.toggle('trend',on);
-  $('buzzfill').style.width=(on?Math.max(0,(trendUntil-Date.now())/30000*100):S.buzz)+'%';
-  $('buzztxt').textContent=on?'🔥 '+NM()+'がトレンド1位! 残り'+Math.ceil((trendUntil-Date.now())/1000)+'秒':'バズ度 '+Math.floor(S.buzz)+'% ・ トレンド '+Math.max(2,Math.round(101-S.buzz))+'位';
-  $('qn').textContent=fmt(Math.floor(S.q||0));
-  $('crowdcap').textContent='行列 '+fmt(Math.floor(S.q||0))+'人'+(S.q>CROWD_MAX?'(先頭'+CROWD_MAX+'人を表示)':'')+' ・ 来店希望 毎時'+fmt(lamH())+'人';
+  setW('buzzfill',(on?Math.max(0,(trendUntil-Date.now())/30000*100):S.buzz).toFixed(1)+'%');
+  setT('buzztxt',on?'🔥 '+NM()+'がトレンド1位! 残り'+Math.ceil((trendUntil-Date.now())/1000)+'秒':'バズ度 '+Math.floor(S.buzz)+'% ・ トレンド '+Math.max(2,Math.round(101-S.buzz))+'位');
+  setT('qn',fmt(Math.floor(S.q||0)));
+  setT('crowdcap','行列 '+fmt(Math.floor(S.q||0))+'人'+(S.q>crowdMax()?'(先頭'+crowdMax()+'人を表示)':'')+' ・ 来店希望 毎時'+fmt(lamH())+'人');
   $('crowd').classList.toggle('trend',on);
   if(crowdN()!==crowdShown)renderCrowd();
 }
@@ -1387,14 +1382,17 @@ function autoTick(dt){
 }
 function hudMote(){
   const on=moteOn(),sc=moteScore();
-  $('motefill').style.width=(on?Math.max(0,(moteUntil-Date.now())/moteDur*100):(S.mote||0))+'%';
-  $('motetxt').textContent=on?'💗 モテモテタイム! 残り'+Math.ceil((moteUntil-Date.now())/1000)+'秒(収入×1.5)':'モテゲージ '+Math.floor(S.mote||0)+'% ・ タップするほど、女の子たちが集まってきます';
+  setW('motefill',(on?Math.max(0,(moteUntil-Date.now())/moteDur*100):(S.mote||0)).toFixed(1)+'%');
+  setT('motetxt',on?'💗 モテモテタイム! 残り'+Math.ceil((moteUntil-Date.now())/1000)+'秒(収入×1.5)':'モテゲージ '+Math.floor(S.mote||0)+'% ・ タップするほど、女の子たちが集まってきます');
   $('stage').classList.toggle('moting',on);
-  $('ms').textContent=fmt(sc);$('mrank').textContent='モテ度:'+moteRank(sc);
+  setT('ms',fmt(sc));setT('mrank','モテ度:'+moteRank(sc));
 }
+let entKey='';
 function renderEnt(){
-  const l=ownedList().slice(-14).reverse();
-  $('ent').innerHTML=l.map(h=>'<span class="ent-i" style="--c:'+h.c+'">'+av(h,S.owned[h.id],true)+'</span>').join('');
+  const l=ownedList().slice(CFG.lite?-8:-14).reverse();
+  const key=l.map(h=>h.id+(S.owned[h.id]||1)+(wearing(h.id)||'')).join(',');
+  if(key===entKey)return;entKey=key;
+  $('ent').innerHTML=l.map(h=>'<span class="ent-i" style="--c:'+h.c+'">'+faceImg(h,34)+'</span>').join('');
 }
 function queueTick(dt){
   const q0=S.q||0,arr=lamH()/TS*dt,srv=Math.min(q0+arr,muH()/TS*dt);
@@ -1402,7 +1400,7 @@ function queueTick(dt){
   S.q=q;if(q>S.stats.qbest)S.stats.qbest=q;
 }
 /* ---- 売上・原価・人件費・家賃 ---- */
-function gmult(){return harmony()*allMult()*fanMult()*qMult()*(Date.now()<buffUntil?2:1)*(trendOn()?2:1)*(moteOn()?1.5:1)*bizMult()*Math.pow(1.2,pk('p_inc'));}
+function gmult(){return harmony()*allMult()*fanMult()*qMult()*(Date.now()<buffUntil?2:1)*(trendOn()?2:1)*(moteOn()?1.5:1)*bizMult()*(1+gatherPct()/100)*Math.pow(1.2,pk('p_inc'));}
 const baseSales=h=>h.inc*S.owned[h.id]*heroMult(h.id);
 function perSec(){
   let s=0;
@@ -1424,7 +1422,7 @@ const omtMult=()=>1+omtCoef()*lvSum()+0.06*msCount();
 const tapGain=()=>(BREW+perSec()*0.0008)*upMult('tap')*omtMult()*Math.pow(1.15,pk('p_tap'));
 function nextLocked(){for(let i=0;i<N;i++){if(!S.owned[H[i].id])return H[i].id;}return null;}
 function gain(g){S.hearts+=g;S.total+=g;S.run+=g;const q=S.daily.q;for(let i=0;i<q.length;i++){if(q[i].k==='heart'&&q[i].p<q[i].g)q[i].p=Math.min(q[i].g,q[i].p+g);}}
-function gatherReady(g){return ownedList().length>=g.n&&minLv()>=g.lv&&(!g.fans||S.fans>=g.fans);}
+function gatherReady(g){return ownedList().length>=g.n&&minLv()>=g.lv&&(!g.fans||S.fans>=g.fans)&&g.who.every(id=>S.owned[id]);}
 const onDate=id=>S.dates.some(d=>d.id===id);
 const pendingStars=()=>Math.floor(Math.pow(S.run/R0,0.35)*(1+0.1*pk('p_star')));
 
@@ -1630,15 +1628,8 @@ function cardHTML(h){
     '<div class="role">好感度 Lv '+lv+' ・ 売上 '+fmt(baseSales(h)*gmult()*TS)+'円/時'+(br?' ・ ふれあい ★'+br:'')+'</div><div class="role">時給 '+fmt(wageH(h))+'円 ＋ 売上の'+Math.round(BACK*100)+'%を歩合</div></div><div class="acts">'+up+'<button class="btn ghost" data-act="sign" data-id="'+h.id+'">'+(S.sign===h.id?'★看板ウェイトレス':'看板にする(収入×1.5)')+'</button>'+mem+'</div></article>';
 }
 function heroinePanel(){
-  let shown=false;
-  const g=GATHERS.map(G=>{
-    const seen=S.seen[G.id];
-    if(gatherReady(G))return '<div class="gather"><p><strong>'+G.t+'</strong>みんなが集まる特別なイベントです。</p><button class="btn'+(seen?' ghost':' new')+'" data-act="scene" data-id="'+G.id+'">'+(seen?'もう一度見る':'見る')+'</button></div>';
-    if(shown)return '';
-    shown=true;
-    const n=ownedList().length;
-    return '<div class="gather"><p><strong>集合イベント「？？？」</strong>'+G.n+'人を迎えて、全員の好感度を Lv'+G.lv+' 以上にする'+(G.fans?'。さらにフォロワー'+fmt(G.fans)+'人以上':'')+'。いま '+Math.min(n,G.n)+'/'+G.n+'人・最低 Lv '+minLv()+'。</p><button class="btn ghost" disabled>未解放</button></div>';
-  }).join('');
+  const ng=GATHERS.filter(G=>gatherReady(G)&&!S.seen[G.id]).length;
+  const g=ng?'<div class="gather"><p><strong>集合イベントが '+ng+' 件、解放されています</strong>みんなが集まる特別なイベントです。</p><button class="btn new" data-act="tab" data-id="gather">集合タブへ</button></div>':'';
   const owned=ownedList(),mu=minUp();
   const page=pageSlice(owned,'card');
   return '<div class="gathers">'+g+'</div>'+
@@ -1709,8 +1700,8 @@ function bizPanel(){
     '<p class="note">来店希望が接客できる人数を上回ると行列ができます。行列に上限はなく、長くなるほど売上のボーナスが増えます(伸びはゆるやかです)。ウェイトレスを増やすと、接客できる人数も増えます(デート中の子は接客できません)。</p>'+
     '<h2>時給の高いウェイトレス</h2><div class="list">'+(top||'<p class="note">まだいません</p>')+'</div>';
 }
-const TABS=['heroine','biz','fan','daily','menu','hall','date','cos','zukan','renew','data'];
-const PANEL={heroine:()=>heroinePanel(),biz:()=>bizPanel(),fan:()=>fanPanel(),daily:()=>dailyPanel(),menu:()=>menuPanel(),hall:()=>hallPanel(),date:()=>datePanel(),cos:()=>costumePanel(),zukan:()=>zukanPanel(),renew:()=>renewPanel()};
+const TABS=['heroine','gather','biz','fan','daily','menu','hall','date','cos','zukan','renew','data'];
+const PANEL={heroine:()=>heroinePanel(),gather:()=>gatherPanel(),biz:()=>bizPanel(),fan:()=>fanPanel(),daily:()=>dailyPanel(),menu:()=>menuPanel(),hall:()=>hallPanel(),date:()=>datePanel(),cos:()=>costumePanel(),zukan:()=>zukanPanel(),renew:()=>renewPanel()};
 function renderPanel(t){const f=PANEL[t];if(f)$('p-'+t).innerHTML=mth(f());if(HK.panel)HK.panel(t);}
 function setTab(t,skip){
   tab=t;
@@ -1735,20 +1726,22 @@ function render(){
   setTab(tab,true);hud();
 }
 function hud(){
-  $('hearts').textContent=fmt(S.hearts);
-  $('ps').textContent=rate(Math.max(0,netPS()));
-  $('harm').textContent='×'+(harmony()*allMult()).toFixed(2);
-  $('seatn').textContent=ownedList().length+'/'+N;
-  $('brew').innerHTML='コーヒーを淹れる +'+rate(tapGain());
+  setT('hearts',fmt(S.hearts));
+  setT('ps',rate(Math.max(0,netPS())));
+  setT('harm','×'+(harmony()*allMult()).toFixed(2));
+  setT('seatn',ownedList().length+'/'+N);
+  const bt='コーヒーを淹れる +'+rate(tapGain());
+  if(_tc.brew!==bt){_tc.brew=bt;$('brew').innerHTML=bt;}
   const now=Date.now();
   const rush=buffUntil>now;
   $('buffstat').hidden=!rush;
   if(rush)$('buff').textContent=Math.ceil((buffUntil-now)/1000)+'秒';
   const bs=document.querySelectorAll('[data-cost]');
   for(let i=0;i<bs.length;i++){
-    const ok=S.hearts>=parseFloat(bs[i].getAttribute('data-cost'));
-    bs[i].disabled=!ok;
-    if(bs[i].classList.contains('seat'))bs[i].classList.toggle('can',ok);
+    const b=bs[i];
+    if(b._c===undefined)b._c=parseFloat(b.getAttribute('data-cost'));
+    const ok=S.hearts>=b._c;
+    if(b._ok!==ok){b._ok=ok;b.disabled=!ok;if(b.classList.contains('seat'))b.classList.toggle('can',ok);}
   }
   const bars=document.querySelectorAll('[data-dend]');
   for(let i=0;i<bars.length;i++){
@@ -1827,12 +1820,12 @@ function dailyPanel(){
     '<p class="note">日課をすべて達成すると、チケットが2枚追加でもらえます。チケットは「衣装」タブで使います。日課は毎日0時(この端末の時刻)に入れ替わります。連続ログインが途切れると、1日目に戻ります。</p>';
 }
 function hudExtra(){
-  $('tk').textContent=S.tickets;
-  $('omt').textContent='おもてなし力 ×'+omtMult().toFixed(2)+'(おもてなしを重ねるほど、タップの円が増えます)';
+  setT('tk',S.tickets);
+  setT('omt','おもてなし力 ×'+omtMult().toFixed(2)+'(おもてなしを重ねるほど、タップの円が増えます)');
   const t=TITLES.filter(x=>x.id===S.title)[0];
   $('titleline').textContent=t?'称号: '+t.n:'';
   $('hap').hidden=!(S.hap.ready>0&&eligibleHaps().length>0);
-  $('hapbtn').textContent='ハプニング発生!'+(S.hap.ready>1?' ×'+S.hap.ready:'');
+  setT('hapbtn','ハプニング発生!'+(S.hap.ready>1?' ×'+S.hap.ready:''));
   let dot=!loginClaimed();
   S.daily.q.forEach((q,i)=>{
     const p=$('qp'+i);
@@ -1941,7 +1934,7 @@ function importText(txt){
     const o=JSON.parse(json),d=(o&&o.game==='hidamari')?o.data:null;
     if(!d||!d.owned||typeof d.hearts!=='number')return false;
     if((o.v||0)<4){d.hearts*=200;d.total=(d.total||0)*200;d.run=(d.run||0)*200;}
-    S=normalize(d);buffUntil=0;ensureDay();save();render();return true;
+    S=normalize(d);gPctV=-1;buffUntil=0;ensureDay();save();render();return true;
   }catch(e){return false;}
 }
 
@@ -1973,9 +1966,132 @@ const randVoice=h=>h.voice[Math.floor(Math.random()*h.voice.length)];
 
 /* ================= 思い出シーン ================= */
 let sc=null;
+/* ================= 集合イベントの進行 ================= */
+function addBond(id,v){S.bond[id]=Math.min(BOND_MAX*10,(S.bond[id]||0)+v);}
+function gLines(lines,g,own){
+  const out=[];
+  (lines||[]).forEach(function(l){
+    let sp=l[0];
+    if(sp==='@main')sp=g.main;
+    else if(sp==='@any'){const pool=own.filter(h=>h.id!==g.main);sp=pool.length?pool[Math.floor(Math.random()*pool.length)].id:g.main;}
+    if(sp==='n'||sp==='m'||S.owned[sp])out.push([sp,l[1]]);
+  });
+  return out;
+}
+function gatherChapters(g){
+  const e=g.e,own=ownedList(),chs=[];
+  const mk=function(c){
+    let ch=c.choices;
+    if(ch==='auto')ch=(GD&&GD.autoChoices)||null;
+    const lines=gLines(c.lines,g,own);
+    if(!lines.length)return;
+    chs.push({lines:lines,choices:(ch&&ch.length)?ch.map(function(x){const r=gLines(x.res,g,own);return Object.assign({},x,{res:r.length?r:[['n','……']]});}):null});
+  };
+  if(e.chapters)e.chapters.forEach(mk);
+  else{
+    const A=e.auto||{},k=A.guests||8,ids=[],cnt=own.length,seen={};
+    for(let t=0;t<k;t++){const h=own[Math.min(cnt-1,Math.max(0,Math.floor((t+1)*g.n/(k+1))-1))];if(h&&!seen[h.id]){seen[h.id]=1;ids.push(h);}}
+    const l=[['n',A.story||'みんなが、ひだまり喫茶に集まった。']];
+    ids.forEach(function(h,t){l.push([h.id,h.voice[t%h.voice.length]]);});
+    l.push(['m',A.master||'こんなに大勢で笑って、ごはんを食べて……夢みたいだ。']);
+    mk({lines:l,choices:A.choices===false?null:'auto'});
+  }
+  const gy=e.gaya!=null?e.gaya:GCFG.gaya;
+  if(gy>0&&own.length>4){
+    const used={};chs.forEach(c=>c.lines.forEach(l=>{used[l[0]]=1;}));
+    const pool=own.filter(h=>!used[h.id]);
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=pool[i];pool[i]=pool[j];pool[j]=t;}
+    const sp=(GD&&GD.speech)||{},cl=[['n',GCFG.chorusIntro]];
+    pool.slice(0,gy).forEach(function(h){const a=(h.gen&&sp[h.arch]&&sp[h.arch].length)?sp[h.arch]:h.voice;cl.push([h.id,a[Math.floor(Math.random()*a.length)]]);});
+    if(cl.length>1)chs.push({lines:cl,choices:null});
+  }
+  if(e.finale)mk({lines:e.finale});
+  return chs;
+}
+function openGather(id){
+  const g=GM[id];if(!g||!gatherReady(g)){sfx.ng();return;}
+  const chs=gatherChapters(g);if(!chs.length){sfx.ng();return;}
+  sc={lines:chs[0].lines,i:0,key:g.id,cur:S.owned[g.main]?g.main:ownedList()[0].id,phase:'lines',choices:chs[0].choices,gather:g,chs:chs,ci:0,picks:[],crowd:true};
+  startScene(g.t+(chs.length>1?'  1/'+chs.length:''),g.c);
+}
+function gatherAdvance(){
+  const g=sc.gather;
+  if(sc.phase==='result'&&sc.pick){sc.picks.push(sc.pick);sc.pick=null;}
+  if(sc.ci<sc.chs.length-1){
+    sc.ci++;const c=sc.chs[sc.ci];
+    sc.lines=c.lines;sc.i=0;sc.phase='lines';sc.choices=c.choices;
+    $('scTitle').textContent=mt(g.t)+'  '+(sc.ci+1)+'/'+sc.chs.length;
+    $('scChoices').hidden=true;$('scNext').hidden=false;
+    showLine();$('scNext').focus();return;
+  }
+  finishGather();
+}
+function finishGather(){
+  const g=sc.gather,e=g.e,own=ownedList(),now=Date.now(),picks=sc.picks.slice();
+  const first=!S.seen[g.id],cd=(GCFG.repeatCooldownMin||0)*60000;
+  const pay=first||(now-(S.gcd[g.id]||0)>=cd),R=e.reward||{};
+  let minutes=first?(R.minutes!=null?R.minutes:GCFG.firstMinutes):GCFG.repeatMinutes,photo=first,mote=0,fans=0;
+  picks.forEach(function(c){
+    const b=c.bond||{};
+    Object.keys(b).forEach(function(k){
+      if(!b[k])return;
+      if(k==='*')own.forEach(h=>addBond(h.id,b[k]));
+      else{const id=k==='@main'?g.main:k;if(S.owned[id])addBond(id,b[k]);}
+    });
+    if(c.mote)mote+=c.mote;
+    if(c.minutes)minutes+=c.minutes;
+    if(c.fans)fans+=c.fans;
+    if(c.photo)photo=true;
+  });
+  const msg=[];
+  if(first){
+    const bb=R.bond!=null?R.bond:GCFG.bond;if(bb)own.forEach(h=>addBond(h.id,bb));
+    const tk=R.tickets!=null?R.tickets:GCFG.tickets;if(tk){S.tickets+=tk;msg.push('チケット+'+tk);}
+    S.seen[g.id]=true;gPctV=-1;
+    const ip=R.income!=null?R.income:GCFG.incomePct;if(ip)msg.push('収入ボーナス+'+ip+'%');
+  }
+  if(pay){const m=Math.max(perSec()*60*minutes,50*CK*minutes);gain(m);S.gcd[g.id]=now;msg.unshift('+'+fmt(m)+' 円');}
+  else msg.unshift('(ごほうびは あと'+Math.ceil((cd-(now-(S.gcd[g.id]||0)))/60000)+'分後)');
+  if(fans){const gf=fans*(10+S.fans*0.005);S.fans+=gf;msg.push('フォロワー+'+fmt(gf));}
+  if(mote)addMote(mote);
+  if(photo){
+    const rest=own.filter(h=>h.id!==g.main);
+    for(let i=rest.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=rest[i];rest[i]=rest[j];rest[j]=t;}
+    S.photos[g.id]={n:own.length,ids:[g.main].concat(rest.slice(0,17).map(h=>h.id)),t:now};
+  }
+  dq('scene',1);
+  const title=g.t;
+  closeScene();
+  toast('集合イベント「'+title+'」'+(first?'クリア!':'おしまい')+'  '+msg.join('・'));sfx.coin();
+  render();save();checkAch();
+}
+function gatherPanel(){
+  if(!GATHERS.length)return '<p class="note">集合イベントのデータ(hidamari_gather.js)を読み込めませんでした。このHTMLと同じフォルダに置いてあるか、確認してください。</p>';
+  const own=ownedList().length,cleared=GATHERS.filter(g=>S.seen[g.id]).length,photos=Object.keys(S.photos||{}).length;
+  const now=Date.now(),cd=(GCFG.repeatCooldownMin||0)*60000;
+  const sum='<div class="sum"><span>クリア <b>'+cleared+'/'+GATHERS.length+'</b></span><span>集合ボーナス <b>×'+(1+gatherPct()/100).toFixed(2)+'</b></span><span>集合写真 <b>'+photos+'枚</b></span><span>在籍 <b>'+own+'人</b></span></div>';
+  const card=function(g){
+    const seen=S.seen[g.id],ph=S.photos&&S.photos[g.id],R=g.e.reward||{};
+    const wait=Math.max(0,Math.ceil((cd-(now-(S.gcd[g.id]||0)))/60000));
+    const fm=R.minutes!=null?R.minutes:GCFG.firstMinutes,ft=R.tickets!=null?R.tickets:GCFG.tickets,fi=R.income!=null?R.income:GCFG.incomePct;
+    const tag=seen?'<span class="gtag ok">クリア済み</span>':'<span class="gtag new">NEW</span>';
+    const rw=seen?('もう一度見る: '+(wait>0?'ごほうびは あと'+wait+'分':'ごほうびあり(売上'+GCFG.repeatMinutes+'分ぶん)')):('初回のごほうび: 売上'+fm+'分ぶん・チケット+'+ft+'・収入+'+fi+'%');
+    const pic=ph?'<span class="gphoto">'+ph.ids.filter(id=>HM[id]).slice(0,14).map(id=>faceImg(HM[id],24,'gfimg')).join('')+'<span>'+(g.e.photo||'集合写真')+'('+ph.n+'人)</span></span>':'';
+    return '<div class="gather"><p><strong>'+g.t+tag+'</strong>'+rw+pic+'</p><button class="btn'+(seen?' ghost':' new')+'" data-act="scene" data-id="'+g.id+'">'+(seen?'もう一度見る':'見る')+'</button></div>';
+  };
+  const lock=function(g){
+    const need=[g.n+'人を迎える(いま '+Math.min(own,g.n)+'/'+g.n+')',g.lv>1?'全員の好感度を Lv'+g.lv+' 以上(いま最低 Lv'+minLv()+')':'',g.fans?'フォロワー'+fmt(g.fans)+'人以上':'',g.who.filter(id=>!S.owned[id]).map(id=>HM[id]?HM[id].name:id).join('・')].filter(Boolean);
+    return '<div class="gather"><p><strong>集合イベント「？？？」</strong>'+need.join(' ・ ')+'</p><button class="btn ghost" disabled>未解放</button></div>';
+  };
+  const ready=GATHERS.filter(gatherReady),locked=GATHERS.filter(g=>!gatherReady(g));
+  const fresh=ready.filter(g=>!S.seen[g.id]),done=ready.filter(g=>S.seen[g.id]);
+  return sum+'<div class="gathers">'+fresh.map(card).join('')+locked.slice(0,2).map(lock).join('')+done.map(card).join('')+'</div>'+
+    (locked.length>2?'<p class="note">ほかにも、まだ見ぬ集合イベントが '+(locked.length-2)+' 件あります。</p>':'')+
+    '<p class="note">一度クリアすると、いつでも見返せます。2回目以降は、'+GCFG.repeatCooldownMin+'分ごとにごほうびがもらえます。クリアした数だけ、全体の収入が増えます。</p>';
+}
 function openScene(id,i){
   let def,key,main,color;
-  if(GM[id]){def=GM[id];key=id;main=def.main;color=def.c;}
+  if(GM[id]){openGather(id);return;}
   else{const h=HM[id];def=h.ev[i];key=id+':'+i;main=id;color=h.c;}
   sc={lines:def.l,i:0,key:key,cur:main,phase:'lines',choices:null};
   startScene(def.t,color);
@@ -2002,10 +2118,18 @@ function scCrowdShow(){
   const box=$('scCrowd'),st=$('scStage');
   if(!sc||!sc.crowd){box.hidden=true;box.innerHTML='';st.classList.remove('crowd');return;}
   st.classList.add('crowd');box.hidden=false;
-  const L=ownedList(),n=L.length,W=box.clientWidth||340,Hh=box.clientHeight||280;
+  let L=ownedList();
+  const cap=CFG.lite?Math.min(GCFG.crowdLite,GCFG.crowdCap):GCFG.crowdCap;
+  if(L.length>cap){
+    const used={};(sc.chs||[]).forEach(c=>c.lines.forEach(l=>{used[l[0]]=1;}));
+    const a=L.filter(h=>used[h.id]),b=L.filter(h=>!used[h.id]);
+    for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=b[i];b[i]=b[j];b[j]=t;}
+    L=a.concat(b).slice(0,cap);
+  }
+  const n=L.length,W=box.clientWidth||340,Hh=box.clientHeight||280;
   const fs=n<=20?34:n<=60?28:n<=120?22:n<=200?18:16,cx=W/2,cy=Hh/2;
   let html='',i=0,k=0;
-  const face=(h,x,y)=>'<span class="scf" data-id="'+h.id+'" style="left:'+x.toFixed(1)+'px;top:'+y.toFixed(1)+'px;width:'+fs+'px;height:'+fs+'px">'+av(h,S.owned[h.id],true)+'</span>';
+  const face=(h,x,y)=>'<span class="scf" data-id="'+h.id+'" style="left:'+x.toFixed(1)+'px;top:'+y.toFixed(1)+'px;width:'+fs+'px;height:'+fs+'px">'+faceImg(h,fs)+'</span>';
   while(i<n&&k<40){
     const rx=W/2-fs/2-2-k*fs*0.8,ry=Hh/2-fs/2-2-k*fs*0.8;
     if(rx<fs||ry<fs*0.6)break;
@@ -2028,7 +2152,7 @@ function showLine(){
   const p=$('scText');p.textContent=mt(tx);p.className='sc-text'+(sp==='n'?' n':'');
   p.style.animation='none';void p.offsetWidth;p.style.animation='';
   if(HM[sp])sfx.voice(HM[sp]);
-  $('scNext').textContent=sc.i>=sc.lines.length-1?(sc.phase==='lines'&&sc.choices?'選ぶ':'おわり'):'つぎへ';
+  $('scNext').textContent=sc.i>=sc.lines.length-1?(sc.phase==='lines'&&sc.choices?'選ぶ':(sc.gather&&sc.ci<sc.chs.length-1?'つぎへ':'おわり')):'つぎへ';
 }
 function showChoices(){
   sc.phase='choice';
@@ -2067,6 +2191,7 @@ function nextLine(){
   if(!sc)return;
   if(sc.i<sc.lines.length-1){sc.i++;showLine();return;}
   if(sc.phase==='lines'&&sc.choices){showChoices();return;}
+  if(sc.gather){gatherAdvance();return;}
   if(sc.phase==='result'){finishHap();return;}
   const first=!S.seen[sc.key];
   S.seen[sc.key]=true;
@@ -2116,6 +2241,10 @@ function scheduleVisitor(first){
 let sw=null;
 const CUSTL=['これ、お店の足しにしてください!','マスターさんに貢がせて……!','お布施です、受け取ってください!','指名します!シャンパン入れて!','今月のお小遣い、ぜんぶマスターに!','推しに課金できて幸せ……','これで足りますか?まだ出せます!','お釣りはいらないです!','また貢ぎに来ます!','マスターのためなら、いくらでも!'];
 const custCache={};
+function faceURL(h){const lv=S.owned[h.id]||1;return svgURL(h.id+'|'+lv+'|'+(wearing(h.id)||''),av(h,lv,true));}
+function faceImg(h,sz,cls){return '<img class="'+(cls||'fimg')+'" src="'+faceURL(h)+'" width="'+sz+'" height="'+sz+'" alt="" decoding="async" draggable="false">';}
+const custFaceURL=i=>svgURL('cf'+i,custH(i).face);
+const custBodyURL=i=>svgURL('cb'+i,custH(i).svg);
 function custH(i){
   if(custCache[i])return custCache[i];
   const r=seedRand('cust'+i),hue=r()*360,L=[32,46,58,68][Math.floor(r()*4)];
@@ -2125,13 +2254,13 @@ function custH(i){
   c.svg=avatar(c,4,false);c.face=avatar(c,5,true);
   return custCache[i]=c;
 }
-const CROWD_MAX=100;
-const crowdN=()=>Math.min(CROWD_MAX,Math.floor(S.q||0));
+const crowdMax=()=>CFG.lite?40:100;
+const crowdN=()=>Math.min(crowdMax(),Math.floor(S.q||0));
 let crowdShown=-1;
 function renderCrowd(){
   const n=crowdN(),el=$('crowd'),cur=el.childElementCount;
   crowdShown=n;
-  if(n>cur){let h='';for(let i=cur;i<n;i++)h+='<button class="cust" data-act="cust" data-i="'+i+'" aria-label="並んでいるお客さん">'+custH(i%48).face+'</button>';el.insertAdjacentHTML('beforeend',h);}
+  if(n>cur){let h='';for(let i=cur;i<n;i++)h+='<button class="cust" data-act="cust" data-i="'+i+'" aria-label="並んでいるお客さん"><img class="fimg" src="'+custFaceURL(i%48)+'" width="30" height="30" alt="" decoding="async" draggable="false"></button>';el.insertAdjacentHTML('beforeend',h);}
   else while(el.childElementCount>n)el.removeChild(el.lastChild);
 }
 function bubbleOn(el,text){
@@ -2164,8 +2293,8 @@ function startSwarm(){
   sw={end:Date.now()+SW_MS,tot:n,left:n,combo:0,last:0,got:0,fsReady:0};
   let h='<div class="swbar"><i id="swfill"></i></div><div class="swmsg" id="swmsg">貢ぎ物を持った女の子が殺到!</div>';
   for(let i=0;i<n;i++){
-    const c=custH(Math.floor(Math.random()*48));
-    h+='<button class="swc" data-act="swserve" data-i="'+i+'" style="left:'+(2+Math.random()*86).toFixed(1)+'%;top:'+(14+Math.random()*64).toFixed(1)+'%;animation-delay:-'+Math.random().toFixed(2)+'s" aria-label="ファンを接客">'+c.svg+'</button>';
+    const ci=Math.floor(Math.random()*48);
+    h+='<button class="swc" data-act="swserve" data-i="'+i+'" style="left:'+(3+Math.random()*84).toFixed(1)+'%;top:'+(24+Math.random()*24).toFixed(1)+'%;animation-delay:-'+Math.random().toFixed(2)+'s" aria-label="ファンを接客"><img class="fimg" src="'+custBodyURL(ci)+'" width="46" height="55" alt="" decoding="async" draggable="false"></button>';
   }
   h+='<button class="swfs" id="swfs" data-act="swfs">貢ぎ物をまとめて受け取る</button>';
   $('swarm').innerHTML=h;$('swarm').hidden=false;
@@ -2410,6 +2539,11 @@ document.addEventListener('click',function(e){
   }else if(act==='title'){
     const tt=TITLES.filter(x=>x.id===id)[0];
     if(tt&&tt.f()){S.title=id;render();save();}
+  }else if(act==='lite'){
+    CFG.lite=!CFG.lite;try{localStorage.setItem('hidamari-lite',CFG.lite?'1':'0');}catch(e){}
+    applyLite();$('crowd').innerHTML='';crowdShown=-1;entKey='';render();
+  }else if(act==='install'){
+    installApp();
   }else if(act==='export'){
     exportFile();
   }else if(act==='copy'){
@@ -2485,15 +2619,15 @@ $('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeScene();})
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sc)closeScene();});
 
 /* ================= ループ ================= */
-let last=performance.now(),slow=0;
+let hudT=false,last=performance.now(),slow=0;
 setInterval(()=>{
   const now=performance.now(),dt=Math.min((now-last)/1000,1);last=now;
   const gr=perSec();gain(gr*dt);payCosts(gr,dt);queueTick(dt);moteTick(dt);autoTick(dt);
   fanTick(dt);
   checkDates();
   swTick();
-  hud();
-  if(++slow>=10){slow=0;if(ensureDay())render();if(dirty){dirty=false;render();}else if(tab==='biz')renderPanel('biz');hapTick();checkMiles();checkAch();}
+  hudT=!hudT;if(hudT&&!document.hidden)hud();
+  if(++slow>=10){slow=0;if(ensureDay())render();if(dirty){dirty=false;render();}else if(tab==='biz')renderPanel('biz');$('t-gather').classList.toggle('dot',GATHERS.some(g=>!S.seen[g.id]&&gatherReady(g)));hapTick();checkMiles();checkAch();}
 },100);
 setInterval(save,5000);
 setInterval(()=>{
@@ -2518,9 +2652,9 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 })();
 
 /* ===== v9 拡張: ホール拡張(新メニュー/貢ぎ物コレクション/人数ご褒美/売上ランキング) ===== */
-const MENU9=[['ブレンドコーヒー',3],['季節のパンケーキ',6],['とろけるプリン',9],['ふわふわオムライス',12],['ナポリタン',15],['手作りクッキー',18],['フルーツサンド',21],['抹茶パフェ',24],['ひだまりカレー',27],['クリームソーダ',30],['ホットサンド',34],['苺のショートケーキ',38],['限定モンブラン',42],['ハニートースト',46],['特製ビーフシチュー',50],['ミニコース',55],['アフタヌーンティー',60],['夜のデザートワイン',65],['シャンパンタワー',70],['季節の特別コース',75],['王室のティーセット',80],['ひだまりフルコース',85],['伝説のスイーツ',92],['マスター特製・愛のスペシャル',100],['ひだまり黄金パフェ',108],['星降る夜のコース',116],['祝祭の大皿',124],['王宮の晩餐会',132],['永遠のひだまりブレンド',140],['百五十人分の愛のフルコース',150],['ひだまり星空コース',160],['黄金の朝食セット',170],['桜色の宴',180],['月夜のティーセット',190],['伝説の海鮮丼',200],['虹色のスイーツ塔',210],['神々のスペシャル',220],['世界一のひだまりランチ',230],['宇宙の果てのカレー',240],['二百五十人分の愛のフルコース',250]].map(function(m){return {id:'mk'+m[1],n:m[0],need:m[1],cost:R2(0.4*HC(m[1]))};});
+const MENU9=[['ブレンドコーヒー',3],['季節のパンケーキ',6],['とろけるプリン',9],['ふわふわオムライス',12],['ナポリタン',15],['手作りクッキー',18],['フルーツサンド',21],['抹茶パフェ',24],['ひだまりカレー',27],['クリームソーダ',30],['ホットサンド',34],['苺のショートケーキ',38],['限定モンブラン',42],['ハニートースト',46],['特製ビーフシチュー',50],['ミニコース',55],['アフタヌーンティー',60],['夜のデザートワイン',65],['シャンパンタワー',70],['季節の特別コース',75],['王室のティーセット',80],['ひだまりフルコース',85],['伝説のスイーツ',92],['マスター特製・愛のスペシャル',100],['ひだまり黄金パフェ',108],['星降る夜のコース',116],['祝祭の大皿',124],['王宮の晩餐会',132],['永遠のひだまりブレンド',140],['百五十人分の愛のフルコース',150],['ひだまり星空コース',160],['黄金の朝食セット',170],['桜色の宴',180],['月夜のティーセット',190],['伝説の海鮮丼',200],['虹色のスイーツ塔',210],['神々のスペシャル',220],['世界一のひだまりランチ',230],['宇宙の果てのカレー',240],['二百五十人分の愛のフルコース',250],['白銀の冬メニュー',260],['千年のレシピ',270],['奇跡のブレンド',280],['ひだまり大宴会コース',290],['三百人分の愛のフルコース',300]].map(function(m){return {id:'mk'+m[1],n:m[0],need:m[1],cost:R2(0.4*HC(m[1]))};});
 const GIFT9=['ブランドの財布','花束','高級チョコレート','ラブレター','手編みのマフラー','大きなぬいぐるみ','腕時計','香水','ネックレス','商品券','シャンパン','金のコーヒーカップ','宝石箱','ペアのマグカップ','バラの花束','古い懐中時計','手作りクッキー缶','星のペンダント','限定フィギュア','お店の合鍵'];
-const HMS9=[10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250];
+const HMS9=[10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300];
 const cnt9=o=>Object.keys(o).length;
 function extraMult(){return Math.pow(1.03,cnt9(S.mk))*(1+0.005*cnt9(S.gift))*Math.pow(1.03,cnt9(S.hms));}
 function giftDrop(p){if(Math.random()>=p)return;const left=GIFT9.filter(function(g){return !S.gift[g];});if(!left.length)return;const g=left[Math.floor(Math.random()*left.length)];S.gift[g]=1;toast('女の子から貢ぎ物「'+g+'」をもらいました(収入+0.5%)');}
@@ -2540,7 +2674,7 @@ function hallPanel(){
     '<h2>稼ぎ頭ランキング</h2><div class="list">'+(top||'<p class="note">まだいません</p>')+'</div><h2>新メニュー開発</h2><div class="list">'+mk+'</div><h2>貢ぎ物コレクション</h2>'+gf+'<h2>人数ご褒美</h2><div class="list">'+ms+'</div>';
 }
 const totalLv=()=>U.reduce((a,u)=>a+ulv(u.id),0)+FUP.reduce((a,u)=>a+flv(u.id),0)+BZ.reduce((a,b)=>a+blv(b.id),0);
-ACH.push({id:'hr1',n:'囲まれる店長',d:'ハーレム大騒動を経験する',f:()=>EVENTS.some(e=>e.harem&&S.hap.seen[e.id])},{id:'hr9',n:'逃げ場なし',d:'ハーレム大騒動をすべて経験する',f:()=>EVENTS.filter(e=>e.harem).every(e=>S.hap.seen[e.id])},{id:'ul50',n:'強化の鬼',d:'強化レベルの合計が50に達する',f:()=>totalLv()>=50},{id:'ul200',n:'強化の権化',d:'強化レベルの合計が200に達する',f:()=>totalLv()>=200},{id:'ul1000',n:'終わらない投資',d:'強化レベルの合計が1,000に達する',f:()=>totalLv()>=1000},{id:'pk10',n:'星の恩恵',d:'星の特典を合計10回強化する',f:()=>PK.reduce((a,q)=>a+pk(q.id),0)>=10},{id:'w250',n:'二百五十人のひだまり',d:'250人全員を採用する',f:()=>ownedList().length>=N},{id:'w200',n:'二百人のウェイトレス',d:'200人を採用する',f:()=>ownedList().length>=200},{id:'mt1',n:'はじめてのモテモテ',d:'モテモテタイムを発動する',f:()=>S.stats.motes>=1},{id:'mt10',n:'モテモテが日常',d:'モテモテタイムを10回発動する',f:()=>S.stats.motes>=10},{id:'mq1',n:'行列ができた',d:'行列が1,000人に達する',f:()=>S.stats.qbest>=1e3},{id:'mq2',n:'地平線までの行列',d:'行列が10万人に達する',f:()=>S.stats.qbest>=1e5},{id:'mq3',n:'行列が国境を越えた',d:'行列が1,000万人に達する',f:()=>S.stats.qbest>=1e7},{id:'w150',n:'百五十人のひだまり',d:'150人を採用する',f:()=>ownedList().length>=150},{id:'w60',n:'ハーレム喫茶',d:'60人を採用する',f:()=>ownedList().length>=60},{id:'w80',n:'店中ウェイトレス',d:'80人を採用する',f:()=>ownedList().length>=80},{id:'w100',n:'百人のウェイトレス',d:'100人全員を採用する',f:()=>ownedList().length>=100},
+ACH.push({id:'hr1',n:'囲まれる店長',d:'ハーレム大騒動を経験する',f:()=>EVENTS.some(e=>e.harem&&S.hap.seen[e.id])},{id:'hr9',n:'逃げ場なし',d:'ハーレム大騒動をすべて経験する',f:()=>EVENTS.filter(e=>e.harem).every(e=>S.hap.seen[e.id])},{id:'ul50',n:'強化の鬼',d:'強化レベルの合計が50に達する',f:()=>totalLv()>=50},{id:'ul200',n:'強化の権化',d:'強化レベルの合計が200に達する',f:()=>totalLv()>=200},{id:'ul1000',n:'終わらない投資',d:'強化レベルの合計が1,000に達する',f:()=>totalLv()>=1000},{id:'pk10',n:'星の恩恵',d:'星の特典を合計10回強化する',f:()=>PK.reduce((a,q)=>a+pk(q.id),0)>=10},{id:'w300',n:'三百人のひだまり',d:'300人全員を採用する',f:()=>ownedList().length>=N},{id:'w250',n:'二百五十人のひだまり',d:'250人を採用する',f:()=>ownedList().length>=250},{id:'w200',n:'二百人のウェイトレス',d:'200人を採用する',f:()=>ownedList().length>=200},{id:'mt1',n:'はじめてのモテモテ',d:'モテモテタイムを発動する',f:()=>S.stats.motes>=1},{id:'mt10',n:'モテモテが日常',d:'モテモテタイムを10回発動する',f:()=>S.stats.motes>=10},{id:'mq1',n:'行列ができた',d:'行列が1,000人に達する',f:()=>S.stats.qbest>=1e3},{id:'mq2',n:'地平線までの行列',d:'行列が10万人に達する',f:()=>S.stats.qbest>=1e5},{id:'mq3',n:'行列が国境を越えた',d:'行列が1,000万人に達する',f:()=>S.stats.qbest>=1e7},{id:'w150',n:'百五十人のひだまり',d:'150人を採用する',f:()=>ownedList().length>=150},{id:'w60',n:'ハーレム喫茶',d:'60人を採用する',f:()=>ownedList().length>=60},{id:'w80',n:'店中ウェイトレス',d:'80人を採用する',f:()=>ownedList().length>=80},{id:'w100',n:'百人のウェイトレス',d:'100人全員を採用する',f:()=>ownedList().length>=100},
  {id:'mk5',n:'メニュー開発室',d:'新メニューを5つ発売する',f:()=>cnt9(S.mk)>=5},{id:'mk12',n:'名物メニュー',d:'新メニューを12個発売する',f:()=>cnt9(S.mk)>=12},{id:'mk24',n:'メニューコンプリート',d:'新メニューを全て発売する',f:()=>cnt9(S.mk)>=MENU9.length},
  {id:'gf5',n:'貢がれ体質',d:'貢ぎ物を5個もらう',f:()=>cnt9(S.gift)>=5},{id:'gf10',n:'貢ぎ物の山',d:'貢ぎ物を10個もらう',f:()=>cnt9(S.gift)>=10},{id:'gf20',n:'貢ぎ物コンプリート',d:'貢ぎ物を全てもらう',f:()=>cnt9(S.gift)>=GIFT9.length},
  {id:'hm5',n:'ご褒美上手',d:'人数ご褒美を5つ受け取る',f:()=>cnt9(S.hms)>=5},{id:'hm10',n:'ご褒美コンプリート',d:'人数ご褒美を全て受け取る',f:()=>cnt9(S.hms)>=HMS9.length},{id:'sg1',n:'看板ウェイトレス',d:'看板ウェイトレスを決める',f:()=>!!S.sign});
@@ -2562,6 +2696,101 @@ checkMiles();
 checkAch();
 scheduleVisitor(true);
 setTimeout(()=>{if(!S.tg.namehint){S.tg.namehint=true;toast('店長の名前は、画面上部の欄からいつでも変えられます');save();}},2500);
+/* ---- アプリ化(ホーム画面・デスクトップへのインストール) ---- */
+let installEv=null;
+const isStandalone=()=>(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+function iconURL(sz){
+  const c=document.createElement('canvas');c.width=c.height=sz;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,sz,sz);g.addColorStop(0,'#ff7aa2');g.addColorStop(1,'#ffc66b');
+  x.fillStyle=g;x.fillRect(0,0,sz,sz);
+  x.fillStyle='#fff';x.font='700 '+Math.round(sz*0.62)+'px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('ひ',sz/2,sz/2+sz*0.03);
+  return c.toDataURL('image/png');
+}
+function setupPWA(){
+  try{
+    const add=(tag,attrs)=>{const e=document.createElement(tag);Object.keys(attrs).forEach(k=>e.setAttribute(k,attrs[k]));document.head.appendChild(e);};
+    add('meta',{name:'theme-color',content:'#1a1530'});
+    add('meta',{name:'apple-mobile-web-app-capable',content:'yes'});
+    add('meta',{name:'mobile-web-app-capable',content:'yes'});
+    add('meta',{name:'apple-mobile-web-app-title',content:'ひだまり喫茶'});
+    add('link',{rel:'apple-touch-icon',href:iconURL(180)});
+    const url=location.href.split('#')[0];
+    const man={name:'ひだまり喫茶',short_name:'ひだまり',start_url:url,scope:url.replace(/[^\/]*$/,''),display:'standalone',background_color:'#1a1530',theme_color:'#1a1530',lang:'ja',icons:[{src:iconURL(192),sizes:'192x192',type:'image/png',purpose:'any'},{src:iconURL(512),sizes:'512x512',type:'image/png',purpose:'any'}]};
+    if(/^https?:$/.test(location.protocol))add('link',{rel:'manifest',href:URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/manifest+json'}))}); /* file:// では読み込めないため、公開先(https)でのみ有効 */
+  }catch(e){}
+}
+function updInstall(){
+  const b=$('installBtn'),n=$('installNote');if(!b)return;
+  if(isStandalone()){b.disabled=true;b.textContent='インストール済み(アプリとして起動中)';n.textContent='';return;}
+  b.disabled=false;b.textContent='アプリとしてインストール';
+  n.textContent=installEv?'このブラウザから、そのままインストールできます。':'';
+}
+async function installApp(){
+  if(isStandalone())return;
+  if(installEv){
+    const ev=installEv;installEv=null;
+    try{ev.prompt();const r=await ev.userChoice;toast(r&&r.outcome==='accepted'?'インストールを開始しました':'インストールをキャンセルしました');}catch(e){}
+    updInstall();return;
+  }
+  const ua=navigator.userAgent||'';let msg;
+  if(location.protocol==='file:')msg='このファイルをそのまま開いている場合は、アプリ化できません。https で公開した場所(GitHub Pages など)から開いてください。';
+  else if(/iPhone|iPad|iPod/.test(ua))msg='Safari で開き、共有ボタン→「ホーム画面に追加」を選んでください。';
+  else if(/Android/.test(ua))msg='ブラウザのメニュー(︙)→「アプリをインストール」または「ホーム画面に追加」を選んでください。';
+  else msg='Chrome や Edge では、アドレスバー右側のインストールアイコン、またはメニュー→「インストール」から追加できます。';
+  $('installNote').textContent=msg;
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEv=e;updInstall();});
+window.addEventListener('appinstalled',()=>{installEv=null;toast('アプリとしてインストールしました');updInstall();});
+setupPWA();updInstall();
+function applyLite(){
+  document.body.classList.toggle('lite',CFG.lite);
+  const b=$('liteBtn');if(b){b.textContent='軽量モード: '+(CFG.lite?'オン':'オフ');b.classList.toggle('ghost',!CFG.lite);}
+}
+applyLite();
+/* 軽量モード中は、拡張ファイルなどが画面に浮かべる小さな顔アイコンを表示しない */
+(function(){
+  const SAFE='#modal,#seats,#crowd,#ent,#swarm,#toasts,#feed,.panel,nav,header,#visitor,.counter,.hap,#hap,#scCrowd';
+  function floating(el){
+    if(!CFG.lite||el.nodeType!==1||el.closest(SAFE))return false;
+    if(!el.querySelector('svg,img')&&el.tagName!=='IMG'&&el.tagName!=='svg')return false;
+    if(el.querySelector('button,input,a'))return false;
+    const cs=getComputedStyle(el);
+    if(cs.position!=='absolute'&&cs.position!=='fixed')return false;
+    const r=el.getBoundingClientRect();
+    return r.width<=96&&r.height<=96;
+  }
+  new MutationObserver(ms=>{ms.forEach(m=>{m.addedNodes.forEach(n=>{if(floating(n)&&n.parentNode)n.parentNode.removeChild(n);});});}).observe(document.body,{childList:true,subtree:true});
+})();
+/* ---- プレゼントの絵文字(🎁)を、どこで生成されても表示しない ---- */
+(function(){
+  const GIFT=/\u{1F381}/gu,HAS=/\u{1F381}/u,KEEP=/^(BUTTON|A|LABEL|INPUT|TEXTAREA|SELECT|BODY|HTML)$/;
+  function scrubText(t){
+    if(!HAS.test(t.nodeValue))return;
+    const only=!t.nodeValue.replace(GIFT,'').trim(),p=t.parentNode;
+    t.nodeValue=t.nodeValue.replace(GIFT,'');
+    if(only&&p&&p.nodeType===1&&!p.id&&p.children.length===0&&!KEEP.test(p.tagName))p.parentNode&&p.parentNode.removeChild(p);
+  }
+  function scrub(n){
+    if(n.nodeType===3){scrubText(n);return;}
+    if(n.nodeType!==1||!n.textContent||!HAS.test(n.textContent))return;
+    const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT),list=[];
+    while(w.nextNode())list.push(w.currentNode);
+    list.forEach(scrubText);
+  }
+  function scrubCss(){
+    Array.prototype.forEach.call(document.styleSheets,sh=>{
+      let rules;try{rules=sh.cssRules;}catch(e){return;}
+      Array.prototype.forEach.call(rules||[],r=>{if(r.style&&HAS.test(r.style.content||''))r.style.setProperty('content','none');});
+    });
+  }
+  scrub(document.body);scrubCss();
+  new MutationObserver(ms=>{ms.forEach(m=>{
+    if(m.type==='characterData')scrubText(m.target);
+    else m.addedNodes.forEach(scrub);
+  });}).observe(document.body,{childList:true,subtree:true,characterData:true});
+  new MutationObserver(()=>scrubCss()).observe(document.head,{childList:true,subtree:true,characterData:true});
+  setTimeout(scrubCss,1500);window.addEventListener('load',scrubCss);
+})();
 setTimeout(()=>{if(S.login.total>=3&&Date.now()-(S.lastExport||0)>7*86400000)toast('セーブの書き出しをおすすめします(データタブ)');},3000);
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
 setTimeout(()=>{if(S.owned.hinata)say('hinata',randVoice(HM.hinata));},700);
