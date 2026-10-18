@@ -1,0 +1,2344 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ひだまり喫茶</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* Layout: 夕暮れの窓辺の喫茶店。上に席(ヒロインのシルエットが埋まっていく)、下にタブ式の経営パネル。 */
+:root{
+  --bg:#17142b; --bg2:#221e3d; --panel:#2a2550; --line:#3d3669;
+  --fg:#f6eefc; --mute:#b6acd6;
+  --rose:#ff7aa2; --amber:#ffc66b; --mint:#7fe3c6;
+  --wood:#3a2433; --wood2:#4d2f40;
+  --f-display:'Mochiy Pop One','Hiragino Maru Gothic ProN','Yu Gothic',sans-serif;
+  --f-body:'Zen Maru Gothic','Hiragino Maru Gothic ProN','Yu Gothic',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 var(--f-body);padding-inline:16px;padding-block:20px 56px}
+.wrap{max-width:1000px;margin:0 auto;display:grid;gap:18px}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+.top{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;justify-content:space-between}
+h1{margin:0;font:400 clamp(1.7rem,6vw,2.5rem)/1.1 var(--f-display);color:var(--amber);letter-spacing:.02em}
+.sub{margin:4px 0 0;color:var(--mute);font-size:.85rem}
+.hud{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.stat{display:grid;gap:2px;align-content:center;box-sizing:border-box;width:108px;min-height:56px;padding:6px 10px;border:1px solid var(--line);border-radius:12px;background:#ffffff08;min-width:0;overflow:hidden}
+.stat.main{width:150px}.stat.wide{width:158px}
+.stat b{display:block;overflow:hidden;white-space:nowrap;font:400 1.25rem/1.15 var(--f-display);font-variant-numeric:tabular-nums;color:var(--fg)}
+.stat[hidden]{display:grid;visibility:hidden}
+.stat.main b{font-size:1.9rem;color:var(--rose)}
+.stat.rush b{color:var(--amber)}
+.stat span{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:.7rem;letter-spacing:.04em;color:var(--mute)}
+.hrt{width:.9em;height:.9em;fill:currentColor;vertical-align:-.1em}
+.stat.main .hrt{fill:var(--rose)}
+a.snd{text-decoration:none;display:inline-block}
+.lnk{color:var(--rose)!important;border-color:var(--rose)!important}
+.snd{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:6px 12px;font-size:.78rem;cursor:pointer}
+
+.stage{position:relative;border-radius:22px;overflow:hidden;border:1px solid var(--line);
+  background:radial-gradient(circle at 88% 12%,#ffd8a066 0,#ffd8a000 38%),linear-gradient(180deg,#2e2457 0%,#6f3c73 50%,#d9866a 100%);
+  padding:46px 10px 0}
+.seats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 4px}
+@media(min-width:720px){.seats{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.seat{position:relative;display:grid;justify-items:center;gap:1px;padding:4px 2px 8px;background:none;border:0;color:var(--fg);font-size:inherit;cursor:pointer;border-radius:14px;-webkit-tap-highlight-color:transparent}
+.seat svg{width:100%;max-width:112px;height:auto;display:block;transition:transform .15s}
+.seat:active svg{transform:scale(.96) translateY(2px)}
+.seat .nm{font-size:.78rem;font-weight:700;text-shadow:0 1px 3px #0009}
+.seat .lv{font-size:.66rem;color:#fff;opacity:.88;font-variant-numeric:tabular-nums;text-shadow:0 1px 3px #0009}
+.seat.lock svg{filter:brightness(0) invert(.2)}
+.seat.lock .nm{opacity:.7}
+.seat.lock:disabled{cursor:not-allowed}
+.seat.lock:disabled svg{opacity:.7}
+.seat.lock.can svg{filter:brightness(0) invert(.55);animation:glow 1.4s ease-in-out infinite alternate}
+.seat.away svg{opacity:.55}
+@keyframes glow{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+.seat.bump svg{animation:bump .3s ease}
+@keyframes bump{40%{transform:translateY(-8px) scale(1.04)}}
+.bubble{--dx:0px;position:absolute;top:0;left:calc(50% + var(--dx));transform:translate(-50%,-92%);z-index:5;width:max-content;max-width:min(190px,46vw);
+  background:#fff;color:var(--wood);font-size:.74rem;font-weight:700;line-height:1.4;padding:6px 10px;border-radius:12px;box-shadow:0 4px 14px #0006;pointer-events:none;animation:pop .25s ease}
+.bubble::after{content:"";position:absolute;left:calc(50% - var(--dx));bottom:-5px;width:10px;height:10px;background:#fff;transform:translateX(-50%) rotate(45deg)}
+@keyframes pop{from{opacity:0;margin-top:6px}}
+.counter{margin:10px -10px 0;padding:14px 16px;background:linear-gradient(var(--wood2),var(--wood));border-top:3px solid #6d4457;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.counter p{margin:0;font-size:.8rem;color:#e9d3e0;min-width:0}
+.brew{border:0;background:var(--amber);color:#3a2433;font-weight:700;font-size:1rem;padding:12px 22px;border-radius:999px;box-shadow:0 4px 0 #b97a1f;cursor:pointer}
+.brew:active{transform:translateY(3px);box-shadow:0 1px 0 #b97a1f}
+.visitor{position:absolute;z-index:8;border:0;border-radius:999px;padding:10px 16px;background:#fff;color:var(--wood);font-weight:700;font-size:.85rem;box-shadow:0 0 0 4px #ffc66b99,0 6px 18px #0008;cursor:pointer;animation:pulse .8s ease-in-out infinite alternate}
+@keyframes pulse{to{transform:scale(1.1)}}
+
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:transparent;color:var(--mute);border-radius:999px;padding:8px 16px;font-size:.88rem;font-weight:700;cursor:pointer}
+.tab.on{background:var(--rose);border-color:var(--rose);color:#3a1022}
+.panel{display:grid;gap:14px;align-content:start}
+.panel[hidden]{display:none}
+h2{margin:6px 0 0;font:400 1rem/1.3 var(--f-display);color:var(--mute);letter-spacing:.06em}
+.note{margin:0;color:var(--mute);font-size:.82rem}
+.gathers{display:grid;gap:8px}
+.gather{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.gather p{margin:0;font-size:.82rem;color:var(--mute);min-width:0;flex:1 1 240px}
+.gather strong{color:var(--fg);font-family:var(--f-display);font-weight:400;display:block;font-size:.95rem;margin-bottom:2px}
+
+.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px 12px;align-content:start}
+.card.row{grid-template-columns:minmax(0,1fr) auto;align-items:center}
+.card.done{opacity:.6}
+.card.ach.got{border-color:var(--amber)}
+.face{width:64px;height:64px;border-radius:50%;overflow:hidden;background:var(--c);box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--c)}
+.face svg{display:block;width:100%;height:100%}
+.card h3{margin:0;font:400 1rem/1.3 var(--f-display)}
+.role{font-size:.75rem;color:var(--mute);font-variant-numeric:tabular-nums}
+.pips{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin:6px 0 4px}
+.pips i{height:6px;border-radius:3px;background:var(--line)}
+.pips i.on{background:var(--c)}
+.acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:0;border-radius:999px;padding:8px 14px;background:var(--rose);color:#3a1022;font-weight:700;font-size:.85rem;cursor:pointer;position:relative}
+.btn:disabled{background:var(--line);color:var(--mute);cursor:not-allowed}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--fg)}
+.btn.ghost:disabled{color:var(--mute);opacity:.7}
+.btn.small{padding:6px 10px;font-size:.76rem}
+.btn.new::after{content:"";position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 2px var(--panel)}
+.dline{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center}
+.dline .face{width:44px;height:44px;box-shadow:0 0 0 2px var(--c)}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;width:0;background:var(--c,var(--mint))}
+.tl{font-size:.78rem;color:var(--mute);font-variant-numeric:tabular-nums}
+.foot{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;color:var(--mute);font-size:.78rem}
+.foot .btn{font-size:.75rem;padding:6px 12px}
+.sum{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.85rem;color:var(--mute)}
+.sum b{color:var(--fg);font-variant-numeric:tabular-nums}
+
+.crowd{display:flex;flex-wrap:wrap;justify-content:center;padding:6px 0 8px;min-height:10px}
+.cust{position:relative;flex:0 0 auto;width:44px;margin:0 -7px;border:0;background:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.cust img{display:block;width:100%;height:auto;transition:transform .15s}
+.cust:active img{transform:translateY(2px) scale(.96)}
+.cust.hop img{animation:bump .3s ease}
+@media(max-width:600px){.cust{width:38px;margin:0 -9px}}
+.visitor{display:flex;align-items:center;gap:8px}
+.visitor[hidden]{display:none}
+.visitor .vface{display:block;width:34px;height:34px;border-radius:50%;overflow:hidden;background:#ffe3ef;flex:0 0 auto}
+.visitor .vface svg{display:block;width:100%;height:100%}
+.swarm{position:relative;z-index:9;height:250px;margin:8px 10px 0;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#ff7aa238,#ffc66b24);border:1px solid #ffffff33}
+.swarm[hidden]{display:none}
+.swbar{position:absolute;left:12px;right:12px;top:10px;height:8px;border-radius:4px;background:#0006;overflow:hidden}
+.swbar i{display:block;height:100%;width:100%;background:var(--amber)}
+.swmsg{position:absolute;left:0;right:0;top:22px;text-align:center;font:400 .85rem/1.3 var(--f-display);color:#fff;text-shadow:0 1px 4px #000a}
+.swc{position:absolute;width:58px;border:0;background:none;padding:0;cursor:pointer;pointer-events:auto;animation:wob .8s ease-in-out infinite alternate;-webkit-tap-highlight-color:transparent}
+.swc img{display:block;width:100%;aspect-ratio:100/120;height:auto}
+@keyframes wob{to{transform:translateY(-6px)}}
+.pager{display:flex;gap:12px;align-items:center;justify-content:center;padding:6px 0}
+.stage .pager .role{color:#fff;text-shadow:0 1px 3px #0009}
+.tab.dot::after{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--amber);margin-left:6px;vertical-align:middle}
+.titleline{margin:2px 0 0;color:var(--amber);font-size:.85rem;font-weight:700}
+.hap{display:flex;justify-content:center}
+.hap[hidden]{display:none}
+.hapbtn{border:0;border-radius:999px;padding:10px 22px;background:linear-gradient(90deg,#ff7aa2,#ffc66b);color:#3a1022;font-weight:700;font-size:.95rem;cursor:pointer;animation:pulse .9s ease-in-out infinite alternate}
+.choices{display:grid;gap:8px}
+.choices[hidden]{display:none}
+.choices .btn{text-align:left;border-radius:14px;padding:10px 14px;font-size:.92rem}
+.login{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 2px;text-align:center;font-size:.66rem;line-height:1.4;color:var(--mute)}
+.day b{display:block;color:var(--fg);font-size:.74rem}
+.day.now{border-color:var(--amber)}
+.day.got{opacity:.5}
+.cos{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.btn.on{background:var(--mint);color:#0f3a2e}
+.zk{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.zcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;display:grid;gap:3px;justify-items:center;text-align:center;align-content:start}
+.zcard .face{width:64px;height:64px}
+.zcard b{font:400 .9rem/1.3 var(--f-display)}
+.zcard.lock .face svg{filter:brightness(0) invert(.2)}
+.io{width:100%;min-height:110px;background:var(--bg2);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:10px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;resize:vertical}
+input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
+.nmwrap{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-top:6px}.nmwrap .nmrow{margin-top:0}.nmwrap .snd{padding:4px 12px;font-size:.74rem;color:var(--mute)}
+.nmrow{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:.78rem;color:var(--mute)}
+.nmrow input{background:var(--bg2);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font:inherit;font-size:.88rem;width:9.5em;max-width:46vw}
+.crowdcap{text-align:center;font-size:.74rem;color:#fff;text-shadow:0 1px 3px #0009;margin-top:6px}
+.crowd{display:flex;flex-wrap:wrap;justify-content:center;padding:4px 0 24px}
+.cust{width:32px;margin:0 -5px -18px}
+@media(max-width:600px){.cust{width:28px;margin:0 -6px -16px}}
+@keyframes cheer{to{transform:translateY(-5px)}}
+.feed{margin:2px 0 0;background:#150f2acc;border:1px solid #ffffff22;border-radius:14px;padding:8px 10px;color:#f6eefc}
+.feedhead{display:flex;justify-content:space-between;gap:8px;font-size:.72rem;color:#ffd7e6}
+.buzzbar{height:6px;border-radius:3px;background:#ffffff22;overflow:hidden;margin:4px 0 6px}
+.buzzbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff7aa2,#ffc66b)}
+.feed.trend .buzzbar i{background:linear-gradient(90deg,#ffc66b,#fff)}
+.posts{display:grid;gap:3px;font-size:.74rem;line-height:1.45;min-height:5.9em;align-content:start}
+.post{display:flex;gap:6px;min-width:0;animation:pop .25s ease}
+.post .pn{color:#ff9fc0;flex:0 0 auto;font-weight:700}
+.post .pt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.post .pl{color:#ff7aa2;flex:0 0 auto}
+.post.sp .pn,.post.sp .pt{color:#ffc66b;font-weight:700}
+.mgrrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mgr{display:grid;justify-items:center;gap:2px;border:0;background:none;color:#fff;cursor:pointer;padding:0;font:inherit;-webkit-tap-highlight-color:transparent}
+.mgr .mgrsvg{display:block;width:60px;height:60px;border-radius:50%;overflow:hidden;background:linear-gradient(160deg,#ffd6e6,#c9b8ff);box-shadow:0 0 0 2px #fff6,0 0 14px #ffc66b99}
+.mgr .mgrsvg svg{display:block;width:100%;height:100%}
+.mgr .mgrname{font-size:.7rem;font-weight:700;max-width:7em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mgr:active .mgrsvg{transform:scale(.95)}
+.swc{width:46px}
+@media(max-width:600px){.swc{width:40px}}
+.swfs{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;z-index:3;pointer-events:auto;border:0;border-radius:999px;padding:10px 22px;background:linear-gradient(90deg,#ff7aa2,#ffc66b);color:#3a1022;font-weight:700;font-size:.95rem;box-shadow:0 4px 14px #0008;cursor:pointer;font-family:inherit;white-space:nowrap}
+.swfs:disabled{opacity:.6;cursor:not-allowed}
+.modal{position:fixed;inset:0;z-index:50;background:#0a0818d0;display:grid;place-items:center;padding:16px;overflow-y:auto}
+.modal[hidden]{display:none}
+.scene{--c:#ff9d5c;width:100%;max-width:560px;border-radius:22px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 55%,#1a1633) 0%,#1a1633 62%)}
+.sc-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font:400 .95rem/1.3 var(--f-display)}
+.x{border:0;background:#0004;color:var(--fg);width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer}
+.sc-art{height:min(260px,38vh);display:flex;justify-content:center;align-items:flex-end;overflow:hidden}
+.sc-art svg{height:100%;width:auto;max-width:100%}
+.sc-art.dim svg{opacity:.35}
+.sc-hr{display:flex;gap:8px;align-items:center}
+.sc-art.flash{animation:camflash .55s ease-out}
+@keyframes camflash{0%{box-shadow:inset 0 0 0 0 #fff}18%{box-shadow:inset 0 0 90px 50px #ffffffcc}100%{box-shadow:inset 0 0 0 0 #fff0}}
+.sc-box{background:#120f26;border-top:1px solid var(--line);padding:14px 18px 18px;display:grid;gap:8px;min-height:170px;align-content:start}
+.sc-name{font:400 .85rem/1.2 var(--f-display);color:var(--c);min-height:1.2em}
+.sc-text{margin:0;font-size:1rem;line-height:1.8;min-height:3.6em;animation:pop .25s ease}
+.sc-text.n{color:var(--mute);font-style:italic}
+.sc-go{justify-self:end}
+
+.toasts{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:grid;justify-items:center;gap:8px;z-index:60;pointer-events:none;padding-inline:16px}
+.toast{background:#fff;color:var(--wood);font-weight:700;font-size:.85rem;padding:9px 16px;border-radius:999px;box-shadow:0 6px 20px #0007;max-width:100%;animation:pop .25s ease}
+.fl{position:fixed;z-index:70;pointer-events:none;font:400 1rem/1 var(--f-display);color:var(--rose);text-shadow:0 1px 0 #fff,0 0 8px #fff8;animation:fly .9s ease-out forwards}
+@keyframes fly{to{transform:translateY(-54px);opacity:0}}
+/* 行列(顔アイコン)・取り巻き・モテモテタイム */
+.crowd .cust{width:30px;margin:0 -3px -2px}
+.crowd .cust img{aspect-ratio:1;border-radius:50%;background:#ffe3ef;box-shadow:0 0 0 2px #fff9}
+@media(max-width:600px){.crowd .cust{width:26px;margin:0 -3px -2px}}
+.mote{margin:4px 2px 0;font-size:.72rem;color:#ffd7e6;text-align:center}
+.mote .buzzbar i{background:linear-gradient(90deg,#ff7aa2,#ff3d85)}
+.ent{display:flex;flex-wrap:wrap;justify-content:center;padding:6px 0 2px}
+.ent-i{width:34px;height:34px;border-radius:50%;overflow:hidden;margin:0 -4px;box-shadow:0 0 0 2px #fff9;background:var(--c)}
+.ent-i img{display:block;width:100%;height:100%}
+.stage.moting{box-shadow:0 0 0 3px #ff7aa2,0 0 34px #ff7aa2aa}
+.sc-stage{position:relative}
+.sc-crowd{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.sc-crowd[hidden]{display:none}
+.sc-stage.crowd .sc-art{position:relative;z-index:2;height:min(300px,42vh)}
+.scf{position:absolute;transform:translate(-50%,-50%);border-radius:50%;overflow:hidden;background:#ffe3ef;box-shadow:0 0 0 1.5px #fffb}
+.scf img{display:block;width:100%;height:100%}
+.scf.on{z-index:3;animation:none;transform:translate(-50%,-50%) scale(2.2);box-shadow:0 0 0 2px #fff,0 0 14px #ff7aa2}
+@keyframes scfp{from{transform:translate(-50%,-50%) scale(1)}to{transform:translate(-50%,-50%) scale(1.12)}}
+/* 軽量モード: 動きと影を減らす */
+body.lite .swc,body.lite .seat.lock.can svg,body.lite .post{animation:none!important}
+body.lite .stage.moting{box-shadow:none}
+.crowd,.ent,.feed{contain:content}
+.fimg{display:block}
+.gtag{font-size:.7rem;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:middle;font-family:inherit}
+.gtag.new{background:var(--rose);color:#fff}
+.gtag.ok{background:#ffffff22;color:var(--mute)}
+.gphoto{display:flex;align-items:center;flex-wrap:wrap;margin-top:8px}
+.gfimg{width:24px;height:24px;border-radius:50%;margin-right:-6px;box-shadow:0 0 0 2px #1c1633;background:#ffe3ef}
+.gphoto span{margin-left:14px;font-size:.75rem;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>ひだまり喫茶</h1>
+      <p class="sub" id="subline">マスターに惚れた300人の女の子が、ウェイトレス志望で集まってくる喫茶店。</p>
+      <p class="titleline" id="titleline"></p>
+      <div class="nmwrap"><label class="nmrow">店長の名前<input id="nameIn" type="text" maxlength="12" autocomplete="off" spellcheck="false" placeholder="マスター" aria-label="店長の名前"></label><button class="snd" id="sndbtn" data-act="sound" aria-pressed="true">音 ON</button><a class="snd lnk" id="talkLink" href="hidamari_talk.html">ひだまりトーク</a></div>
+    </div>
+    <div class="hud">
+      <div class="stat main"><b id="hearts">0</b><span>円</span></div>
+      <div class="stat"><b id="ps">0</b><span>毎秒(純利益)</span></div>
+      <div class="stat"><b id="harm">×1.00</b><span>全体倍率</span></div>
+      <div class="stat"><b id="seatn">1/100</b><span>席</span></div>
+      <div class="stat"><b id="tk">0</b><span>チケット</span></div>
+      <div class="stat"><b id="fans">0</b><span>フォロワー</span></div>
+      <div class="stat"><b id="qn">0</b><span>行列(人)</span></div>
+      <div class="stat wide"><b id="ms">0</b><span id="mrank">モテ度</span></div>
+      <div class="stat rush" id="buffstat" hidden><b id="buff">0</b><span>常連ラッシュ</span></div>
+    </div>
+  </header>
+
+  <section class="stage" id="stage" aria-label="店内">
+    <div class="seats" id="seats"></div>
+    <div id="seatpager"></div>
+    <div class="crowdcap" id="crowdcap"></div>
+    <div class="crowd" id="crowd" aria-label="店の前に並んでいる行列"></div>
+    <div class="swarm" id="swarm" hidden></div>
+    <div class="mote"><span id="motetxt"></span><div class="buzzbar"><i id="motefill"></i></div></div>
+    <div class="ent" id="ent" aria-label="マスターを囲む女の子たち"></div>
+    <div class="feed" id="feed" aria-label="SNSのタイムライン"><div class="feedhead"><b>SNS タイムライン</b><span id="buzztxt"></span></div><div class="buzzbar"><i id="buzzfill"></i></div><div class="posts" id="posts"></div></div>
+    <button class="visitor" id="visitor" data-act="visitor" hidden>推しに貢ぎに来た!</button>
+    <div class="counter">
+      <div class="mgrrow">
+        <button class="mgr" data-act="brew" id="mgr" aria-label="店長(タップでコーヒーを淹れる)"><span class="mgrsvg" id="mgrsvg"></span><span class="mgrname" id="mgrname"></span></button>
+        <button class="brew" data-act="brew" id="brew">コーヒーを淹れる</button>
+      </div>
+      <p>席の子や、行列のお客さんをタップすると、声と円がもらえます。<br>コーヒー1杯は売上500円−原価150円で、粗利350円です。<br><span id="omt"></span></p>
+    </div>
+  </section>
+
+  <div class="hap" id="hap" hidden><button class="hapbtn" id="hapbtn" data-act="hap">ハプニング発生!</button></div>
+
+  <nav class="tabs" role="tablist" aria-label="メニュー">
+    <button class="tab on" role="tab" id="t-heroine" data-act="tab" data-id="heroine">ヒロイン</button>
+    <button class="tab" role="tab" id="t-gather" data-act="tab" data-id="gather">集合</button>
+    <button class="tab" role="tab" id="t-biz" data-act="tab" data-id="biz">経営</button>
+    <button class="tab" role="tab" id="t-fan" data-act="tab" data-id="fan">推し活</button>
+    <button class="tab" role="tab" id="t-daily" data-act="tab" data-id="daily">日課</button>
+    <button class="tab" role="tab" id="t-menu" data-act="tab" data-id="menu">メニュー開発</button>
+    <button class="tab" role="tab" id="t-date" data-act="tab" data-id="date">デート</button>
+    <button class="tab" role="tab" id="t-cos" data-act="tab" data-id="cos">衣装</button>
+    <button class="tab" role="tab" id="t-hall" data-act="tab" data-id="hall">ホール拡張</button>
+    <button class="tab" role="tab" id="t-zukan" data-act="tab" data-id="zukan">図鑑</button>
+    <button class="tab" role="tab" id="t-renew" data-act="tab" data-id="renew">リニューアル</button>
+    <button class="tab" role="tab" id="t-data" data-act="tab" data-id="data">データ</button>
+  </nav>
+
+  <section class="panel" id="p-heroine"></section>
+  <section class="panel" id="p-gather" hidden></section>
+  <section class="panel" id="p-biz" hidden></section>
+  <section class="panel" id="p-fan" hidden></section>
+  <section class="panel" id="p-daily" hidden></section>
+  <section class="panel" id="p-menu" hidden></section>
+  <section class="panel" id="p-date" hidden></section>
+  <section class="panel" id="p-cos" hidden></section>
+  <section class="panel" id="p-hall" hidden></section>
+  <section class="panel" id="p-zukan" hidden></section>
+  <section class="panel" id="p-renew" hidden></section>
+  <section class="panel" id="p-data" hidden>
+    <h2>アプリ化</h2>
+    <p class="note">ホーム画面やデスクトップに追加すると、ブラウザのバーのない、アプリのような画面で遊べます。</p>
+    <div class="acts"><button class="btn" id="installBtn" data-act="install">アプリとしてインストール</button></div>
+    <p class="note" id="installNote" aria-live="polite"></p>
+    <h2>ハプニングの通知</h2>
+    <p class="note">ハプニングが起こったとき、画面に通知を出して知らせるかどうかを選びます。オフでも、ステージのボタンから、いつでも見られます。</p>
+    <div class="acts"><button class="btn ghost" id="hapNoteBtn" data-act="hapnote">通知: オフ</button></div>
+    <h2>軽量モード</h2>
+    <p class="note">行列の顔の数や動きを減らして、動作を軽くします。重いと感じたらオンにしてください。</p>
+    <div class="acts"><button class="btn ghost" id="liteBtn" data-act="lite">軽量モード: オン</button></div>
+    <h2>セーブ</h2>
+    <p class="note">進行データは、このブラウザの中に保存されています。ブラウザのデータを消したり、別の端末で遊んだりすると引き継がれないので、ときどき書き出して保管してください。</p>
+    <div class="sum"><span>最後の書き出し <b id="lastExport">まだありません</b></span></div>
+    <div class="acts"><button class="btn" data-act="export">ファイルに保存</button><button class="btn ghost" data-act="copy">コードをコピー</button></div>
+    <h2>読み込む</h2>
+    <p class="note">保存したファイルを選ぶか、コピーしたコードを貼り付けてください。いまの進行データは上書きされます。</p>
+    <input type="file" id="ioFile" accept=".json,.txt,application/json,text/plain" aria-label="セーブファイル">
+    <textarea class="io" id="ioText" placeholder="ここにコードを貼り付け" aria-label="セーブコード"></textarea>
+    <div class="acts"><button class="btn" data-act="import" id="importBtn">読み込む</button></div>
+    <p class="note" id="ioMsg" aria-live="polite"></p>
+  </section>
+
+  <div class="foot">
+    <span>自動で保存されます。放っておいても、円は貯まります。</span>
+    <button class="btn ghost" id="reset" data-act="reset">はじめからやり直す</button>
+  </div>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="scene" id="scene" role="dialog" aria-modal="true" aria-labelledby="scTitle">
+    <div class="sc-head"><span id="scTitle"></span><span class="sc-hr"><button class="btn ghost small" id="scSkip" data-act="scskip">スキップ</button><button class="x" id="scClose" aria-label="閉じる">×</button></span></div>
+    <div class="sc-stage" id="scStage"><div class="sc-crowd" id="scCrowd" hidden></div><div class="sc-art" id="scArt"></div></div>
+    <div class="sc-box">
+      <div class="sc-name" id="scName"></div>
+      <p class="sc-text" id="scText"></p>
+      <div class="choices" id="scChoices" hidden></div>
+      <button class="btn sc-go" id="scNext">つぎへ</button>
+    </div>
+  </div>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="hidamari_roster.js"></script>
+<script src="hidamari_gather.js"></script>
+<script src="hidamari_hap.js"></script>
+<script>
+(function(){
+'use strict';
+const CFG={hapNote:(function(){try{return localStorage.getItem('hidamari-hapnote')==='1';}catch(e){return false;}})(),lite:(function(){try{return localStorage.getItem('hidamari-lite')!=='0';}catch(e){return true;}})()};
+/* 顔アイコンは、1つずつSVGを埋め込まずに、画像(Blob URL)を使い回して軽くする */
+const FIMG={};
+function svgURL(key,svg){let u=FIMG[key];if(!u){u=FIMG[key]=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));}return u;}
+const _tc={};
+function setT(id,v){if(_tc[id]!==v){_tc[id]=v;document.getElementById(id).textContent=v;}}
+function setW(id,v){const k='w'+id;if(_tc[k]!==v){_tc[k]=v;document.getElementById(id).style.width=v;}}
+const HK=(window.HIDAMARI_HOOKS=window.HIDAMARI_HOOKS||{}); /* 拡張ファイル hidamari_harem.js との連携口 */
+const KEY='hidamari-kissa-v5', KEY4='hidamari-kissa-v4', OLD='hidamari-kissa-none', MAXLV=12, GROW=1.32, BOND_MAX=10;
+/* 経済のものさし: 店内の時間は60倍速(現実の1秒=店内の1分)。コーヒー1杯500円(原価150円→粗利350円)、時給は1,200円〜、採用費は求人・制服・研修で数万円〜 */
+const CK=100,TS=60,BREW=350,COGS=0.30,BACK=0.06,START=30000,HG=1.12,HG2=1.09,GI=1.003,GU=1.12,R0=2e8,LVG=0.25;
+const HC=i=>Math.round(650*CK*Math.pow(HG,Math.min(i,200))*Math.pow(HG2,Math.max(0,i-200))); /* i人目の採用費。設備・SNS・メニューの値段もこのカーブに沿わせる */
+const HRT='<svg class="hrt" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>';
+
+/* ================= データ: ヒロイン300人(名簿は hidamari_roster.js から読み込み) ================= */
+const R=window.HIDAMARI_ROSTER;
+if(!R){document.body.insertAdjacentHTML('afterbegin','<p style="padding:16px;color:#fff">名簿(hidamari_roster.js)が読み込めません。このHTMLと同じフォルダに置いてください。</p>');throw new Error('hidamari_roster.js missing');}
+const H=R.H,ARCH=R.ARCH,hsl=R.hsl,shade=R.shade,avatar=R.avatar;
+const HM={};
+H.forEach(function(h,i){HM[h.id]=h;h.i=i;
+  h.cost=i?HC(i):0;   /* 採用費(求人・制服・研修): 2人目で7.8万円 */
+  h.inc=60*Math.pow(GI,i);                       /* 売上/秒(=店内1時間で約3,600円) */
+  h.up=Math.round(60*CK*Math.pow(GU,i));          /* おもてなし研修費 */
+  h.wage=Math.round((1200+12*i)/10)*10;             /* 時給(円) */
+});
+const N=H.length;
+
+/* ---- Lv12の思い出(絆の証) ---- */
+const EV12=[
+['hinata','約束の続き','開店記念の夜。ひなたがエプロンを外して、マスターの正面に座った。','子どもの頃の約束、叶っちゃったね。次の約束、してもいい?','これからも、毎朝「おはよう」って言わせて。それが、私の夢。'],
+['rin','赤ペンの手紙','凛が一通の封筒をカウンターに置いた。中身は、赤ペンで丁寧に書かれた手紙だった。','店の改善案、全部で四十七項目。……最後の一行だけ、読んでほしい。','「あなたの店が、私の一番好きな場所です。」……以上、報告終わり!'],
+['nonoka','特別なケーキ','ののかが、不格好なケーキをそっとテーブルに置く。','マスターのために、ひとりで作ったの。形はヘンだけど、気持ちはいっぱい入ってるよ。','いつも、ありがとう。だいすきだよー!……あ、みんなには、ナイショね?'],
+['mio','先輩のうしろ姿','閉店後、みおがモップを片手に、いつもより静かに笑っている。','マスター先輩の背中を追いかけて、気づいたらここまで来ちゃいました。','これからは、追いかけるだけじゃなくて、隣を歩けるように頑張ります!'],
+['kaguya','月が沈むまで','夜明け前。かぐやが窓辺で、薄れていく月を見つめている。','月は沈んでも、また昇る。あなたとの夜も、そうであってほしい。','……おやすみなさい、私の灯り。また今夜、ここで。'],
+['mina','ミナの居場所','ミナが店のクッションの上で丸くなり、片目だけ開けてマスターを見た。','ここが、ミナの場所。誰にもあげないにゃ。','……でも、マスターの隣なら、半分だけ、貸してあげる。'],
+['akari','焼きたての言葉','朝の厨房。あかりが焼きたてのパンを手に、ふわりと笑う。','あなたに出会って、お菓子の味が少し変わったの。やさしい味に、ね。','これからも一緒に作りましょう。毎日、おいしい朝を。'],
+['shizuku','最後のページ','しずくが一冊のノートを両手で差し出した。表紙には、この店の名前が書かれている。','この店で起きたこと、ぜんぶ書き留めました。私の、初めての小説です。','主人公は、いつも優しいマスター。……最後のページは、これから一緒に書いてください。'],
+['luna','センターに立つ日','小さなステージに、ルナがひとり。客席のみんなが息をのむ。','夢のステージはまだ先だけど、一番最初のファンは、いつもここにいる。','だから歌うよ、マスターのために。いつか武道館でも、ずっと!'],
+['sumire','名前で呼んで','すみれが背筋を伸ばし、マスターの前で一礼した。','神楽坂の名ではなく、すみれと呼んでくださる方が、わたくしの宝物ですわ。','これからは、わたくしの方から言わせてくださいませ。……ありがとう、マスター。'],
+['yuzu','追い風','夕暮れのグラウンド横。ゆずがスパイクの紐を結び直して笑った。','走っても走っても、帰る場所があるって、最高だね!','マスター、次の大会も見に来てよ。ゴールの先で、待ってるから!'],
+['kotori','最後のフレーズ','閉店後の静けさの中、ことりのギターがやさしく鳴る。','歌詞の最後、決まったよ。「ここが、帰りたくなる場所」。','いつか、みんなの前で歌うね。この店の、ひだまりの歌を。'],
+['yuki','雪解け','春の朝。ゆきが窓の外の雪解けを見つめて、ふっと笑った。','溶けるのは、少し怖かった。でも、あたたかいのも、悪くない。','……これからも、ここで。あなたの隣で、溶けていたい。'],
+['momiji','縁結びのお礼','朝の境内。もみじが小さな絵馬を、マスターに差し出した。','お守りの効果、ばっちりでした。ここで皆さんと出会えたのが、いちばんのご利益です!','絵馬には、これからもずっと一緒に、って書きました。'],
+['elena','第二の故郷','エレナが手作りの折り紙の花を、店じゅうに飾っている。','日本のおもてなしは、心の贈り物。私も、マスターに贈りたいデス。','この店が、私のホーム。ずっと、ここにいマス!'],
+['lily','背丈よりも大きく','リリが帽子をかぶり直し、杖をぎゅっと握った。','背は伸びてないけど、魔法はちょっとだけ上手になったよ。','だから見てて!一番最初に、マスターに見せたかったの!'],
+['mikan','収穫祭','店の外に、みかんの木箱がずらりと並んでいる。','今年は、豊作だったの!みんなで食べたくて、全部持ってきちゃった!','マスターの笑顔が、うちの畑でいちばんの収穫だよ。'],
+['sora','最後の配達','夕焼けの店先。そらが自転車を止めて、小さな箱を差し出す。','世界で一つだけの届けもの。宛先は、マスターだよ。','箱の中身は……「ただいま」。何度でも言いたくなる言葉、だよね。'],
+['shino','影から、隣へ','夜。いつも物陰にいたしのが、マスターの隣の席に座っていた。','……初めて、影から出た。落ち着かない。でも、悪くない。','ここが、私の帰る場所。……守るだけじゃなくて、ここにいたい。'],
+['honoka','ひだまりの約束','ランプの灯りが、いつもより温かく店中を照らしている。','みなさんの笑顔が揃ったとき、わたしの光は一番まぶしくなります。','これからも、ひだまりの席は、あなたの隣に。ずっと、ここに。']
+];
+EV12.forEach(r=>{HM[r[0]].ev.push({lv:12,t:r[1],l:[['n',r[2]],[r[0],r[3]],[r[0],r[4]]]});});
+
+/* ---- 衣装 ---- */
+const COS=[{k:'yukata',n:'浴衣',tk:3},{k:'maid',n:'メイド服',tk:3},{k:'pajama',n:'パジャマ',tk:4},{k:'hallow',n:'ハロウィン',tk:5}];
+
+/* ---- ハプニング(選択肢つきイベント) ---- */
+function CH(t,res,b,min,tag,rush){return {t:t,res:res,fx:{b:b,min:min,tag:tag,rush:!!rush}};}
+const EVENTS=[
+{id:'h1',t:'デートの約束がバッティング',need:['hinata','rin'],
+ intro:[['n','開店前。ひなたと凛が、同じ日曜日の予定をマスターに差し出した。'],['hinata','日曜はお店、お休みでしょ?私と出かける約束、してたよね!'],['rin','先に誘ったのは私よ。生徒会の視察という名目だけれど。']],
+ ch:[CH('ひなたと出かける',[['hinata','やった!絶対楽しい日にするね!'],['rin','……仕方ないわ。次は、私の番よ。']],{hinata:3,rin:1},15,'hinata'),
+     CH('凛の視察に付き合う',[['rin','い、いい判断ね。視察という名目だけど、楽しみにしているわ。'],['hinata','むー……次は私だからね!']],{rin:3,hinata:1},15,'rin'),
+     CH('三人で出かける',[['hinata','それなら、みんなでお弁当作ろう!'],['rin','三人なら……視察の名目も立つわね。']],{hinata:2,rin:2},25,'fair')]},
+{id:'h2',t:'ケーキの最後のひとつ',need:['nonoka','mio'],
+ intro:[['n','閉店間際。ショーケースに残ったケーキは、あとひとつだけ。'],['nonoka','ののか、これ食べたい!さっきからずっと目をつけてたの!'],['mio','先輩!私も楽しみにしてたんです!今日、いっぱい働きましたよね?']],
+ ch:[CH('ののかにあげる',[['nonoka','わーい!マスター、だいすきー!'],['mio','うう……明日は、絶対私の番ですからね!']],{nonoka:3,mio:1},15,'nonoka'),
+     CH('みおにあげる',[['mio','やったあ!マスター先輩、ありがとうございます!'],['nonoka','ふえぇ……ののかのケーキ……']],{mio:3,nonoka:1},15,'mio'),
+     CH('半分こにする',[['nonoka','半分でも、おいしさは二倍だよー!'],['mio','先輩、センスありますね!さすがです!']],{nonoka:2,mio:2},25,'fair')]},
+{id:'h3',t:'どっちの席?',need:['hinata','kaguya'],
+ intro:[['n','夕方。窓際の席の前で、ひなたとかぐやが向かい合っている。'],['hinata','この席は、朝の私の特等席なの!'],['kaguya','あら。夜の私にとっても、特等席よ。']],
+ ch:[CH('ひなたの席にする',[['hinata','ほらね!マスター、わかってる!'],['kaguya','ふふ。夜になったら、返してもらうわ。']],{hinata:3,kaguya:1},15,'hinata'),
+     CH('かぐやの席にする',[['kaguya','ありがとう。月の光がよく見える席なの。'],['hinata','じゃあ朝は、私が占領するからね!']],{kaguya:3,hinata:1},15,'kaguya'),
+     CH('席を二つ並べる',[['hinata','隣同士なら、一日中おしゃべりできるね!'],['kaguya','朝も夜も、にぎやかになりそうね。']],{hinata:2,kaguya:2},25,'fair',true)]},
+{id:'h4',t:'猫とクリーム',need:['nonoka','mina'],
+ intro:[['n','ミナの膝にいた猫が、ののかの作った生クリームに飛びついた。'],['nonoka','あーっ!クリームがー!'],['mina','ミナのせいじゃないにゃ!猫が勝手に!']],
+ ch:[CH('ミナをかばう',[['mina','……ありがとにゃ。借りは返すにゃ。'],['nonoka','ううっ……ちょっと悲しいけど、いいよー。']],{mina:3,nonoka:1},15,'mina'),
+     CH('ののかをなぐさめる',[['nonoka','マスター、やさしー。また作るからね!'],['mina','べ、別に悪いなんて思ってないにゃ。……ごめん。']],{nonoka:3,mina:1},15,'nonoka'),
+     CH('猫ごと掃除を手伝う',[['nonoka','三人でやれば、すぐ終わるね!'],['mina','猫、おまえも手伝うにゃ!']],{nonoka:2,mina:2},25,'fair')]},
+{id:'h5',t:'ステージの取り合い',need:['luna','kotori'],
+ intro:[['n','土曜の夕方。小さなステージの使用時間をめぐって、ルナとことりが相談している。'],['luna','私、次のライブの練習がしたいの!'],['kotori','私も、新曲を試したいな。']],
+ ch:[CH('ルナを優先する',[['luna','ありがとう!ばっちり決めるね!'],['kotori','うん、いってらっしゃい。客席で聴いてるよ。']],{luna:3,kotori:1},15,'luna'),
+     CH('ことりを優先する',[['kotori','ありがとう。静かな曲だけど、聴いてね。'],['luna','次は絶対私だからね!']],{kotori:3,luna:1},15,'kotori'),
+     CH('二人でコラボする',[['luna','ことりのギターで歌うなんて、最高!'],['kotori','じゃあ、ちょっと派手めにアレンジしようか。']],{luna:2,kotori:2},25,'fair',true)]},
+{id:'h6',t:'氷と炎のドリンク',need:['yuki','momiji'],
+ intro:[['n','猛暑の午後。ゆきの冷たいドリンクともみじの温かい甘酒が、同時に出された。'],['yuki','暑いから、冷たいのが正解。'],['momiji','体の中から温めるのが正解です!']],
+ ch:[CH('ゆきの冷たいドリンク',[['yuki','……ふふ。当然。'],['momiji','うう、明日の甘酒は絶対飲ませますから!']],{yuki:3,momiji:1},15,'yuki'),
+     CH('もみじの甘酒',[['momiji','やった!ご利益ありますよ!'],['yuki','……ぬるいほうも、悪くない。']],{momiji:3,yuki:1},15,'momiji'),
+     CH('ぬるめに混ぜる',[['yuki','……意外と、おいしい。'],['momiji','新メニューですね!名前、考えましょう!']],{yuki:2,momiji:2},25,'fair')]},
+{id:'h7',t:'お嬢様と陸上部のレジ対決',need:['sumire','yuzu'],
+ intro:[['n','レジの前で、すみれとゆずがお会計の速さを競っている。'],['sumire','わたくしの方が、正確ですわ!'],['yuzu','スピードなら、私が絶対速い!']],
+ ch:[CH('すみれの正確さを褒める',[['sumire','当然ですわ。わたくしにお任せくださいませ。'],['yuzu','むー、次はミスなしで勝つ!']],{sumire:3,yuzu:1},15,'sumire'),
+     CH('ゆずの速さを褒める',[['yuzu','よっしゃー!ダッシュで接客だ!'],['sumire','速さだけでは、お客さまは満足しませんわよ?']],{yuzu:3,sumire:1},15,'yuzu'),
+     CH('二人で分担させる',[['sumire','では、わたくしが会計、ゆずさんが配膳ですわね。'],['yuzu','最強のコンビだね!']],{sumire:2,yuzu:2},25,'fair')]},
+{id:'h8',t:'店内宝探し',need:['elena','lily','mikan'],
+ intro:[['n','貸切の日。三人が「店の中で宝探し」を始め、マスターが審判に選ばれた。'],['elena','ヒントは、日本の「ワビサビ」デス!'],['lily','魔法のコンパスなら、すぐ見つかるもん!'],['mikan','みかんの箱の中だと思うな!']],
+ ch:[CH('エレナの推理を信じる',[['elena','やりマシタ!ワビサビ、大勝利デス!'],['lily','むう……次は魔法で勝つ!']],{elena:3,lily:1,mikan:1},15,'elena'),
+     CH('リリの魔法に任せる',[['lily','えへん!魔法、成功!……たぶん偶然だけど!'],['mikan','わー、リリちゃんすごい!']],{lily:3,elena:1,mikan:1},15,'lily'),
+     CH('みかんの勘に賭ける',[['mikan','ほんとにあった!やったあ、みかん箱の底!'],['elena','Oh、直感の勝利デス!']],{mikan:3,elena:1,lily:1},15,'mikan'),
+     CH('みんなで一緒に探す',[['elena','チームワーク、ベリーグッド!'],['lily','宝物は、みんなで見つけると楽しいね!']],{elena:2,lily:2,mikan:2},30,'fair',true)]},
+{id:'h9',t:'気配のない護衛',need:['hinata','shino'],
+ intro:[['n','ひなたが振り向くと、棚の陰からしのが顔を出していた。'],['hinata','わっ!いつからいたの!?'],['shino','……さっきから。マスターの護衛。']],
+ ch:[CH('しのをねぎらう',[['shino','……ありがとう。続ける。'],['hinata','びっくりしたけど……えらいね、しのちゃん。']],{shino:3,hinata:1},15,'shino'),
+     CH('ひなたをなだめる',[['hinata','もう、心臓に悪いよー!でも、慣れるね!'],['shino','……善処する。']],{hinata:3,shino:1},15,'hinata'),
+     CH('三人でお茶にする',[['hinata','しのちゃん、こっちの席!ケーキ食べよ!'],['shino','……任務、一時中断。']],{hinata:2,shino:2},25,'fair')]},
+{id:'h10',t:'勉強会の席順',need:['rin','shizuku','mio'],
+ intro:[['n','試験前の夜。勉強会の席で、凛、しずく、みおがマスターの隣を見つめている。'],['rin','勉強を教えるなら、私が適任ね。'],['shizuku','あ、あの……私も、お役に立てると思います……。'],['mio','先輩、私も教えてほしいです!']],
+ ch:[CH('凛に教わる',[['rin','いい心がけね。厳しくいくわよ。'],['shizuku','わ、私は、お茶を淹れますね……。']],{rin:3,shizuku:1,mio:1},15,'rin'),
+     CH('しずくと一緒に読む',[['shizuku','は、はい!とっておきの本を持ってきます!'],['rin','……ずるくはないわよね?']],{shizuku:3,rin:1,mio:1},15,'shizuku'),
+     CH('みおの質問に答える',[['mio','やったあ!マスター先輩、大好きです!'],['rin','ま、まあ、後輩の面倒を見るのも大事ね。']],{mio:3,rin:1,shizuku:1},15,'mio'),
+     CH('四人で勉強会にする',[['rin','全員、同じ範囲から始めるわよ。'],['shizuku','私、まとめノート作ります!']],{rin:2,shizuku:2,mio:2},30,'fair',true)]}
+];
+
+(function(){
+  for(let k=20;k+1<H.length;k+=2){
+    const A=H[k],B=H[k+1],AA=ARCH[A.arch],BB=ARCH[B.arch],f={},w=(k/2)%4===0;
+    EVENTS.push({id:'hg'+(k/2),t:A.giv+'と'+B.giv+'のゆずれない一日',need:[A.id,B.id],
+      intro:[['n',A.place+'。'+A.role+'の'+A.giv+'と'+B.role+'の'+B.giv+'が、'+A.it+'と'+B.it+'をめぐって言い合っている。'],[A.id,AA.claim],[B.id,BB.claim]],
+      ch:[
+        CH(A.giv+'を優先する',[[A.id,AA.win],[B.id,BB.lose]],(function(){const o={};o[A.id]=3;o[B.id]=1;return o;})(),15,A.id),
+        CH(B.giv+'を優先する',[[B.id,BB.win],[A.id,AA.lose]],(function(){const o={};o[B.id]=3;o[A.id]=1;return o;})(),15,B.id),
+        CH('二人で一緒にやってもらう',[[A.id,AA.fair],[B.id,BB.fair]],(function(){const o={};o[A.id]=2;o[B.id]=2;return o;})(),25,'fair',w)
+      ]});
+  }
+})();
+(function(){
+  const SETS=[[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,25,30,35,40],[22,27,32,37,42],[45,50,55,60,65],[70,75,80,85,90],[95,100,105,110,115],[120,125,130,135,140],[101,106,111,116,121],[126,131,136,141,146],[150,155,160,165,170],[175,180,185,190,195],[200,205,210,215,220],[225,230,235,240,245],[151,156,161,166,171],[201,206,211,216,221],[250,255,260,265,270],[275,280,285,290,295],[251,256,261,266,271],[276,281,286,291,296]];
+  const joy=h=>h.gen?ARCH[h.arch].win:h.voice[1];
+  const claim=h=>h.gen?ARCH[h.arch].claim:h.voice[0];
+  const lose=h=>h.gen?ARCH[h.arch].lose:h.voice[2];
+  const nm=h=>h.name.split(' ')[1]||h.name;
+  SETS.forEach(function(set,j){
+    const G=set.map(i=>H[i]),bAll={},bFirst={},bRest={};
+    G.forEach(function(h,t){bAll[h.id]=2;bFirst[h.id]=t===0?3:1;bRest[h.id]=t===0?1:2;});
+    EVENTS.push({id:'hc'+j,t:'みんなに囲まれて',need:G.map(h=>h.id),
+      intro:[['n','気づけば、マスターのまわりを女の子たちがぐるりと取り囲んでいた。']].concat(G.slice(0,4).map(h=>[h.id,claim(h)])),
+      ch:[
+        CH('全員にコーヒーをおごる',[['m','今日は全員、俺のおごりだ!'],[G[1].id,joy(G[1])],[G[2].id,joy(G[2])]],bAll,30,'fair',true),
+        CH(nm(G[0])+'の話から聞く',[[G[0].id,joy(G[0])],[G[3].id,lose(G[3])]],bFirst,15,G[0].id),
+        CH('順番にひとりずつ聞く',[[G[4].id,joy(G[4])],[G[3].id,joy(G[3])]],bRest,20,'fair')
+      ]});
+  });
+})();
+function CHF(t,res,b,min,tag,rush,fans,buzz){const c=CH(t,res,b,min,tag,rush);c.fx.fans=fans||0;c.fx.buzz=buzz||0;return c;}
+(function(){
+  const D=[
+   ['hinata','rin','開店前から、店の前に長い行列。全員がマスターの名前入りのうちわやペンライトを持った女の子たちだった。','店長目当てのお客さまが多すぎて、人手が足りないよ!','……行列の整理は私がやるわ。でも、あの人気ぶりは少し複雑ね。','ファンサ、すごい歓声!……でも、私たちのことも忘れないでね?','……ありがとう。私たちのことも、ちゃんと見ていてくれるのね。','みんなで撮ろう!はい、チーズ!'],
+   ['nonoka','mio','SNSの投稿が拡散され、「イケメン店長に会える店」として、女の子たちが次々に入ってくる。','マスターがキラキラしてるー!ののかも写真撮りたーい!','マスター先輩、人気すぎます!私、握手会の整理券係やります!','ファンのみんなも、あまーいの食べてってねー!','先輩、やっぱり私たちのこと大事にしてくれるんですね!','みんなでぱしゃりー!ののかはセンターでいいよねー?'],
+   ['kaguya','mina','夜の営業。窓の外まで、ファンの女の子たちがぎっしりと並んでいる。','今夜は星より、あなたを見に来る人のほうが多いのね。','べ、別に妬いてないにゃ。ただ、ミナの席が埋まってるだけにゃ。','ふふ、人気者ね。……少しだけ、妬いてしまうわ。','……ミナの席、ちゃんと空けてくれてたにゃ。ありがと。','みんなで一枚だけ、月の下で撮りましょう。'],
+   ['akari','luna','「推し活カフェ」として店がテレビに映った翌日。店じゅうがペンライトの海になった。','あらあら、大盛況ね。お姉さん、ケーキが足りるか心配になってきたわ。','負けてられない!私もステージで盛り上げる!','ファンのみんな、遠慮せず食べてってね。','ふふ、ちゃんと私たちにも目を向けてくれるのね。','みんなで撮りましょう。お姉さんは端っこでいいわよ。'],
+   ['sumire','yuzu','限定コースターを求めて、ファンが開店前から走ってくる。','まあ、庶民の熱気とはすごいものですわね。わたくしも列に並ぶべきかしら?','ダッシュで列整理!よっしゃ、任せて!','ファンの皆さまに愛されるのは、ご立派なことですわ。','わたくしたちの席も、守ってくださって嬉しいですわ。','全員で撮影ですわね。わたくし、一番いい角度で写りますわ。'],
+   ['kotori','yuki','ファンの女の子たちが、店長のために手作りのプレゼントを山ほど持ってきた。','みんなの気持ち、音になって聞こえてくるね。','……騒がしい。でも、あなたが愛されてるのは、悪くない。','みんなの歌、今夜のライブで返そうか。','……ちゃんと、こっちを見ててくれたのね。','写真、苦手だけど……今日は、撮ってもいい。']
+  ];
+  D.forEach(function(r,j){
+    const A=r[0],B=r[1];
+    const bf={},bh={},bp={};bf[A]=1;bf[B]=1;bh[A]=3;bh[B]=3;bp[A]=2;bp[B]=2;
+    EVENTS.push({id:'hf'+j,t:'ファンに囲まれて',need:[A,B],
+      intro:[['n',r[2]],[A,r[3]],[B,r[4]]],
+      ch:[
+        CHF('ファンサービスを優先する',[['m','みんな、来てくれてありがとう!'],[A,r[5]]],bf,30,'fan',true,3,30),
+        CHF('ヒロインのふたりを優先する',[[B,r[6]],[A,'……うん、ありがとう。']],bh,20,A,false,0,0),
+        CHF('全員で記念撮影をする',[[A,r[7]],[B,'……ふふ、いい写真になりそう。']],bp,25,'fair',true,2,15)
+      ]});
+  });
+})();
+/* ---- ハーレム大騒動: 在籍するウェイトレス全員が、店長を取り囲んで迫ってくる ---- */
+(function(){
+  const claimL=h=>h.gen?ARCH[h.arch].claim:h.voice[0];
+  const joyL=h=>h.gen?ARCH[h.arch].win:h.voice[1];
+  const loseL=h=>h.gen?ARCH[h.arch].lose:h.voice[2];
+  const nm0=h=>h.name.split(' ')[1]||h.name;
+  const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;};
+  const HAREM=[
+   [8,'みんなに迫られて','閉店後のホール。気づけば、{n}人の女の子たちが、じりじりと距離を詰めてきていた。'],
+   [15,'今夜は誰のものなの?','「今夜は誰と過ごすの?」——{n}人の視線が、ぜんぶマスターに突き刺さる。'],
+   [30,'店長争奪戦','{n}人の女の子が、マスターの腕を左右から引っ張り合っている。'],
+   [50,'五十人の包囲網','開店前のホール。{n}人の女の子が、出口をふさぐように立ちはだかった。'],
+   [80,'逃げ場のないひだまり喫茶','気づけば店じゅうが女の子でいっぱい。{n}人が、一歩ずつ、マスターに近づいてくる。'],
+   [120,'百人を超える波','女の子の波が押し寄せる。{n}人がいっせいに、マスターの名前を呼んだ。'],
+   [160,'マスターを探せ!','{n}人の女の子が店じゅうを探し回り、ついにマスターを見つけた。'],
+   [200,'二百人の大行進','商店街まで続く女の子の列。先頭の子たちが、マスターに向かって走り出す。いまここにいるのは{n}人。'],
+   [250,'全員集合・ひだまりの頂点','{n}人が、そろった。ホールも外も、マスターを囲む輪でいっぱいだ。'],
+   [300,'ひだまりの大輪','{n}人。店の前の通りまで、マスターを囲む輪が何重にも広がっていた。']
+  ];
+  HAREM.forEach(function(t){
+    EVENTS.push({id:'hr'+t[0],t:t[1],need:['hinata'],nOwned:t[0],harem:true,
+      mk:function(){
+        const L=ownedList(),n=L.length,sh=shuffle(L),sp=sh.slice(0,Math.min(5,n));
+        const intro=[['n',t[2].split('{n}').join(n)]].concat(sp.map(h=>[h.id,claimL(h)])).concat([['n','女の子たちの輪が、じりじりと狭まってくる。']]);
+        const all=k=>{const o={};L.forEach(h=>{o[h.id]=k;});return o;};
+        const half=()=>{const o={};sh.slice(0,Math.max(1,Math.ceil(n/2))).forEach(h=>{o[h.id]=3;});return o;};
+        const f=sh[0],o2=sh.slice(1,3),bf=all(1);bf[f.id]=8;
+        const tk=Math.max(1,Math.ceil(t[0]/40));
+        const pickL=k=>shuffle(L).slice(0,k);
+        const mk2=(txt,res,b,min,tag,extra)=>({t:txt,res:res,fx:Object.assign({b:b,min:min,tag:tag,rush:false},extra||{})});
+        return {intro:intro,ch:[
+          mk2('全員にコーヒーをおごる',[['m','今日は全員、俺のおごりだ!']].concat(pickL(3).map(h=>[h.id,joyL(h)])),all(2),40,'fair',{rush:true,mote:35,tk:tk,fans:2}),
+          mk2('ひとりずつ順番に向き合う',[['m','順番だ。ちゃんと、ひとりずつ聞くから。']].concat(pickL(3).map((h,k)=>[h.id,k?loseL(h):joyL(h)])),half(),30,'fair',{mote:20,tk:Math.ceil(tk/2)}),
+          mk2(nm0(f)+'の手を取る',[[f.id,joyL(f)]].concat(o2.map(h=>[h.id,loseL(h)])),bf,25,f.id,{mote:15,buzz:10}),
+          mk2('店の奥へ逃げる',[['m','み、みんな、いったん落ち着いて!']].concat(pickL(2).map(h=>[h.id,claimL(h)])).concat([['n','女の子たちは、笑いながら追いかけてきた。']]),all(1),15,'fair',{mote:10})
+        ]};
+      }});
+  });
+})();
+/* ---- 日課・ログインボーナス ---- */
+const LOGIN=[[10,0],[15,0],[20,1],[25,0],[30,1],[40,0],[60,3]];
+const QPOOL=[
+{k:'tap',t:'コーヒーやウェイトレスを合計{n}回タップする',g:[60,150,300]},
+{k:'date',t:'デートを{n}回する',g:[2,3,5]},
+{k:'up',t:'おもてなしを{n}回する',g:[2,4,6]},
+{k:'visit',t:'貢ぎを{n}回受け取る',g:[1,1,2]},
+{k:'scene',t:'思い出を{n}つ見る',g:[1,1,2]},
+{k:'hap',t:'ハプニングに{n}回答える',g:[1,1,2]},
+{k:'heart',t:'今日のうちに{n}円を稼ぐ',g:[0,0,0]}
+];
+
+/* ---- 称号 ---- */
+const TITLES=[
+{id:'t0',n:'みならいマスター',d:'最初から',f:()=>true},
+{id:'t1',n:'ひだまりの店主',d:'8人を採用する',f:()=>ownedList().length>=8},
+{id:'t2',n:'ハーレムの主',d:'20人を採用する',f:()=>ownedList().length>=20},
+{id:'t3',n:'ふれあい名人',d:'ふれあいを最大にした子がいる',f:()=>maxBond()},
+{id:'t4',n:'衣装道楽',d:'衣装を20着集める',f:()=>totalCos()>=20},
+{id:'t5',n:'平等主義者',d:'ハプニングで「みんなで」を10回選ぶ',f:()=>S.choice.fair>=10},
+{id:'t6',n:'一途なマスター',d:'ハプニングで同じ子を10回選ぶ',f:()=>Object.keys(S.choice.per).some(k=>S.choice.per[k]>=10)},
+{id:'t7',n:'通い詰めの店主',d:'3日間ログインする',f:()=>S.login.total>=3},
+{id:'t8',n:'十日目の常連',d:'10日間ログインする',f:()=>S.login.total>=10},
+{id:'t9',n:'ひだまりの灯',d:'30日間ログインする',f:()=>S.login.total>=30},
+{id:'t10',n:'思い出コレクター',d:'思い出を40個見る',f:()=>seenN()>=40},
+{id:'t11',n:'図鑑マスター',d:'実績をすべて達成する',f:()=>achCount()>=ACH.length},
+{id:'t12',n:'ひだまりの王',d:'100人を採用する',f:()=>ownedList().length>=100},
+{id:'t13',n:'おもてなしの鬼',d:'おもてなしを5,000回する',f:()=>S.stats.omt>=5000},
+{id:'t14',n:'百人力',d:'おもてなし力が100倍に達する',f:()=>omtMult()>=100},
+{id:'t15',n:'行列のできる店主',d:'貢ぎ殺到を10回こなす',f:()=>S.stats.swarms>=10},
+{id:'t16',n:'バズり店長',d:'トレンド入りする',f:()=>S.stats.trends>=1},
+{id:'t17',n:'国民的店長',d:'フォロワーが1,000万人に達する',f:()=>S.fans>=1e7},
+{id:'t18',n:'ひだまり神話',d:N+'人全員を採用する',f:()=>ownedList().length>=N}
+];
+
+
+/* ---- みんな集合イベント(データは hidamari_gather.js) ---- */
+const GD=(window.HIDAMARI_GATHER&&typeof window.HIDAMARI_GATHER==='object')?window.HIDAMARI_GATHER:null;
+const GCFG=Object.assign({firstMinutes:10,repeatMinutes:2,repeatCooldownMin:20,tickets:1,bond:1,incomePct:1,gaya:6,crowdCap:150,crowdLite:60,chorusIntro:'店じゅうのあちこちから、みんなの声が重なって聞こえてくる。'},(GD&&GD.config)||{});
+const GATHERS=[];
+((GD&&GD.events)||[]).forEach(function(e){
+  if(!e||!e.id)return;
+  const nd=e.need||{};
+  GATHERS.push({id:e.id,t:e.title||e.id,c:e.color||'#ff9bb8',n:nd.count||0,lv:nd.minLv||1,fans:nd.fans||0,who:nd.who||[],main:(e.main&&HM[e.main])?e.main:'hinata',e:e});
+});
+GATHERS.sort((a,b)=>a.n-b.n||(a.fans||0)-(b.fans||0));
+let gPctV=-1;
+const gatherPct=()=>{if(gPctV<0){gPctV=0;GATHERS.forEach(g=>{if(S.seen[g.id])gPctV+=(g.e.reward&&g.e.reward.income!=null)?g.e.reward.income:GCFG.incomePct;});}return gPctV;};
+const GM={}; GATHERS.forEach(function(g){GM[g.id]=g;});
+
+/* ---- メニュー開発 ---- */
+const U=[
+{id:'mill',n:'ハンドミル',d:'タップの収入 ×2',cost:300,type:'tap',val:2},
+{id:'omt1',n:'おもてなし講座',d:'おもてなし1Lvごとのタップ強化 +0.4%',cost:1200,type:'omt',val:0.004},
+{id:'beans',n:'こだわり豆',d:'全体の収入 ×1.3',cost:1500,type:'all',val:1.3},
+{id:'menu',n:'手書きメニュー',d:'貢ぎ ×2',cost:8000,type:'visit',val:2},
+{id:'book',n:'デート予約表',d:'デート枠 +1',cost:20000,type:'slot',val:1},
+{id:'flower',n:'窓際の花',d:'全体の収入 ×1.3',cost:60000,type:'all',val:1.3},
+{id:'sofa',n:'ふかふかソファ',d:'デート報酬 ×2',cost:3e5,type:'date',val:2},
+{id:'omt2',n:'接客マニュアル',d:'おもてなし1Lvごとのタップ強化 +0.4%',cost:1e6,type:'omt',val:0.004},
+{id:'cake',n:'ケーキ新メニュー',d:'全体の収入 ×1.5',cost:1.5e6,type:'all',val:1.5},
+{id:'siphon',n:'サイフォン導入',d:'タップの収入 ×3',cost:8e6,type:'tap',val:3},
+{id:'bgm',n:'店内BGM',d:'全体の収入 ×1.5',cost:5e7,type:'all',val:1.5},
+{id:'couple',n:'カップル席',d:'デート枠 +1',cost:2e8,type:'slot',val:1},
+{id:'party',n:'貸切パーティ予約',d:'貢ぎ ×3',cost:1e9,type:'visit',val:3},
+{id:'omt3',n:'笑顔トレーニング',d:'おもてなし1Lvごとのタップ強化 +0.6%',cost:4e9,type:'omt',val:0.006},
+{id:'terrace',n:'テラス席増設',d:'全体の収入 ×2',cost:8e9,type:'all',val:2},
+{id:'latte',n:'ラテアート',d:'タップの収入 ×2',cost:4e10,type:'tap',val:2},
+{id:'honey',n:'蜂蜜ケーキの噂',d:'デート報酬 ×3',cost:6e10,type:'date',val:3},
+{id:'second',n:'二号店',d:'全体の収入 ×2',cost:5e11,type:'all',val:2},
+{id:'omt4',n:'おもてなし検定',d:'おもてなし1Lvごとのタップ強化 +0.6%',cost:3e12,type:'omt',val:0.006},
+{id:'famous',n:'ひだまり名物化',d:'全体の収入 ×3',cost:1e13,type:'all',val:3},
+{id:'vip',n:'VIPラウンジ',d:'デート枠 +1',cost:1e14,type:'slot',val:1},
+{id:'chain',n:'全国チェーン化',d:'全体の収入 ×4',cost:5e15,type:'all',val:4},
+{id:'omt5',n:'一流のホスピタリティ',d:'おもてなし1Lvごとのタップ強化 +0.8%',cost:8e15,type:'omt',val:0.008},
+{id:'brand',n:'ひだまりブランド',d:'全体の収入 ×4',cost:2e17,type:'all',val:4},
+{id:'slot4',n:'テラスVIP席',d:'デート枠 +1',cost:5e17,type:'slot',val:1},
+{id:'date4',n:'恋する昼下がり',d:'デート報酬 ×4',cost:8e19,type:'date',val:4},
+{id:'visit4',n:'行列のできる店',d:'貢ぎ ×4',cost:3e20,type:'visit',val:4},
+{id:'omt6',n:'おもてなしの極意',d:'おもてなし1Lvごとのタップ強化 +1.2%',cost:1e22,type:'omt',val:0.012},
+{id:'all5',n:'銀座に出店',d:'全体の収入 ×5',cost:5e23,type:'all',val:5},
+{id:'slot5',n:'個室ラウンジ',d:'デート枠 +1',cost:1e25,type:'slot',val:1},
+{id:'omt7',n:'魂のホスピタリティ',d:'おもてなし1Lvごとのタップ強化 +1.6%',cost:1e29,type:'omt',val:0.016},
+{id:'all6',n:'海外進出',d:'全体の収入 ×6',cost:1e31,type:'all',val:6},
+{id:'slot6',n:'ひだまり貸切フロア',d:'デート枠 +1',cost:3e33,type:'slot',val:1},
+{id:'all7',n:'宇宙喫茶',d:'全体の収入 ×8',cost:1e39,type:'all',val:8},
+{id:'omt8',n:'万物へのおもてなし',d:'おもてなし1Lvごとのタップ強化 +2%',cost:1e43,type:'omt',val:0.02},
+{id:'all8',n:'時空を超える常連',d:'全体の収入 ×10',cost:1e47,type:'all',val:10},
+{id:'all9',n:'ひだまり銀河',d:'全体の収入 ×20',cost:1e55,type:'all',val:20}
+];
+
+/* ---- デート ---- */
+const COURSES=[
+{n:'お散歩',sec:30,mult:40,pt:1},
+{n:'カフェ巡り',sec:150,mult:230,pt:3},
+{n:'おでかけ',sec:600,mult:1000,pt:8}
+];
+
+/* ================= 状態 ================= */
+function fresh(){return {hearts:START,total:0,run:0,owned:{hinata:1},sign:'',mk:{},gift:{},hms:{},seen:{},t:Date.now(),taps:0,upg:{},bond:{},dates:[],
+  stats:{dates:0,visitors:0,renewals:0,quests:0,omt:0,swarms:0,served:0,trends:0,lost:0,paid:0,qbest:0,motes:0},ach:{},stars:0,sound:true,
+  tickets:0,tg:{},cos:{},heard:{},title:'t0',tu:{},lastExport:0,
+  name:'',fans:80,q:2,mote:0,buzz:0,fup:{},biz:{},sperk:{},spent:0,gcd:{},photos:{},fmile:{},
+  daily:{date:'',bonus:false,q:[]},login:{last:'',claimed:'',streak:0,best:0,total:0},
+  hap:{ready:0,next:0,seen:{},last:''},choice:{n:0,fair:0,per:{}}};}
+function normalize(j){
+  const base=fresh();
+  if(j.fans===undefined)j.fans=Math.max(30,Math.floor(20*Math.pow(Math.max(1,j.total||1),0.15)));
+  Object.keys(base).forEach(k=>{if(j[k]===undefined)j[k]=base[k];});
+  ['stats','login','hap','choice'].forEach(k=>{Object.keys(base[k]).forEach(kk=>{if(j[k][kk]===undefined)j[k][kk]=base[k][kk];});});
+  return j;
+}
+function load(){
+  let j=null;
+  try{j=JSON.parse(localStorage.getItem(KEY));}catch(e){}
+  if(!j){
+    try{const o4=JSON.parse(localStorage.getItem(KEY4));
+      if(o4&&o4.owned&&typeof o4.hearts==='number'){o4.hearts*=200;o4.total=(o4.total||0)*200;o4.run=(o4.run||0)*200;j=o4;}
+    }catch(e){}
+  }
+  if(!j){
+    try{const o=JSON.parse(localStorage.getItem(OLD));
+      if(o&&o.owned){j={hearts:o.hearts,total:o.total||0,run:o.total||0,owned:o.owned,seen:o.seen||{},t:o.t};}
+    }catch(e){}
+  }
+  if(j&&j.owned&&typeof j.hearts==='number')return normalize(j);
+  return fresh();
+}
+let S=load();
+let tab='heroine', buffUntil=0;
+
+/* ================= 店長の名前 ================= */
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const NM=()=>((S.name||'').trim())||'マスター';
+const mt=t=>String(t).split('マスター').join(NM());
+const mth=t=>String(t).split('マスター').join(esc(NM()));
+
+/* ================= 推し活: ファン・バズ・タイムライン ================= */
+const FUP=[
+{id:'f1',n:'公式アカウント開設',d:'フォロワー自然増 +1人/秒',cost:2e3,type:'rate',val:1},
+{id:'f2',n:'店長ブロマイド',d:'殺到の報酬 ×1.5',cost:5e4,type:'rew',val:1.5},
+{id:'f3',n:'整理券システム',d:'殺到が時間切れでも、残りの20%を自動で接客',cost:6e5,type:'auto',val:0.2},
+{id:'f4',n:'店頭ポスター',d:'殺到の頻度アップ(間隔 ×0.9)',cost:5e6,type:'freq',val:0.9},
+{id:'f5',n:'握手会',d:'殺到の人数 +8',cost:5e7,type:'size',val:8},
+{id:'f6',n:'SNS広告',d:'フォロワー自然増 +20人/秒',cost:5e9,type:'rate',val:20},
+{id:'f7',n:'ファンクラブ会報',d:'バズ度の上がり ×1.5',cost:2e11,type:'buzz',val:1.5},
+{id:'f8',n:'公式グッズ販売',d:'フォロワー数による収入倍率 ×1.3',cost:3e13,type:'mult',val:1.3},
+{id:'f9',n:'等身大パネル',d:'殺到の人数 +10',cost:5e15,type:'size',val:10},
+{id:'f10',n:'ファンミーティング',d:'殺到の頻度アップ(間隔 ×0.85)',cost:1e18,type:'freq',val:0.85},
+{id:'f11',n:'ライブ配信',d:'フォロワー自然増 +500人/秒',cost:4e20,type:'rate',val:500},
+{id:'f12',n:'写真集の発売',d:'殺到の報酬 ×2',cost:1e24,type:'rew',val:2},
+{id:'f13',n:'ファン専用ラウンジ',d:'殺到が時間切れでも、残りの40%を自動で接客',cost:5e27,type:'auto',val:0.4},
+{id:'f14',n:'全国ツアー',d:'殺到の人数 +15',cost:1e32,type:'size',val:15},
+{id:'f15',n:'ドラマ出演',d:'バズ度の上がり ×2',cost:1e38,type:'buzz',val:2},
+{id:'f16',n:'ひだまり劇場',d:'フォロワー数による収入倍率 ×1.5',cost:1e45,type:'mult',val:1.5},
+{id:'f17',n:'国民的アイドル店長',d:'フォロワー自然増 +50,000人/秒',cost:1e52,type:'rate',val:50000},
+{id:'f18',n:'世界ツアー',d:'殺到の頻度アップ(間隔 ×0.8)',cost:1e60,type:'freq',val:0.8}
+];
+function SC(c){const x=Math.pow(10,2.5+0.135*(Math.log10(c)-2.5));const p=Math.pow(10,Math.floor(Math.log10(x))-1);return Math.round(x/p)*p;}
+U.forEach(u=>{u.cost=SC(u.cost);});
+FUP.forEach((u,k)=>{u.cost=R2(0.8*HC(Math.round(6+k*0.88*250/FUP.length)));if(['f6','f11','f17'].indexOf(u.id)>=0){u.val*=0.1;u.d=u.d.replace(/\+([\d,]+)人/,(m,a)=>'+'+(parseInt(a.replace(/,/g,''),10)*0.1).toLocaleString('ja-JP')+'人');}});
+U.push({id:'wuni',n:'おそろいの制服',d:'全体の収入 ×1.4',cost:2e4,type:'all',val:1.4},{id:'wpos',n:'POSレジ導入',d:'タップの収入 ×3',cost:3e5,type:'tap',val:3},{id:'wtrain',n:'ホール研修',d:'おもてなし1Lvごとのタップ強化 +0.5%',cost:5e6,type:'omt',val:0.005},{id:'wshift',n:'シフト最適化',d:'全体の収入 ×2',cost:2e8,type:'all',val:2});
+U.sort((a,b)=>a.cost-b.cost);
+function R2(x){const p=Math.pow(10,Math.floor(Math.log10(x))-1);return Math.round(x/p)*p;}
+U.forEach((u,k)=>{u.cost=R2(0.5*HC(Math.round(1+k*0.95*250/U.length)));if(u.type==='visit'||u.type==='date'){u.val=Math.pow(u.val,0.35);u.d=u.d.replace(/×([\d.]+)/,(m,a)=>'×'+(Math.round(Math.pow(parseFloat(a),0.35)*100)/100));}if(u.type==='all'||u.type==='tap'){u.val=Math.pow(u.val,0.3);u.d=u.d.replace(/×([\d.]+)/,(m,a)=>'×'+(Math.round(Math.pow(parseFloat(a),0.3)*100)/100));}});
+const MILES=[[100,'地元で話題に'],[1e3,'SNSで拡散'],[1e4,'ご当地ニュースに登場'],[1e5,'テレビ取材が来た!'],[1e6,'ドラマ化のオファーが届く'],[1e7,'国民的アイドル店長'],[1e8,'世界が注目する店長'],[1e9,'伝説の店長']];
+/* ================= 何度でも強化できる仕組み ================= */
+U.forEach(u=>{u.max=u.type==='slot'?1:0;u.gr={all:2.4,tap:2.2,omt:2.3,visit:2.2,date:2.2,slot:1}[u.type]||2.3;});
+FUP.forEach(u=>{u.max={size:6,auto:3,freq:14}[u.type]||0;u.gr=2.3;});
+const ulv=id=>{const v=S.upg[id];return v===true?1:(v|0);};
+const flv=id=>{const v=S.fup[id];return v===true?1:(v|0);};
+const blv=id=>S.biz[id]|0;
+const pk=id=>S.sperk[id]|0;
+const uCost=u=>R2(u.cost*Math.pow(u.gr,ulv(u.id)));
+const fCost=u=>R2(u.cost*Math.pow(u.gr,flv(u.id)));
+const uMax=u=>u.max&&ulv(u.id)>=u.max, fMax=u=>u.max&&flv(u.id)>=u.max;
+function fupMult(t){if(t==='freq'){let m=1;FUP.forEach(u=>{const l=flv(u.id);if(l&&u.type===t)m*=Math.pow(u.val,l);});return Math.max(0.35,m);}let a=0;FUP.forEach(u=>{const l=flv(u.id);if(l&&u.type===t)a+=(u.val-1)*l*LVG;});return 1+a;} /* 同じ種類の強化は足し算でまとめる(掛け算だと暴走するため) */
+function fupSum(t){let v=0;FUP.forEach(u=>{const l=flv(u.id);if(l&&u.type===t)v+=u.val*l;});return v;}
+function fupAuto(){let m=0;FUP.forEach(u=>{const l=flv(u.id);if(l&&u.type==='auto')m+=u.val*l;});return Math.min(0.9,m);}
+/* 経営の強化(何度でも) */
+const BZ=[
+{id:'b_cogs',n:'仕入れ交渉',d:'原価率 −1.2ポイント(下限12%)',max:15,at:6,gr:2.2},
+{id:'b_rent',n:'家賃・光熱費の見直し',d:'家賃・光熱費 −6%',max:25,at:8,gr:2.2},
+{id:'b_wage',n:'待遇改善(昇給制度)',d:'時給 +10%、やる気が上がって全体の収入 +3%',max:0,at:12,gr:2.4},
+{id:'b_seat',n:'席数の拡張',d:'接客できる人数 +10%',max:0,at:10,gr:2.25},
+{id:'b_ad',n:'集客広告',d:'来店希望 +12%',max:0,at:14,gr:2.25},
+{id:'b_brand',n:'ひだまりブランド戦略',d:'全体の収入 +2.5%',max:0,at:20,gr:2.35},
+{id:'b_train',n:'研修制度の充実',d:'おもてなし研修の費用 −4%(下限40%)',max:20,at:18,gr:2.3},
+{id:'b_hire',n:'採用ブランディング',d:'採用費 −4%(下限35%)',max:24,at:24,gr:2.3},
+{id:'b_auto',n:'店長代理(自動おもてなし)',d:'お金に余裕があるとき、自動でおもてなし研修を行う(Lv1で60秒ごと、強化するたび間隔×0.85)',max:15,at:30,gr:2.6}
+];
+BZ.forEach(b=>{b.cost=R2(0.6*HC(b.at));});
+const bCost=b=>R2(b.cost*Math.pow(b.gr,blv(b.id)));
+const bMax=b=>b.max&&blv(b.id)>=b.max;
+const cogsRate=()=>Math.max(0.12,COGS-0.012*blv('b_cogs'));
+const bizMult=()=>(1+0.03*blv('b_wage')+0.025*blv('b_brand'));
+const trainDisc=()=>Math.max(0.4,1-0.04*blv('b_train'));
+const hireDisc=()=>Math.max(0.35,1-0.04*blv('b_hire'))*Math.max(0.4,1-0.03*pk('p_hire'));
+const hireCost=h=>Math.round(h.cost*hireDisc());
+/* リニューアルの特典(星で買う・何度でも) */
+const PK=[
+{id:'p_inc',n:'ひだまりの加護',d:'全体の収入 ×1.2',base:1,gr:1.5,max:0},
+{id:'p_tap',n:'黄金のコーヒー',d:'タップの収入 ×1.15',base:1,gr:1.5,max:0},
+{id:'p_crew',n:'常連スタッフ',d:'リニューアル後、最初から2人多く採用済みになる',base:2,gr:1.45,max:50},
+{id:'p_cash',n:'開店資金',d:'リニューアル後の開店資金 ×2',base:1,gr:1.6,max:12},
+{id:'p_hire',n:'採用の人脈',d:'採用費 −3%(下限40%)',base:1,gr:1.5,max:25},
+{id:'p_off',n:'留守番上手',d:'留守中の収入の割合 +4%(最大100%)、留守中に貯まる時間の上限 +1時間',base:1,gr:1.5,max:12},
+{id:'p_star',n:'星のきらめき',d:'リニューアルで得る星 +10%',base:2,gr:1.6,max:0},
+{id:'p_mote',n:'モテの素質',d:'モテモテタイムが2秒長くなり、ゲージの貯まり +10%',base:1,gr:1.5,max:15}
+];
+const pkCost=q=>Math.ceil(q.base*Math.pow(q.gr,pk(q.id)));
+const pkMax=q=>q.max&&pk(q.id)>=q.max;
+const starBank=()=>(S.stars|0)-(S.spent|0);
+let trendUntil=0;
+const trendOn=()=>Date.now()<trendUntil;
+const fanMult=()=>(1+0.15*Math.log10(1+S.fans))*fupMult('mult');
+const fanRate=()=>(0.4+fupSum('rate'))*(1+0.02*Object.keys(S.owned).length)*(trendOn()?2:1);
+function addBuzz(v){
+  if(trendOn())return;
+  S.buzz=Math.min(100,S.buzz+v*fupMult('buzz'));
+  if(S.buzz>=100)startTrend();
+}
+function startTrend(){
+  trendUntil=Date.now()+30000;S.buzz=100;S.stats.trends++;
+  toast('🔥 '+NM()+'がトレンド1位に!ファン殺到、収入×2(30秒)');
+  feedPush('【速報】'+NM()+'さんが「今日のトレンド」1位に!ファンが殺到しています',true);
+  sfx.trend();
+}
+const HPRE=['mimi','haru','yuu','rina','nana','sakura','mika','kana','miyu','aoi','momo','hina','riko','yuna','mei','saki','emi','kokoro','rio','nene'];
+const HSUF=['_oshi','♡','_cafe','0412','_love','_kikaku','xx','_sweet','_1019','_nikki','_pop','chan'];
+const POSTS=['{n}の笑顔、尊すぎて語彙力が消えた…','今日も{n}に会いに来た!推ししか勝たない','{n}が淹れたコーヒー、一口で恋に落ちた☕','開店前から並んだけど、{n}と目が合っただけで全部報われた','「{n}」で検索したらトレンド入りしてて草。みんな沼へようこそ','店長が{n}ってだけで通う理由になる','ひだまり喫茶の{n}、ファンサ神すぎる…','{n}にお釣りを渡されるとき、手が触れた気がする','行列3時間でも並ぶ。だって{n}だもん','友だち全員に布教した。{n}推しの輪が広がってく','推し活用にペンライト買った。{n}、こっち見て!','今日の{n}もかっこよかった…永久保存版','{n}のサイン入りコースターゲット!家宝にする','女の子たちもかわいいし、{n}もイケメンで目が足りない','バズってるの納得。{n}の接客、レベルが違う','夢に{n}が出てきた。現実でも会いに行く','{n}に「いつもありがとう」って言われて今週の運を使い切った','推しの名前を呼べる幸せ。{n}、大好き!','{n}の待ち行列に並びます。みんな席ゆずり合おうね','{n}ガチ恋勢、全員で肩組んでがんばろ'];
+const rnd=n=>Math.floor(Math.random()*n);
+function randPost(){return POSTS[rnd(POSTS.length)].split('{n}').join(NM())+(Math.random()<0.5?' #ひだまり喫茶':' #'+NM()+'推し');}
+function feedPush(text,sp){
+  const box=$('posts');if(!box)return;
+  const d=document.createElement('div');d.className='post'+(sp?' sp':'');
+  const n=document.createElement('span');n.className='pn';n.textContent=sp?'📢 速報':'@'+HPRE[rnd(HPRE.length)]+HSUF[rnd(HSUF.length)];
+  const t=document.createElement('span');t.className='pt';t.textContent=text;
+  const l=document.createElement('span');l.className='pl';l.textContent='♡'+fmt(Math.floor(5+Math.random()*(20+S.fans*0.3)));
+  d.appendChild(n);d.appendChild(t);d.appendChild(l);
+  box.insertBefore(d,box.firstChild);
+  while(box.children.length>4)box.removeChild(box.lastChild);
+}
+let feedAcc=0;
+function fanTick(dt){
+  S.fans+=fanRate()*dt;
+  if(trendUntil&&!trendOn()){trendUntil=0;S.buzz=0;toast('トレンドが落ち着きました。また殺到を呼びましょう');}
+  else if(!trendOn())S.buzz=Math.max(0,S.buzz-1.2*dt);
+  if(document.hidden)return;
+  feedAcc+=dt;
+  const iv=trendOn()?0.7:Math.max(0.9,2.6-0.15*Math.log10(1+S.fans));
+  if(feedAcc>=iv){feedAcc=0;feedPush(randPost(),false);}
+}
+function checkMiles(){
+  MILES.forEach((m,i)=>{
+    if(S.fans>=m[0]&&!S.fmile[m[0]]){
+      S.fmile[m[0]]=true;S.tickets+=i+1;
+      const g=perSec()*600*(i+1)+100*CK;gain(g);
+      toast('フォロワー'+fmt(m[0])+'人突破!「'+m[1]+'」 チケット+'+(i+1)+'・+'+fmt(g)+' 円');
+      feedPush('【速報】'+NM()+'さんのフォロワーが'+fmt(m[0])+'人を突破!「'+m[1]+'」',true);
+      sfx.ach();render();save();
+    }
+  });
+  GATHERS.forEach(G=>{if(G.fans&&!S.seen[G.id]&&!G._n&&gatherReady(G)){G._n=true;toast('集合イベント「'+G.t+'」が解放されました');}});
+}
+function hudFan(){
+  const on=trendOn();
+  setT('fans',fmt(S.fans));
+  $('feed').classList.toggle('trend',on);
+  setW('buzzfill',(on?Math.max(0,(trendUntil-Date.now())/30000*100):S.buzz).toFixed(1)+'%');
+  setT('buzztxt',on?'🔥 '+NM()+'がトレンド1位! 残り'+Math.ceil((trendUntil-Date.now())/1000)+'秒':'バズ度 '+Math.floor(S.buzz)+'% ・ トレンド '+Math.max(2,Math.round(101-S.buzz))+'位');
+  setT('qn',fmt(Math.floor(S.q||0)));
+  setT('crowdcap','行列 '+fmt(Math.floor(S.q||0))+'人'+(S.q>crowdMax()?'(先頭'+crowdMax()+'人を表示)':'')+' ・ 来店希望 毎時'+fmt(lamH())+'人');
+  $('crowd').classList.toggle('trend',on);
+  if(crowdN()!==crowdShown)renderCrowd();
+}
+function updName(){
+  const el=$('subline');if(el)el.textContent=NM()+'のまわりに、'+N+'人の女の子と、数えきれない推し活のファンが集まる店。';
+  const m=$('mgrname');if(m)m.textContent=NM();
+}
+function mgrSVG(crop){
+  const vb=crop?'10 8 80 80':'0 0 100 120';
+  return '<svg viewBox="'+vb+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="店長">'+
+    '<path d="M24 52C22 16 78 12 76 52L75 62L25 62Z" fill="#2a2236"/>'+
+    '<path d="M13 120C15 92 33 84 50 84C67 84 85 92 87 120Z" fill="#f4efe8"/>'+
+    '<path d="M30 120L35 97L50 91L65 97L70 120Z" fill="#7a4a2e"/>'+
+    '<path d="M38 85L50 100L62 85L56 83L50 91L44 83Z" fill="#fff"/>'+
+    '<rect x="44" y="70" width="12" height="16" fill="#f1c9ae"/>'+
+    '<ellipse cx="50" cy="54" rx="20" ry="23" fill="#fde0cc"/>'+
+    '<path d="M27 50C25 26 47 15 66 23C77 28 77 44 73 52C71 42 64 35 54 34C45 33 35 37 30 52Z" fill="#2a2236"/>'+
+    '<path d="M34 49L46 51 M54 51L66 49" stroke="#2a2236" stroke-width="2.2" stroke-linecap="round"/>'+
+    '<ellipse cx="41" cy="57" rx="3.2" ry="4.2" fill="#2a2236"/><ellipse cx="59" cy="57" rx="3.2" ry="4.2" fill="#2a2236"/>'+
+    '<circle cx="42.2" cy="55.4" r="1.2" fill="#fff"/><circle cx="60.2" cy="55.4" r="1.2" fill="#fff"/>'+
+    '<path d="M44 66Q50 72 56 66" fill="none" stroke="#b8556b" stroke-width="1.8" stroke-linecap="round"/>'+
+    '<ellipse cx="36" cy="64" rx="4.4" ry="2.6" fill="#ff8fa8" opacity=".35"/><ellipse cx="64" cy="64" rx="4.4" ry="2.6" fill="#ff8fa8" opacity=".35"/>'+
+    '<g fill="#ffe36a"><path d="M17 30l1.8 4.6 4.6 1.8-4.6 1.8-1.8 4.6-1.8-4.6-4.6-1.8 4.6-1.8z"/><path d="M84 22l1.4 3.6 3.6 1.4-3.6 1.4-1.4 3.6-1.4-3.6-3.6-1.4 3.6-1.4z"/><path d="M84 62l1.2 3 3 1.2-3 1.2-1.2 3-1.2-3-3-1.2 3-1.2z"/></g></svg>';
+}
+function save(){S.t=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+const ownedList=()=>H.filter(h=>S.owned[h.id]);
+const minLv=()=>{const l=ownedList();return l.length?Math.min.apply(null,l.map(h=>S.owned[h.id])):0;};
+const bondRank=id=>Math.min(BOND_MAX,Math.floor((S.bond[id]||0)/10));
+const costumeCount=id=>(S.cos[id]&&S.cos[id].own)?S.cos[id].own.length:0;
+const wearing=id=>(S.cos[id]&&S.cos[id].wear)||null;
+const heroMult=id=>(1+0.1*bondRank(id)+0.03*costumeCount(id))*(S.sign===id?1.5:1);
+const totalCos=()=>Object.keys(S.cos).reduce((a,id)=>a+(S.cos[id].own?S.cos[id].own.length:0),0);
+const heardN=()=>Object.keys(S.heard).reduce((a,id)=>a+Object.keys(S.heard[id]).length,0);
+function heard(id,text){const h=HM[id];if(!h)return;const k=h.voice.indexOf(text);if(k>=0){const o=S.heard[id]=S.heard[id]||{};o[k]=1;}}
+const achCount=()=>Object.keys(S.ach).length;
+function upMult(t){let a=0;U.forEach(u=>{const l=ulv(u.id);if(l&&u.type===t)a+=(u.val-1)*l*LVG;});return 1+a;}
+function slots(){let n=2;U.forEach(u=>{if(ulv(u.id)&&u.type==='slot')n+=u.val;});return n;}
+function harmony(){const n=ownedList().length;return 1+0.06*(n-1)+0.1*Math.floor(minLv()/3);}
+function allMult(){return upMult('all')*(1+0.02*achCount())*(1+0.02*S.stars)*extraMult();}
+/* ---- 行列(お店の前に実際に並んでいる人)。フォロワー(SNSの数字)とは別物 ---- */
+const qMult=()=>1+0.12*Math.log10(1+Math.floor(S.q||0)); /* 行列が長いほど売上アップ(上限なし・伸びはゆるやか) */
+function lamH(){const n=ownedList().length;return (4+1.5*n)*(1+Math.pow(S.fans/50,0.35))*(trendOn()?2:1)*(1+S.buzz/200)*(1+0.12*blv('b_ad'));} /* 来店希望(人/店内1時間) */
+function muH(){return 6*Math.max(1,ownedList().length-S.dates.length)*(1+0.1*blv('b_seat'));} /* ウェイトレスが捌ける人数(人/店内1時間) */
+/* ---- モテモテ: タップでモテゲージが貯まり、満タンでモテモテタイム(収入×1.5・20秒) ---- */
+let moteUntil=0,moteAcc=0,moteDur=20000;
+const moteOn=()=>Date.now()<moteUntil;
+const MOTEL=['マスター、こっち向いて!','今日は私と一緒にいて?','ずるい!私も隣に座る!','マスターのこと、独り占めしたいなぁ','きゃー、マスターと目が合った!','いちばん近い席は私のものよ!','ねえマスター、あーんして?','みんなマスターのこと大好きなんだから!','マスターの隣、ぜったい譲らないんだから!','撫でて撫でて、マスター!'];
+const MOTER=[[0,'クラスの人気者'],[30,'商店街の人気者'],[100,'街のモテ男'],[250,'県内で噂のモテ男'],[600,'全国区のモテ男'],[1200,'モテの王者'],[2500,'世界一モテる男'],[5000,'モテの神話']];
+const moteScore=()=>ownedList().length*10+lvSum()*2+Math.floor(Math.log10(1+S.fans)*20)+Math.floor(Math.log10(1+(S.q||0))*20)+totalCos()*3;
+const moteRank=v=>{let r=MOTER[0][1];MOTER.forEach(m=>{if(v>=m[0])r=m[1];});return r;};
+function addMote(v){
+  if(moteOn())return;
+  S.mote=Math.min(ownedList().length>=2?100:99,(S.mote||0)+v*(1+0.1*pk('p_mote')));
+  if(S.mote>=100)startMote();
+}
+function startMote(){
+  moteDur=20000+2000*pk('p_mote');moteUntil=Date.now()+moteDur;S.mote=100;S.stats.motes++;
+  toast('💗 モテモテタイム!女の子たちがマスターに群がっています(収入×1.5・20秒)');if(HK.moteStart)HK.moteStart();else sfx.trend();
+}
+function puffHearts(el,n){
+  if(document.hidden||!el)return;
+  const r=el.getBoundingClientRect();
+  for(let i=0;i<n;i++){
+    const f=document.createElement('div');f.className='fl';f.textContent=['💗','💕','💖','💓'][Math.floor(Math.random()*4)];
+    f.style.left=(r.left+r.width*Math.random())+'px';f.style.top=(r.top+r.height*0.3*Math.random())+'px';
+    document.body.appendChild(f);setTimeout(()=>{if(f.parentNode)f.parentNode.removeChild(f);},950);
+  }
+}
+function moteBurst(){
+  if(HK.moteBurst&&HK.moteBurst())return;
+  const l=ownedList().filter(h=>!onDate(h.id));if(!l.length)return;
+  const h=l[Math.floor(Math.random()*l.length)];
+  say(h.id,MOTEL[Math.floor(Math.random()*MOTEL.length)],true);
+  const seat=document.querySelector('[data-seat="'+h.id+'"]');if(seat)puffHearts(seat,2);
+  if(Math.random()<0.2){S.bond[h.id]=Math.min(BOND_MAX*10,(S.bond[h.id]||0)+2);toast(given(h)+'から告白された!ふれあい+2');}
+}
+function moteTick(dt){
+  if(moteUntil&&!moteOn()){moteUntil=0;S.mote=0;toast('モテモテタイム終了。また盛り上げよう');if(HK.moteEnd)HK.moteEnd();}
+  else if(!moteOn())S.mote=Math.max(0,(S.mote||0)-0.8*dt);
+  moteAcc+=dt;
+  if(moteOn()&&moteAcc>=0.8){moteAcc=0;if(!document.hidden)moteBurst();}
+}
+let autoAcc=0,dirty=false;
+function autoTick(dt){
+  const l=blv('b_auto');if(!l)return;
+  autoAcc+=dt;if(autoAcc<Math.max(4,60*Math.pow(0.85,l-1)))return;
+  autoAcc=0;
+  let best=null,bc=Infinity;
+  ownedList().forEach(h=>{const lv=S.owned[h.id];if(lv<MAXLV){const c=upCost(h,lv);if(c<bc){bc=c;best=h;}}});
+  if(best&&S.hearts>=bc*2){
+    const lv=S.owned[best.id];S.hearts-=bc;S.owned[best.id]=lv+1;S.stats.omt++;dq('up',1);
+    if(lv+1===MAXLV&&!S.tg['m'+best.id]){S.tg['m'+best.id]=true;S.tickets+=1;}
+    dirty=true;
+  }
+}
+function hudMote(){
+  const on=moteOn(),sc=moteScore();
+  setW('motefill',(on?Math.max(0,(moteUntil-Date.now())/moteDur*100):(S.mote||0)).toFixed(1)+'%');
+  setT('motetxt',on?'💗 モテモテタイム! 残り'+Math.ceil((moteUntil-Date.now())/1000)+'秒(収入×1.5)':'モテゲージ '+Math.floor(S.mote||0)+'% ・ タップするほど、女の子たちが集まってきます');
+  $('stage').classList.toggle('moting',on);
+  setT('ms',fmt(sc));setT('mrank','モテ度:'+moteRank(sc));
+}
+let entKey='';
+function renderEnt(){
+  const l=ownedList().slice(CFG.lite?-8:-14).reverse();
+  const key=l.map(h=>h.id+(S.owned[h.id]||1)+(wearing(h.id)||'')).join(',');
+  if(key===entKey)return;entKey=key;
+  $('ent').innerHTML=l.map(h=>'<span class="ent-i" style="--c:'+h.c+'">'+faceImg(h,34)+'</span>').join('');
+}
+function queueTick(dt){
+  const q0=S.q||0,arr=lamH()/TS*dt,srv=Math.min(q0+arr,muH()/TS*dt);
+  const q=q0+arr-srv;
+  S.q=q;if(q>S.stats.qbest)S.stats.qbest=q;
+}
+/* ---- 売上・原価・人件費・家賃 ---- */
+function gmult(){return harmony()*allMult()*fanMult()*qMult()*(Date.now()<buffUntil?2:1)*(trendOn()?2:1)*(moteOn()?1.5:1)*bizMult()*(1+gatherPct()/100)*Math.pow(1.2,pk('p_inc'));}
+const baseSales=h=>h.inc*S.owned[h.id]*heroMult(h.id);
+function perSec(){
+  let s=0;
+  ownedList().forEach(h=>{s+=baseSales(h);});
+  return s*gmult();
+}
+const wageH=h=>Math.round(h.wage*(1+0.05*(S.owned[h.id]-1))*(1+0.1*blv('b_wage'))/10)*10;
+function wageBasePS(){let w=0;ownedList().forEach(h=>{w+=wageH(h)/TS;});return w;}
+function wagesPS(){const g=gmult();let w=0;ownedList().forEach(h=>{w+=wageH(h)/TS+BACK*baseSales(h)*g;});return w;}
+const rentH=()=>Math.round(1000*(1+0.05*ownedList().length+0.1*Object.keys(S.upg).length+0.05*Object.keys(S.mk).length)*Math.max(0.3,1-0.06*blv('b_rent')));
+const rentPS=()=>rentH()/TS;
+const netPS=()=>{const g=perSec();return g-cogsRate()*g-wagesPS()-rentPS();};
+function payCosts(gr,dt){const c=(cogsRate()*gr+wagesPS()+rentPS())*dt;S.hearts=Math.max(0,S.hearts-c);S.stats.paid+=c;}
+const upCost=(h,lv)=>Math.ceil(h.up*Math.pow(GROW,lv-1)*trainDisc());
+const lvSum=()=>ownedList().reduce((a,h)=>a+S.owned[h.id]-1,0);
+const msCount=()=>ownedList().reduce((a,h)=>{const l=S.owned[h.id];return a+(l>=4?1:0)+(l>=8?1:0)+(l>=12?1:0);},0);
+function omtCoef(){let c=0.012;U.forEach(u=>{const l=ulv(u.id);if(l&&u.type==='omt')c+=u.val*l;});return c;}
+const omtMult=()=>1+omtCoef()*lvSum()+0.06*msCount();
+const tapGain=()=>(BREW+perSec()*0.0008)*upMult('tap')*omtMult()*Math.pow(1.15,pk('p_tap'));
+function nextLocked(){for(let i=0;i<N;i++){if(!S.owned[H[i].id])return H[i].id;}return null;}
+function gain(g){S.hearts+=g;S.total+=g;S.run+=g;const q=S.daily.q;for(let i=0;i<q.length;i++){if(q[i].k==='heart'&&q[i].p<q[i].g)q[i].p=Math.min(q[i].g,q[i].p+g);}}
+function gatherReady(g){return ownedList().length>=g.n&&minLv()>=g.lv&&(!g.fans||S.fans>=g.fans)&&g.who.every(id=>S.owned[id]);}
+const onDate=id=>S.dates.some(d=>d.id===id);
+const pendingStars=()=>Math.floor(Math.pow(S.run/R0,0.35)*(1+0.1*pk('p_star')));
+
+function trim(s){return s.indexOf('.')>=0?s.replace(/\.?0+$/,''):s;}
+const BIGU=[[1e68,'無量大数'],[1e64,'不可思議'],[1e60,'那由他'],[1e56,'阿僧祇'],[1e52,'恒河沙'],[1e48,'極'],[1e44,'載'],[1e40,'正'],[1e36,'澗'],[1e32,'溝'],[1e28,'穣'],[1e24,'秭'],[1e20,'垓'],[1e16,'京'],[1e12,'兆'],[1e8,'億'],[1e4,'万']];
+function fmt(n){
+  if(!isFinite(n))return '∞';
+  if(n<10000)return Math.floor(n).toLocaleString('ja-JP');
+  if(n>=1e72)return n.toExponential(2).replace('e+','e');
+  for(let i=0;i<BIGU.length;i++){
+    if(n>=BIGU[i][0]){const x=n/BIGU[i][0];return trim(x>=100?x.toFixed(0):x>=10?x.toFixed(1):x.toFixed(2))+BIGU[i][1];}
+  }
+  return String(Math.floor(n));
+}
+const rate=n=>n<10?n.toFixed(1):fmt(n);
+const given=h=>h.name.split(' ')[1]||h.name;
+
+/* ================= 効果音(WebAudioで合成) ================= */
+let AC=null,MG=null;
+function ac(){
+  if(!S.sound)return null;
+  if(!AC){
+    try{
+      const C=window.AudioContext||window.webkitAudioContext;
+      AC=new C();MG=AC.createGain();MG.gain.value=0.55;
+      const cp=AC.createDynamicsCompressor();MG.connect(cp);cp.connect(AC.destination);
+    }catch(e){AC=null;return null;}
+  }
+  if(AC.state==='suspended'){try{AC.resume();}catch(e){}}
+  return AC;
+}
+function tone(f,t,d,type,v,f2){
+  const a=ac();if(!a)return;
+  const o=a.createOscillator(),g=a.createGain();
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+  if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(v,t+0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+  o.connect(g);g.connect(MG);o.start(t);o.stop(t+d+0.03);
+}
+function noise(t,d,v,hp){
+  const a=ac();if(!a)return;
+  const n=Math.floor(a.sampleRate*d),b=a.createBuffer(1,n,a.sampleRate),x=b.getChannelData(0);
+  for(let i=0;i<n;i++)x[i]=(Math.random()*2-1)*(1-i/n);
+  const s=a.createBufferSource();s.buffer=b;
+  const f=a.createBiquadFilter();f.type='highpass';f.frequency.value=hp||6000;
+  const g=a.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+  s.connect(f);f.connect(g);g.connect(MG);s.start(t);
+}
+function bell(f,t,v){tone(f,t,1.1,'sine',v);tone(f*2.76,t,.6,'sine',v*.35);tone(f*5.4,t,.3,'sine',v*.15);}
+const PENTA=[0,2,4,7,9];
+function noteHz(k){return 523.25*Math.pow(2,(PENTA[k%5]+12*Math.floor(k/5))/12);}
+let comboK=0,lastTap=0;
+const sfx={
+  tap(){ /* クリック/タップのたび: ペンタトニックで連打すると音階が上がる */
+    const a=ac();if(!a)return;
+    const t=performance.now(),now=a.currentTime;
+    comboK=(t-lastTap<650)?Math.min(comboK+1,9):0;lastTap=t;
+    const f=noteHz(comboK);
+    tone(f,now,.15,'sine',.2);tone(f*2,now,.06,'triangle',.05);
+  },
+  up(){const a=ac();if(!a)return;const n=a.currentTime;[0,2,4].forEach((k,i)=>tone(noteHz(k+5),n+i*.07,.2,'triangle',.13));bell(noteHz(14),n+.2,.1);},
+  buy(){const a=ac();if(!a)return;const n=a.currentTime;tone(784,n,.08,'square',.05);tone(1175,n+.07,.08,'square',.05);tone(1568,n+.14,.3,'square',.05);},
+  unlock(){
+    const a=ac();if(!a)return;const n=a.currentTime;
+    tone(261.6,n,1.1,'sine',.1);
+    [0,2,4,5,7,9].forEach((k,i)=>bell(noteHz(k+5),n+i*.08,.12));
+    [5,7,9].forEach(k=>bell(noteHz(k+5),n+.55,.09));
+    for(let i=0;i<7;i++)bell(2000+Math.random()*2400,n+.5+i*.07,.035);
+    noise(n+.5,.5,.08,7000);
+  },
+  ach(){const a=ac();if(!a)return;const n=a.currentTime;[2,4,5,7].forEach((k,i)=>tone(noteHz(k+5),n+i*.09,.28,'triangle',.12));bell(noteHz(16),n+.36,.1);},
+  trend(){const a=ac();if(!a)return;const n=a.currentTime;[0,2,4,5,7,9,12].forEach((k,i)=>{bell(noteHz(k+5),n+i*.07,.1);});noise(n,.8,.1,6000);},
+  serve(k){const a=ac();if(!a)return;const n=a.currentTime,f=noteHz(5+Math.min(k||0,9));bell(f,n,.09);tone(f*2,n,.1,'triangle',.06);},
+  vApp(){const a=ac();if(!a)return;const n=a.currentTime;bell(880,n,.14);bell(660,n+.28,.14);},
+  coin(){const a=ac();if(!a)return;const n=a.currentTime;tone(1318,n,.08,'square',.05);tone(1760,n+.07,.28,'square',.05);bell(2637,n+.07,.06);},
+  dStart(){const a=ac();if(!a)return;const n=a.currentTime;tone(660,n,.1,'triangle',.14);tone(880,n+.1,.18,'triangle',.14);},
+  dDone(){const a=ac();if(!a)return;const n=a.currentTime;bell(988,n,.12);bell(1319,n+.12,.12);bell(1568,n+.24,.1);},
+  ng(){const a=ac();if(!a)return;const n=a.currentTime;tone(170,n,.2,'sawtooth',.07,110);},
+  renew(){const a=ac();if(!a)return;const n=a.currentTime;tone(180,n,1.2,'sine',.2,1800);[0,2,4,5,7,9,10,12].forEach((k,i)=>bell(noteHz(k+5),n+.4+i*.09,.1));noise(n+.3,.9,.1,5000);},
+  voice(h){ /* ヒロインごとに音程の違う「しゃべり声」 */
+    const a=ac();if(!a)return;const n=a.currentTime,base=300+((h.i*53)%330);
+    for(let i=0;i<3;i++)tone(base*(0.9+Math.random()*0.5),n+i*.06,.07,'triangle',.07);
+  }
+};
+
+/* ================= アバター(SVG) ================= */
+
+/* ================= 描画 ================= */
+const $=id=>document.getElementById(id);
+const av=(h,lv,crop)=>avatar(h,lv,crop,wearing(h.id));
+const PG={seat:0,card:0,date:0,cos:0,zk:0,arch:0};
+const PSZ={seat:12,card:12,date:10,cos:10,zk:20,arch:10};
+function pageSlice(list,key){
+  const n=Math.max(1,Math.ceil(list.length/PSZ[key]));
+  PG[key]=Math.max(0,Math.min(PG[key],n-1));
+  return list.slice(PG[key]*PSZ[key],(PG[key]+1)*PSZ[key]);
+}
+function pagerHTML(key,total){
+  const n=Math.max(1,Math.ceil(total/PSZ[key]));
+  if(n<=1)return '';
+  const p=Math.max(0,Math.min(PG[key],n-1));
+  return '<div class="pager"><button class="btn ghost small" data-act="page" data-k="'+key+'" data-d="-1"'+(p<=0?' disabled':'')+' aria-label="前のページ">◀</button><span class="role">'+(p+1)+' / '+n+'</span><button class="btn ghost small" data-act="page" data-k="'+key+'" data-d="1"'+(p>=n-1?' disabled':'')+' aria-label="次のページ">▶</button></div>';
+}
+function minUp(){let m=Infinity;ownedList().forEach(h=>{const lv=S.owned[h.id];if(lv<MAXLV){const c=upCost(h,lv);if(c<m)m=c;}});return m;}
+function seatHTML(h){
+  const lv=S.owned[h.id];
+  if(lv){
+    const away=onDate(h.id);
+    return '<button class="seat'+(away?' away':'')+'" data-act="seat" data-id="'+h.id+'" data-seat="'+h.id+'" aria-label="'+h.name+'に話しかける">'+av(h,lv,false)+'<span class="nm">'+given(h)+'</span><span class="lv">'+(away?'デート中':'Lv '+lv)+'</span></button>';
+  }
+  const next=nextLocked()===h.id;
+  return '<button class="seat lock" data-act="seat" data-id="'+h.id+'"'+(next?' data-cost="'+hireCost(h)+'"':'')+' aria-label="採用枠">'+avatar(h,1,false)+'<span class="nm">？？？</span><span class="lv">'+(next?'採用費 ':'')+HRT+fmt(hireCost(h))+'</span></button>';
+}
+function cardHTML(h){
+  const lv=S.owned[h.id],cost=upCost(h,lv),br=bondRank(h.id);
+  let pips='';for(let i=1;i<=MAXLV;i++)pips+='<i'+(i<=lv?' class="on"':'')+'></i>';
+  const mem=h.ev.map((e,i)=>{
+    if(lv>=e.lv){const seen=S.seen[h.id+':'+i];return '<button class="btn ghost'+(seen?'':' new')+'" data-act="scene" data-id="'+h.id+'" data-i="'+i+'">'+e.t+'</button>';}
+    return '<button class="btn ghost" disabled>Lv'+e.lv+'で解放</button>';
+  }).join('');
+  const up=lv>=MAXLV?'<button class="btn" disabled>好感度 最大</button>'
+    :'<button class="btn" data-act="up" data-id="'+h.id+'" data-cost="'+cost+'">おもてなし '+HRT+fmt(cost)+'</button>';
+  return '<article class="card" style="--c:'+h.c+'"><div class="face">'+av(h,lv,true)+'</div>'+
+    '<div><h3>'+h.name+'</h3><div class="role">ウェイトレス志願 ・ '+h.role+' ・ '+h.tag+'</div><div class="pips" aria-label="好感度 '+lv+'/'+MAXLV+'">'+pips+'</div>'+
+    '<div class="role">好感度 Lv '+lv+' ・ 売上 '+fmt(baseSales(h)*gmult()*TS)+'円/時'+(br?' ・ ふれあい ★'+br:'')+'</div><div class="role">時給 '+fmt(wageH(h))+'円 ＋ 売上の'+Math.round(BACK*100)+'%を歩合</div></div><div class="acts">'+up+'<button class="btn ghost" data-act="sign" data-id="'+h.id+'">'+(S.sign===h.id?'★看板ウェイトレス':'看板にする(収入×1.5)')+'</button>'+mem+'</div></article>';
+}
+function heroinePanel(){
+  const ng=GATHERS.filter(G=>gatherReady(G)&&!S.seen[G.id]).length;
+  const g=(ng?'<div class="gather"><p><strong>集合イベントが '+ng+' 件、解放されています</strong>みんなが集まる特別なイベントです。</p><button class="btn new" data-act="tab" data-id="gather">集合タブへ</button></div>':'')+'<p class="note">ヒロインたちのハプニングや思い出の場面は、「集合」タブで、いつでも見られます。</p>';
+  const owned=ownedList(),mu=minUp();
+  const page=pageSlice(owned,'card');
+  return '<div class="gathers">'+g+'</div>'+
+    '<div class="acts"><button class="btn" data-act="bulk"'+(isFinite(mu)?' data-cost="'+mu+'"':' disabled')+'>まとめておもてなし(買えるだけ)</button></div>'+
+    '<h2>いまホールで働く子たち('+owned.length+'人)</h2>'+pagerHTML('card',owned.length)+'<div class="list">'+page.map(cardHTML).join('')+'</div>'+pagerHTML('card',owned.length);
+}
+function menuPanel(){
+  const s='<div class="sum"><span>全体 <b>×'+(upMult('all')).toFixed(2)+'</b></span><span>タップ <b>×'+upMult('tap').toFixed(2)+'</b></span><span>おもてなし力 <b>×'+omtMult().toFixed(2)+'</b></span><span>デート報酬 <b>×'+upMult('date').toFixed(2)+'</b></span><span>貢ぎ <b>×'+upMult('visit').toFixed(2)+'</b></span><span>デート枠 <b>'+slots()+'</b></span></div>';
+  const items=U.map(u=>{
+    const lv=ulv(u.id),mx=uMax(u),c=uCost(u);
+    const now=lv?(u.type==='omt'?'いま +'+(u.val*lv*100).toFixed(1)+'%':(u.type==='slot'?'':'いま +'+Math.round((u.val-1)*lv*LVG*100)+'%')):'';
+    return '<article class="card row'+(lv?' ach got':'')+'"><div><h3>'+u.n+(lv?' <small>Lv '+lv+(u.max?'/'+u.max:'')+'</small>':'')+'</h3><div class="role">'+(u.max?u.d:'1回の強化で '+u.d)+(now?'('+now+')':'')+'</div></div>'+
+      (mx?'<button class="btn" disabled>最大</button>':'<button class="btn" data-act="buy" data-id="'+u.id+'" data-cost="'+c+'">'+(lv?'強化 ':'導入 ')+HRT+fmt(c)+'</button>')+'</article>';
+  }).join('');
+  return '<p class="note">お店の設備やメニューに投資すると、収入が増えます。何度でも強化できますが、強化するたびに値段が上がります(リニューアルでリセット)。</p>'+s+'<div class="list">'+items+'</div>';
+}
+function datePanel(){
+  const free=slots()-S.dates.length;
+  const act=S.dates.filter(d=>!d.f).map(d=>{
+    const h=HM[d.id],c=COURSES[d.k];
+    return '<div class="dline" style="--c:'+h.c+'"><div class="face">'+av(h,S.owned[h.id]||1,true)+'</div><div style="min-width:0"><b>'+h.name+'</b> <span class="role">'+c.n+'</span><div class="bar" data-dend="'+d.end+'" data-dtot="'+c.sec+'"><i></i></div></div><span class="tl" data-dtl="'+d.end+'"></span></div>';
+  }).join('');
+  const rows=pageSlice(ownedList(),'date').map(h=>{
+    const br=bondRank(h.id),pts=S.bond[h.id]||0,away=onDate(h.id);
+    const btns=COURSES.map((c,k)=>'<button class="btn ghost small" data-act="date" data-id="'+h.id+'" data-k="'+k+'"'+((away||free<=0)?' disabled':'')+'>'+c.n+' '+(c.sec<60?c.sec+'秒':(c.sec/60)+'分')+'</button>').join('');
+    return '<article class="card" style="--c:'+h.c+'"><div class="face">'+av(h,S.owned[h.id],true)+'</div><div><h3>'+h.name+'</h3><div class="role">ふれあい ★'+br+(br>=BOND_MAX?'(最大)':' ・ '+(pts%10)+'/10')+(away?' ・ デート中':'')+'</div></div><div class="acts">'+btns+'</div></article>';
+  }).join('');
+  return '<p class="note">デートに出かけると、円のごほうびと「ふれあい」が貯まります。ふれあい★1つごとに、その子の収入が10%増えます。</p>'+
+    '<div class="sum"><span>デート枠 <b>'+(S.dates.filter(d=>!d.f).length)+'/'+slots()+'</b></span><span>これまでのデート <b>'+S.stats.dates+'回</b></span></div>'+
+    (act?'<div class="gathers">'+act+'</div>':'')+pagerHTML('date',ownedList().length)+'<div class="list">'+rows+'</div>'+pagerHTML('date',ownedList().length);
+}
+function achPanel(){
+  const items=ACH.map(a=>{
+    const got=S.ach[a.id];
+    return '<article class="card row ach'+(got?' got':' done')+'"><div><h3>'+a.n+'</h3><div class="role">'+a.d+'</div></div><span class="role">'+(got?'達成':'未達成')+'</span></article>';
+  }).join('');
+  return '<div class="sum"><span>達成 <b>'+achCount()+'/'+ACH.length+'</b></span><span>全体収入 <b>+'+(achCount()*2)+'%</b></span></div><p class="note">実績を達成するたびに、全体の収入が恒久的に2%増えます(リニューアルでも消えません)。</p><div class="list">'+items+'</div>';
+}
+function renewPanel(){
+  const p=pendingStars(),bank=starBank();
+  const perks=PK.map(q=>{const l=pk(q.id),mx=pkMax(q),c=pkCost(q);
+    return '<article class="card row'+(l?' ach got':'')+'"><div><h3>'+q.n+(l?' <small>Lv '+l+(q.max?'/'+q.max:'')+'</small>':'')+'</h3><div class="role">1Lvごとに '+q.d+'</div></div>'+
+      (mx?'<button class="btn" disabled>最大</button>':'<button class="btn" data-act="buyp" data-id="'+q.id+'"'+(bank>=c?'':' disabled')+'>強化 ★'+c+'</button>')+'</article>';}).join('');
+  return '<p class="note">お店をリニューアルすると、円・採用・好感度Lv・設備・経営・推し活の強化・メニュー開発がリセットされます。代わりに「ひだまりの星」がもらえます。星は1つにつき全体の収入が恒久的に2%増えるうえ、下の特典の強化にも使えます(使っても収入ボーナスは減りません)。思い出・実績・ふれあい・衣装・フォロワー・貢ぎ物コレクションは残ります。</p>'+
+    '<div class="sum"><span>使える星 <b>★'+bank+'</b></span><span>これまでの星 <b>'+S.stars+'</b></span><span>星による収入 <b>×'+(1+0.02*S.stars).toFixed(2)+'</b></span><span>この周回の売上 <b>'+fmt(S.run)+'</b></span><span>リニューアルで得る星 <b>'+p+'</b></span><span>リニューアル回数 <b>'+S.stats.renewals+'</b></span></div>'+
+    '<div class="gather"><p><strong>リニューアルオープン</strong>'+(p>=1?'いま行うと星を '+p+' 個もらえます(収入は ×'+(1+0.02*(S.stars+p)).toFixed(2)+' になります)。星は周回の売上が大きいほど増えます(売上が10倍で約2.2倍)。':'周回の売上が'+fmt(R0)+'円に達すると、星を1つ得られます。')+'</p><button class="btn" id="renewBtn" data-act="renew"'+(p>=1?'':' disabled')+'>リニューアルする</button></div>'+
+    '<h2>星の特典(何度でも強化)</h2><div class="list">'+perks+'</div>';
+}
+function bizPanel(){
+  const gr=perSec(),cg=cogsRate()*gr,wb=wageBasePS(),wk=Math.max(0,wagesPS()-wb),rt=rentPS(),pr=gr-cg-wb-wk-rt;
+  const hr=v=>fmt(Math.abs(v)*TS)+'円/時',pc=v=>gr>0?Math.round(v/gr*100)+'%':'-';
+  const row=(t,d,v,c)=>'<article class="card row'+(c||'')+'"><div><h3>'+t+'</h3><div class="role">'+d+'</div></div><span class="role"><b>'+v+'</b></span></article>';
+  const pl=row('売上','自動営業の売上です(タップ・貢ぎ・デートの収入は含みません)',hr(gr))+
+    row('仕入れ原価','売上の'+Math.round(cogsRate()*100)+'%('+pc(cg)+')','−'+hr(cg))+
+    row('人件費(時給)',ownedList().length+'人分。おもてなしLvが上がると昇給します('+pc(wb)+')','−'+hr(wb))+
+    row('人件費(歩合)','ウェイトレスの売上の'+Math.round(BACK*100)+'%('+pc(wk)+')','−'+hr(wk))+
+    row('家賃・光熱費','席やメニューが増えるほど上がります('+pc(rt)+')','−'+hr(rt))+
+    row('営業利益','利益率 '+pc(pr)+' ・ 毎秒 '+rate(Math.max(0,pr))+'円',(pr<0?'−':'')+hr(pr),' ach got');
+  const top=ownedList().slice().sort((a,b)=>wageH(b)-wageH(a)).slice(0,5).map((h,i)=>row((i+1)+'位 '+h.name,'Lv '+S.owned[h.id]+' ・ 売上 '+fmt(baseSales(h)*gmult()*TS)+'円/時','時給 '+fmt(wageH(h))+'円')).join('');
+  const bup=BZ.map(b=>{const lv=blv(b.id),mx=bMax(b),c=bCost(b);
+    return '<article class="card row'+(lv?' ach got':'')+'"><div><h3>'+b.n+(lv?' <small>Lv '+lv+(b.max?'/'+b.max:'')+'</small>':'')+'</h3><div class="role">'+(b.id==='b_auto'?'':'1回の強化で ')+b.d+'</div></div>'+
+      (mx?'<button class="btn" disabled>最大</button>':'<button class="btn" data-act="buyb" data-id="'+b.id+'" data-cost="'+c+'">'+(lv?'強化 ':'導入 ')+HRT+fmt(c)+'</button>')+'</article>';}).join('');
+  const fl='<div class="sum"><span>フォロワー <b>'+fmt(S.fans)+'人</b></span><span>行列 <b>'+fmt(Math.floor(S.q||0))+'人</b></span><span>来店希望 <b>'+fmt(lamH())+'人/時</b></span><span>接客できる人数 <b>'+fmt(muH())+'人/時</b></span><span>行列ボーナス <b>×'+qMult().toFixed(2)+'</b></span><span>行列の最高記録 <b>'+fmt(S.stats.qbest)+'人</b></span></div>';
+  return '<p class="note">店内の時間は60倍速で、現実の1秒がお店の1分にあたります。下の金額は「お店の1時間(現実の1分)」あたりです。売上から原価・人件費・家賃を引いた利益が、毎秒の円になります。</p>'+
+    '<h2>経営の強化(何度でも)</h2><div class="list">'+bup+'</div>'+
+    '<h2>お店の損益(1時間あたり)</h2><div class="list">'+pl+'</div>'+
+    '<h2>集客(フォロワーと行列は別の数字です)</h2>'+fl+
+    '<p class="note">来店希望が接客できる人数を上回ると行列ができます。行列に上限はなく、長くなるほど売上のボーナスが増えます(伸びはゆるやかです)。ウェイトレスを増やすと、接客できる人数も増えます(デート中の子は接客できません)。</p>'+
+    '<h2>時給の高いウェイトレス</h2><div class="list">'+(top||'<p class="note">まだいません</p>')+'</div>';
+}
+const TABS=['heroine','gather','biz','fan','daily','menu','hall','date','cos','zukan','renew','data'];
+const PANEL={heroine:()=>heroinePanel(),gather:()=>gatherPanel(),biz:()=>bizPanel(),fan:()=>fanPanel(),daily:()=>dailyPanel(),menu:()=>menuPanel(),hall:()=>hallPanel(),date:()=>datePanel(),cos:()=>costumePanel(),zukan:()=>zukanPanel(),renew:()=>renewPanel()};
+function renderPanel(t){const f=PANEL[t];if(f)$('p-'+t).innerHTML=mth(f());if(HK.panel)HK.panel(t);}
+function setTab(t,skip){
+  tab=t;
+  TABS.forEach(k=>{
+    $('p-'+k).hidden=(k!==t);
+    const b=$('t-'+k);b.classList.toggle('on',k===t);b.setAttribute('aria-selected',k===t?'true':'false');
+  });
+  if(!skip)renderPanel(t);
+}
+function renderSeats(){
+  const vis=H.slice(0,Math.min(N,ownedList().length+6));
+  $('seats').innerHTML=pageSlice(vis,'seat').map(seatHTML).join('');
+  $('seatpager').innerHTML=pagerHTML('seat',vis.length);
+  renderCrowd();renderEnt();
+}
+function render(){
+  renderSeats();
+  renderPanel(tab);
+  $('sndbtn').textContent=S.sound?'音 ON':'音 OFF';
+  $('sndbtn').setAttribute('aria-pressed',S.sound?'true':'false');
+  updExport();
+  setTab(tab,true);hud();
+}
+function hud(){
+  setT('hearts',fmt(S.hearts));
+  setT('ps',rate(Math.max(0,netPS())));
+  setT('harm','×'+(harmony()*allMult()).toFixed(2));
+  setT('seatn',ownedList().length+'/'+N);
+  const bt='コーヒーを淹れる +'+rate(tapGain());
+  if(_tc.brew!==bt){_tc.brew=bt;$('brew').innerHTML=bt;}
+  const now=Date.now();
+  const rush=buffUntil>now;
+  $('buffstat').hidden=!rush;
+  if(rush)$('buff').textContent=Math.ceil((buffUntil-now)/1000)+'秒';
+  const bs=document.querySelectorAll('[data-cost]');
+  for(let i=0;i<bs.length;i++){
+    const b=bs[i];
+    if(b._c===undefined)b._c=parseFloat(b.getAttribute('data-cost'));
+    const ok=S.hearts>=b._c;
+    if(b._ok!==ok){b._ok=ok;b.disabled=!ok;if(b.classList.contains('seat'))b.classList.toggle('can',ok);}
+  }
+  const bars=document.querySelectorAll('[data-dend]');
+  for(let i=0;i<bars.length;i++){
+    const end=+bars[i].getAttribute('data-dend'),tot=+bars[i].getAttribute('data-dtot');
+    bars[i].firstElementChild.style.width=Math.max(0,Math.min(100,(1-(end-now)/(tot*1000))*100))+'%';
+  }
+  const tls=document.querySelectorAll('[data-dtl]');
+  for(let i=0;i<tls.length;i++){tls[i].textContent=Math.max(0,Math.ceil((+tls[i].getAttribute('data-dtl')-now)/1000))+'秒';}
+  hudExtra();
+}
+
+/* ================= 日課・ログインボーナス ================= */
+const pad=n=>(n<10?'0':'')+n;
+function dkey(off){const d=new Date();if(off)d.setDate(d.getDate()+off);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function seedRand(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return function(){h^=h<<13;h^=h>>>17;h^=h<<5;return((h>>>0)%100000)/100000;};}
+function ensureDay(){
+  const today=dkey();
+  if(S.daily.date===today)return false;
+  const n=ownedList().length,r=seedRand(today+':'+n),tier=n<4?0:(n<12?1:2);
+  const pool=QPOOL.filter(q=>q.k!=='hap'||n>=2),pick=[];
+  while(pick.length<4&&pool.length){const i=Math.floor(r()*pool.length);pick.push(pool.splice(i,1)[0]);}
+  S.daily={date:today,bonus:false,q:pick.map(q=>({k:q.k,t:q.t,g:q.k==='heart'?Math.max(5*CK*100,Math.ceil(perSec()*1800)):q.g[tier],p:0,cl:false}))};
+  return true;
+}
+function dq(k,n){S.daily.q.forEach(q=>{if(q.k===k&&q.p<q.g)q.p=Math.min(q.g,q.p+n);});}
+const loginClaimed=()=>S.login.claimed===dkey();
+function loginIdx(){
+  const s=loginClaimed()?S.login.streak:(S.login.last===dkey(-1)?S.login.streak+1:1);
+  return ((Math.max(1,s)-1)%7)+1;
+}
+function bulkUp(){
+  let n=0,guard=0;
+  while(guard++<3000){
+    let best=null,bc=Infinity;
+    ownedList().forEach(h=>{const lv=S.owned[h.id];if(lv>=MAXLV)return;const c=upCost(h,lv);if(c<bc){bc=c;best=h;}});
+    if(!best||bc>S.hearts)break;
+    S.hearts-=bc;
+    const lv=S.owned[best.id];S.owned[best.id]=lv+1;n++;S.stats.omt++;dq('up',1);
+    if(lv+1===MAXLV&&!S.tg['m'+best.id]){S.tg['m'+best.id]=true;S.tickets+=1;}
+  }
+  if(!n){sfx.ng();toast('いまは、おもてなしできる子がいません');return;}
+  const rb=tapGain()*(6+n);gain(rb);
+  sfx.up();toast('おもてなし '+n+'回! 返礼 +'+fmt(rb)+' 円');
+  GATHERS.forEach(G=>{if(gatherReady(G)&&!S.seen[G.id]&&!G._n){G._n=true;toast('集合イベント「'+G.t+'」が解放されました');}});
+  render();save();checkAch();
+}
+function claimLogin(){
+  if(loginClaimed())return;
+  const t=dkey();
+  S.login.streak=(S.login.last===dkey(-1))?S.login.streak+1:1;
+  S.login.last=t;S.login.claimed=t;S.login.total++;
+  S.login.best=Math.max(S.login.best,S.login.streak);
+  const r=LOGIN[(S.login.streak-1)%7];
+  const g=Math.max(perSec()*60*r[0],100*CK*r[0]);gain(g);S.tickets+=r[1];
+  toast('ログインボーナス +'+fmt(g)+' 円'+(r[1]?'・チケット+'+r[1]:''));sfx.coin();
+  render();save();checkAch();
+}
+function claimQuest(i){
+  const q=S.daily.q[i];if(!q||q.cl||q.p<q.g)return;
+  q.cl=true;S.tickets+=1;S.stats.quests++;
+  const g=Math.max(perSec()*300,200*CK);gain(g);
+  let msg='日課達成 +'+fmt(g)+' 円・チケット+1';
+  if(!S.daily.bonus&&S.daily.q.every(x=>x.cl)){S.daily.bonus=true;S.tickets+=2;msg+='・全達成ボーナス チケット+2';}
+  toast(msg);sfx.coin();render();save();checkAch();
+}
+function dailyPanel(){
+  const now=loginIdx(),claimed=loginClaimed();
+  const days=LOGIN.map((r,i)=>{const d=i+1,got=claimed?d<=now:d<now;
+    return '<div class="day'+(d===now?' now':'')+(got?' got':'')+'"><b>'+d+'日目</b>収入'+r[0]+'分'+(r[1]?'<br>チケット+'+r[1]:'')+'</div>';}).join('');
+  const qs=S.daily.q.map((q,i)=>'<article class="card row"><div style="min-width:0"><h3>'+q.t.replace('{n}',fmt(q.g))+'</h3><div class="role"><span id="qp'+i+'">'+fmt(q.p)+'</span> / '+fmt(q.g)+'</div><div class="bar" style="--c:var(--mint)"><i id="qi'+i+'"></i></div></div><button class="btn" id="qb'+i+'" data-act="qclaim" data-i="'+i+'"'+((q.cl||q.p<q.g)?' disabled':'')+'>'+(q.cl?'受け取り済み':'受け取る')+'</button></article>').join('');
+  const done=S.daily.q.filter(q=>q.cl).length;
+  return '<div class="sum"><span>連続 <b>'+S.login.streak+'日</b></span><span>通算 <b>'+S.login.total+'日</b></span><span>チケット <b>'+S.tickets+'枚</b></span></div>'+
+    '<h2>ログインボーナス</h2><div class="login">'+days+'</div>'+
+    '<div><button class="btn" data-act="login"'+(claimed?' disabled':'')+'>'+(claimed?'今日は受け取り済み':'今日のボーナスを受け取る')+'</button></div>'+
+    '<h2>今日の日課('+done+'/'+S.daily.q.length+')</h2><div class="list">'+qs+'</div>'+
+    '<p class="note">日課をすべて達成すると、チケットが2枚追加でもらえます。チケットは「衣装」タブで使います。日課は毎日0時(この端末の時刻)に入れ替わります。連続ログインが途切れると、1日目に戻ります。</p>';
+}
+function hudExtra(){
+  setT('tk',S.tickets);
+  setT('omt','おもてなし力 ×'+omtMult().toFixed(2)+'(おもてなしを重ねるほど、タップの円が増えます)');
+  const t=TITLES.filter(x=>x.id===S.title)[0];
+  $('titleline').textContent=t?'称号: '+t.n:'';
+  $('hap').hidden=!(S.hap.ready>0&&eligibleHaps().length>0);
+  setT('hapbtn','ハプニング発生!'+(S.hap.ready>1?' ×'+S.hap.ready:''));
+  let dot=!loginClaimed();
+  S.daily.q.forEach((q,i)=>{
+    const p=$('qp'+i);
+    if(p){p.textContent=fmt(q.p);const bi=$('qi'+i);if(bi)bi.style.width=Math.min(100,q.p/q.g*100)+'%';const b=$('qb'+i);if(b)b.disabled=q.cl||q.p<q.g;}
+    if(!q.cl&&q.p>=q.g)dot=true;
+  });
+  $('t-daily').classList.toggle('dot',dot);
+  hudFan();hudMote();
+}
+
+/* ================= 推し活タブ ================= */
+function fanPanel(){
+  const st='<div class="sum"><span>フォロワー <b>'+fmt(S.fans)+'人</b></span><span>自然増 <b>'+rate(fanRate())+'人/秒</b></span><span>グッズ収入倍率 <b>×'+fanMult().toFixed(2)+'</b></span><span>いまの行列 <b>'+Math.floor(S.q||0)+'人</b></span><span>接客した人数 <b>'+fmt(S.stats.served)+'人</b></span><span>トレンド入り <b>'+S.stats.trends+'回</b></span></div>';
+  const note='<p class="note">フォロワーは、SNSで店長を応援してくれている人の数です。行列は、いまお店の前に実際に並んでいる人の数で、別の数字です。フォロワーが増えるほど来店を希望する人が増えて行列ができやすくなりますが、行列はウェイトレスが接客するか、店長が行列の人をタップして接客すると減ります。行列に上限はなく、長いほど売上にボーナスがつきます(経営タブで内訳が見られます)。行列の人をタップすると、行列が長いときは数人まとめて接客できます。バズ度が満タンになると「トレンド入り」して、収入×2・来店希望も2倍になります。</p>';
+  const ms=MILES.map((m,i)=>{const ok=!!S.fmile[m[0]];
+    return '<article class="card row'+(ok?' ach got':' done')+'"><div><h3>'+m[1]+'</h3><div class="role">フォロワー '+fmt(m[0])+'人 ・ 報酬 チケット+'+(i+1)+'</div></div><span class="role">'+(ok?'達成':'未達成')+'</span></article>';}).join('');
+  const items=FUP.map(u=>{
+    const lv=flv(u.id),mx=fMax(u),c=fCost(u);
+    const now=lv&&(u.type==='mult'||u.type==='rew'||u.type==='buzz'||u.type==='freq')?(u.type==='freq'?'いま ×'+Math.max(0.35,Math.pow(u.val,lv)).toFixed(2):'いま +'+Math.round((u.val-1)*lv*LVG*100)+'%'):(lv&&(u.type==='rate'||u.type==='size')?'いま +'+fmt(u.val*lv)+(u.type==='rate'?'人/秒':'人'):(lv&&u.type==='auto'?'いま '+Math.round(Math.min(0.9,u.val*lv)*100)+'%':''));
+    return '<article class="card row'+(lv?' ach got':'')+'"><div><h3>'+u.n+(lv?' <small>Lv '+lv+(u.max?'/'+u.max:'')+'</small>':'')+'</h3><div class="role">1回の強化で '+u.d+(now?'('+now+')':'')+'</div></div>'+
+      (mx?'<button class="btn" disabled>最大</button>':'<button class="btn" data-act="buyf" data-id="'+u.id+'" data-cost="'+c+'">'+(lv?'強化 ':'導入 ')+HRT+fmt(c)+'</button>')+'</article>';
+  }).join('');
+  return st+note+'<h2>推し活の強化(何度でも)</h2><div class="list">'+items+'</div><h2>フォロワー達成</h2><div class="list">'+ms+'</div>';
+}
+/* ================= 衣装 ================= */
+function costumePanel(){
+  const rows=pageSlice(ownedList(),'cos').map(h=>{
+    const w=wearing(h.id),own=(S.cos[h.id]&&S.cos[h.id].own)||[];
+    let btns='<button class="btn small'+(w?' ghost':' on')+'" data-act="wear" data-id="'+h.id+'" data-k="">通常'+(w?'':'(着用中)')+'</button>';
+    COS.forEach(c=>{
+      if(own.indexOf(c.k)>=0)btns+='<button class="btn small'+(w===c.k?' on':' ghost')+'" data-act="wear" data-id="'+h.id+'" data-k="'+c.k+'">'+c.n+(w===c.k?'(着用中)':'')+'</button>';
+      else btns+='<button class="btn small" data-act="buycos" data-id="'+h.id+'" data-k="'+c.k+'"'+(S.tickets>=c.tk?'':' disabled')+'>'+c.n+' チケット'+c.tk+'</button>';
+    });
+    return '<article class="card" style="--c:'+h.c+'"><div class="face">'+av(h,S.owned[h.id],true)+'</div><div><h3>'+h.name+'</h3><div class="role">衣装 '+own.length+'/'+COS.length+' ・ 1着ごとにこの子の収入 +3%</div></div><div class="cos">'+btns+'</div></article>';
+  }).join('');
+  return '<p class="note">日課・ログインボーナス・ハプニングで集めたチケットで、衣装を手に入れます。着替えると、席と思い出の絵も変わります。</p>'+
+    '<div class="sum"><span>チケット <b>'+S.tickets+'枚</b></span><span>衣装 <b>'+totalCos()+'/'+(N*COS.length)+'</b></span></div>'+pagerHTML('cos',ownedList().length)+'<div class="list">'+rows+'</div>'+pagerHTML('cos',ownedList().length);
+}
+function wear(id,k){const c=S.cos[id]=S.cos[id]||{own:[],wear:null};c.wear=k||null;sfx.up();render();save();}
+function buyCos(id,k){
+  const c=COS.filter(x=>x.k===k)[0];if(!c||!S.owned[id])return;
+  const o=S.cos[id]=S.cos[id]||{own:[],wear:null};
+  if(o.own.indexOf(k)>=0)return;
+  if(S.tickets<c.tk){sfx.ng();toast('チケットが足りません');return;}
+  S.tickets-=c.tk;o.own.push(k);o.wear=k;
+  sfx.unlock();toast(given(HM[id])+'が「'+c.n+'」に着替えました');
+  render();save();checkAch();
+}
+
+/* ================= 図鑑・称号 ================= */
+function zukanPanel(){
+  const mem=seenN(),memT=N*3+GATHERS.length,cos=totalCos(),cosT=N*COS.length,vo=heardN(),voT=N*3,hp=Object.keys(S.hap.seen).length,hpT=EVENTS.length;
+  const sum='<div class="sum"><span>キャラ <b>'+ownedList().length+'/'+N+'</b></span><span>思い出 <b>'+mem+'/'+memT+'</b></span><span>衣装 <b>'+cos+'/'+cosT+'</b></span><span>台詞 <b>'+vo+'/'+voT+'</b></span><span>ハプニング <b>'+hp+'/'+hpT+'</b></span></div>';
+  const titles=TITLES.map(t=>{
+    const ok=t.f();
+    return '<article class="card row'+(ok?'':' done')+'"><div><h3>'+(ok?t.n:'？？？')+'</h3><div class="role">'+t.d+'</div></div>'+
+      (ok?'<button class="btn'+(S.title===t.id?' on':' ghost')+'" data-act="title" data-id="'+t.id+'">'+(S.title===t.id?'装備中':'装備する')+'</button>':'<span class="role">未解放</span>')+'</article>';
+  }).join('');
+  const chars=pageSlice(H,'zk').map(h=>{
+    const lv=S.owned[h.id];
+    if(!lv)return '<div class="zcard lock"><div class="face" style="--c:#3d3669">'+avatar(h,1,true)+'</div><b>？？？</b><span class="role">'+HRT+fmt(hireCost(h))+' で解放</span></div>';
+    const m=h.ev.filter((e,i)=>S.seen[h.id+':'+i]).length,c=costumeCount(h.id),v=Object.keys(S.heard[h.id]||{}).length;
+    return '<div class="zcard" style="--c:'+h.c+'"><div class="face">'+av(h,lv,true)+'</div><b>'+h.name+'</b><span class="role">'+h.role+'</span><span class="role">思い出 '+m+'/3 ・ 衣装 '+c+'/'+COS.length+'<br>台詞 '+v+'/3 ・ ふれあい ★'+bondRank(h.id)+'</span></div>';
+  }).join('');
+  return sum+'<h2>称号</h2><div class="list">'+titles+'</div><h2>キャラ図鑑</h2>'+pagerHTML('zk',H.length)+'<div class="zk">'+chars+'</div>'+pagerHTML('zk',H.length)+'<h2>実績</h2>'+achPanel();
+}
+
+/* ================= ハプニング ================= */
+/* ハプニング = ファンの殺到(データは hidamari_hap.js)。ヒロインの場面は「集合」タブのハプニング集で、いつでも見られる */
+const HD=(window.HIDAMARI_HAP&&window.HIDAMARI_HAP.events)?window.HIDAMARI_HAP:null;
+const FR=(HD?HD.events:[]).filter(e=>e&&e.id).sort((a,b)=>((a.need&&a.need.fans)||0)-((b.need&&b.need.fans)||0));
+const HCFG=Object.assign({crowdBase:5,pickLatestChance:0.55},(HD&&HD.config)||{});
+const frOk=e=>S.fans>=((e.need&&e.need.fans)||0);
+const crowdNum=()=>Math.floor(HCFG.crowdBase+Math.pow(Math.max(0,S.fans),0.55));
+const oldOk=e=>e.need.every(id=>S.owned[id])&&(!e.nOwned||ownedList().length>=e.nOwned);
+const eligibleHaps=()=>FR.length?FR.filter(frOk):EVENTS.filter(oldOk);
+function hapTick(){
+  const now=Date.now();
+  if(!S.hap.next)S.hap.next=now+240000;
+  if(now>=S.hap.next){
+    if(S.hap.ready<3&&eligibleHaps().length){S.hap.ready++;if(CFG.hapNote){toast('ハプニング発生!店の様子を見に行きましょう');sfx.vApp();}}
+    S.hap.next=now+(200+Math.random()*160)*1000;
+  }
+}
+
+/* ================= セーブの書き出し・読み込み ================= */
+function saveObj(){return {game:'hidamari',v:4,exported:Date.now(),data:S};}
+function updExport(){const el=$('lastExport');if(el)el.textContent=S.lastExport?new Date(S.lastExport).toLocaleString('ja-JP'):'まだありません';}
+function exportFile(){
+  S.lastExport=Date.now();save();
+  try{
+    const blob=new Blob([JSON.stringify(saveObj())],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='hidamari-save-'+dkey()+'.json';
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);if(a.parentNode)a.parentNode.removeChild(a);},800);
+    $('ioMsg').textContent='保存しました。ダウンロードフォルダを確認してください。';
+  }catch(e){$('ioMsg').textContent='ファイルの保存に失敗しました。「コードをコピー」を使ってください。';}
+  updExport();
+}
+function exportCode(){return btoa(unescape(encodeURIComponent(JSON.stringify(saveObj()))));}
+function copyCode(){
+  S.lastExport=Date.now();save();
+  const code=exportCode(),ta=$('ioText');ta.value=code;
+  const ok=()=>{$('ioMsg').textContent='コードをコピーしました。メモ帳などに貼り付けて保管してください。';};
+  const fb=()=>{ta.focus();ta.select();$('ioMsg').textContent='コードを下の欄に表示しました。選択してコピーしてください。';};
+  try{navigator.clipboard.writeText(code).then(ok,fb);}catch(e){fb();}
+  updExport();
+}
+function importText(txt){
+  try{
+    txt=(txt||'').trim();if(!txt)return false;
+    const json=txt.charAt(0)==='{'?txt:decodeURIComponent(escape(atob(txt)));
+    const o=JSON.parse(json),d=(o&&o.game==='hidamari')?o.data:null;
+    if(!d||!d.owned||typeof d.hearts!=='number')return false;
+    if((o.v||0)<4){d.hearts*=200;d.total=(d.total||0)*200;d.run=(d.run||0)*200;}
+    S=normalize(d);gPctV=-1;buffUntil=0;ensureDay();save();render();return true;
+  }catch(e){return false;}
+}
+
+/* ================= 演出 ================= */
+function toast(msg){
+  const t=document.createElement('div');t.className='toast';t.textContent=mt(msg);$('toasts').appendChild(t);
+  const box=$('toasts');while(box.children&&box.children.length>4)box.removeChild(box.firstChild);
+  setTimeout(()=>{if(t.parentNode)t.parentNode.removeChild(t);},3300);
+}
+function floatText(ev,el,txt){
+  const r=el.getBoundingClientRect();
+  const x=(ev&&ev.clientX)?ev.clientX:r.left+r.width/2,y=(ev&&ev.clientY)?ev.clientY:r.top+r.height/2;
+  const f=document.createElement('div');f.className='fl';f.textContent='+'+txt;f.style.left=(x-14)+'px';f.style.top=(y-20)+'px';
+  document.body.appendChild(f);setTimeout(()=>{if(f.parentNode)f.parentNode.removeChild(f);},950);
+}
+function say(id,text,quiet){
+  if(!quiet)heard(id,text);
+  const seat=document.querySelector('[data-seat="'+id+'"]');if(!seat)return;
+  const old=seat.querySelector('.bubble');if(old)seat.removeChild(old);
+  const b=document.createElement('span');b.className='bubble';b.textContent=mt(text);seat.appendChild(b);
+  const sr=$('stage').getBoundingClientRect(),br=b.getBoundingClientRect();
+  let dx=0;
+  if(br.left<sr.left+6)dx=sr.left+6-br.left;
+  else if(br.right>sr.right-6)dx=sr.right-6-br.right;
+  if(dx)b.style.setProperty('--dx',dx+'px');
+  setTimeout(()=>{if(b.parentNode)b.parentNode.removeChild(b);},3000);
+}
+const randVoice=h=>h.voice[Math.floor(Math.random()*h.voice.length)];
+
+/* ================= 思い出シーン ================= */
+let sc=null;
+/* ================= 集合イベントの進行 ================= */
+function addBond(id,v){S.bond[id]=Math.min(BOND_MAX*10,(S.bond[id]||0)+v);}
+function gLines(lines,g,own){
+  const out=[];
+  (lines||[]).forEach(function(l){
+    let sp=l[0];
+    if(sp==='@main')sp=g.main;
+    else if(sp==='@any'){const pool=own.filter(h=>h.id!==g.main);sp=pool.length?pool[Math.floor(Math.random()*pool.length)].id:g.main;}
+    if(sp==='n'||sp==='m'||S.owned[sp])out.push([sp,l[1]]);
+  });
+  return out;
+}
+function gatherChapters(g){
+  const e=g.e,own=ownedList(),chs=[];
+  const mk=function(c){
+    let ch=c.choices;
+    if(ch==='auto')ch=(GD&&GD.autoChoices)||null;
+    const lines=gLines(c.lines,g,own);
+    if(!lines.length)return;
+    chs.push({lines:lines,choices:(ch&&ch.length)?ch.map(function(x){const r=gLines(x.res,g,own);return Object.assign({},x,{res:r.length?r:[['n','……']]});}):null});
+  };
+  if(e.chapters)e.chapters.forEach(mk);
+  else{
+    const A=e.auto||{},k=A.guests||8,ids=[],cnt=own.length,seen={};
+    for(let t=0;t<k;t++){const h=own[Math.min(cnt-1,Math.max(0,Math.floor((t+1)*g.n/(k+1))-1))];if(h&&!seen[h.id]){seen[h.id]=1;ids.push(h);}}
+    const l=[['n',A.story||'みんなが、ひだまり喫茶に集まった。']];
+    ids.forEach(function(h,t){l.push([h.id,h.voice[t%h.voice.length]]);});
+    l.push(['m',A.master||'こんなに大勢で笑って、ごはんを食べて……夢みたいだ。']);
+    mk({lines:l,choices:A.choices===false?null:'auto'});
+  }
+  const gy=e.gaya!=null?e.gaya:GCFG.gaya;
+  if(gy>0&&own.length>4){
+    const used={};chs.forEach(c=>c.lines.forEach(l=>{used[l[0]]=1;}));
+    const pool=own.filter(h=>!used[h.id]);
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=pool[i];pool[i]=pool[j];pool[j]=t;}
+    const sp=(GD&&GD.speech)||{},cl=[['n',GCFG.chorusIntro]];
+    pool.slice(0,gy).forEach(function(h){const a=(h.gen&&sp[h.arch]&&sp[h.arch].length)?sp[h.arch]:h.voice;cl.push([h.id,a[Math.floor(Math.random()*a.length)]]);});
+    if(cl.length>1)chs.push({lines:cl,choices:null});
+  }
+  if(e.finale)mk({lines:e.finale});
+  return chs;
+}
+function openGather(id){
+  const g=GM[id];if(!g||!gatherReady(g)){sfx.ng();return;}
+  const chs=gatherChapters(g);if(!chs.length){sfx.ng();return;}
+  sc={lines:chs[0].lines,i:0,key:g.id,cur:S.owned[g.main]?g.main:ownedList()[0].id,phase:'lines',choices:chs[0].choices,gather:g,chs:chs,ci:0,picks:[],crowd:true};
+  startScene(g.t+(chs.length>1?'  1/'+chs.length:''),g.c);
+}
+function gatherAdvance(){
+  const g=sc.gather;
+  if(sc.phase==='result'&&sc.pick){sc.picks.push(sc.pick);sc.pick=null;}
+  if(sc.ci<sc.chs.length-1){
+    sc.ci++;const c=sc.chs[sc.ci];
+    sc.lines=c.lines;sc.i=0;sc.phase='lines';sc.choices=c.choices;
+    $('scTitle').textContent=mt(g.t)+'  '+(sc.ci+1)+'/'+sc.chs.length;
+    $('scChoices').hidden=true;$('scNext').hidden=false;
+    showLine();$('scNext').focus();return;
+  }
+  finishGather();
+}
+function finishGather(){
+  const g=sc.gather,e=g.e,own=ownedList(),now=Date.now(),picks=sc.picks.slice();
+  const first=!S.seen[g.id],cd=(GCFG.repeatCooldownMin||0)*60000;
+  const pay=first||(now-(S.gcd[g.id]||0)>=cd),R=e.reward||{};
+  let minutes=first?(R.minutes!=null?R.minutes:GCFG.firstMinutes):GCFG.repeatMinutes,photo=first,mote=0,fans=0;
+  picks.forEach(function(c){
+    const b=c.bond||{};
+    Object.keys(b).forEach(function(k){
+      if(!b[k])return;
+      if(k==='*')own.forEach(h=>addBond(h.id,b[k]));
+      else{const id=k==='@main'?g.main:k;if(S.owned[id])addBond(id,b[k]);}
+    });
+    if(c.mote)mote+=c.mote;
+    if(c.minutes)minutes+=c.minutes;
+    if(c.fans)fans+=c.fans;
+    if(c.photo)photo=true;
+  });
+  const msg=[];
+  if(first){
+    const bb=R.bond!=null?R.bond:GCFG.bond;if(bb)own.forEach(h=>addBond(h.id,bb));
+    const tk=R.tickets!=null?R.tickets:GCFG.tickets;if(tk){S.tickets+=tk;msg.push('チケット+'+tk);}
+    S.seen[g.id]=true;gPctV=-1;
+    const ip=R.income!=null?R.income:GCFG.incomePct;if(ip)msg.push('収入ボーナス+'+ip+'%');
+  }
+  if(pay){const m=Math.max(perSec()*60*minutes,50*CK*minutes);gain(m);S.gcd[g.id]=now;msg.unshift('+'+fmt(m)+' 円');}
+  else msg.unshift('(ごほうびは あと'+Math.ceil((cd-(now-(S.gcd[g.id]||0)))/60000)+'分後)');
+  if(fans){const gf=fans*(10+S.fans*0.005);S.fans+=gf;msg.push('フォロワー+'+fmt(gf));}
+  if(mote)addMote(mote);
+  if(photo){
+    const rest=own.filter(h=>h.id!==g.main);
+    for(let i=rest.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=rest[i];rest[i]=rest[j];rest[j]=t;}
+    S.photos[g.id]={n:own.length,ids:[g.main].concat(rest.slice(0,17).map(h=>h.id)),t:now};
+  }
+  dq('scene',1);
+  const title=g.t;
+  closeScene();
+  toast('集合イベント「'+title+'」'+(first?'クリア!':'おしまい')+'  '+msg.join('・'));sfx.coin();
+  render();save();checkAch();
+}
+function archiveHTML(){
+  const fr=FR.filter(frOk).map(e=>({id:e.id,t:e.title,tag:'ファン殺到',seen:!!S.hap.seen[e.id]}));
+  const old=EVENTS.filter(oldOk).map(e=>({id:e.id,t:e.t,tag:e.harem?'ヒロインに囲まれて':'ウェイトレスたちの一日',seen:!!S.hap.seen[e.id]}));
+  const all=fr.concat(old).sort((a,b)=>(a.seen?1:0)-(b.seen?1:0));
+  if(!all.length)return '';
+  const PS=PSZ.arch,p=Math.max(0,Math.min(PG.arch,Math.ceil(all.length/PS)-1));
+  const rows=all.slice(p*PS,(p+1)*PS).map(x=>'<div class="gather"><p><strong>'+x.t+(x.seen?'<span class="gtag ok">見た</span>':'<span class="gtag new">NEW</span>')+'</strong>'+x.tag+'</p><button class="btn'+(x.seen?' ghost':' new')+'" data-act="harc" data-id="'+x.id+'">'+(x.seen?'もう一度見る':'見る')+'</button></div>').join('');
+  return '<h2>ハプニング集</h2><p class="note">ハプニングの場面は、ここから、好きなときに見られます。初めて見るときだけ、ごほうびがもらえます。</p>'+pagerHTML('arch',all.length)+'<div class="gathers">'+rows+'</div>'+pagerHTML('arch',all.length);
+}
+function gatherPanel(){
+  if(!GATHERS.length)return '<p class="note">集合イベントのデータ(hidamari_gather.js)を読み込めませんでした。このHTMLと同じフォルダに置いてあるか、確認してください。</p>';
+  const own=ownedList().length,cleared=GATHERS.filter(g=>S.seen[g.id]).length,photos=Object.keys(S.photos||{}).length;
+  const now=Date.now(),cd=(GCFG.repeatCooldownMin||0)*60000;
+  const sum='<div class="sum"><span>クリア <b>'+cleared+'/'+GATHERS.length+'</b></span><span>集合ボーナス <b>×'+(1+gatherPct()/100).toFixed(2)+'</b></span><span>集合写真 <b>'+photos+'枚</b></span><span>在籍 <b>'+own+'人</b></span></div>';
+  const card=function(g){
+    const seen=S.seen[g.id],ph=S.photos&&S.photos[g.id],R=g.e.reward||{};
+    const wait=Math.max(0,Math.ceil((cd-(now-(S.gcd[g.id]||0)))/60000));
+    const fm=R.minutes!=null?R.minutes:GCFG.firstMinutes,ft=R.tickets!=null?R.tickets:GCFG.tickets,fi=R.income!=null?R.income:GCFG.incomePct;
+    const tag=seen?'<span class="gtag ok">クリア済み</span>':'<span class="gtag new">NEW</span>';
+    const rw=seen?('もう一度見る: '+(wait>0?'ごほうびは あと'+wait+'分':'ごほうびあり(売上'+GCFG.repeatMinutes+'分ぶん)')):('初回のごほうび: 売上'+fm+'分ぶん・チケット+'+ft+'・収入+'+fi+'%');
+    const pic=ph?'<span class="gphoto">'+ph.ids.filter(id=>HM[id]).slice(0,14).map(id=>faceImg(HM[id],24,'gfimg')).join('')+'<span>'+(g.e.photo||'集合写真')+'('+ph.n+'人)</span></span>':'';
+    return '<div class="gather"><p><strong>'+g.t+tag+'</strong>'+rw+pic+'</p><button class="btn'+(seen?' ghost':' new')+'" data-act="scene" data-id="'+g.id+'">'+(seen?'もう一度見る':'見る')+'</button></div>';
+  };
+  const lock=function(g){
+    const need=[g.n+'人を迎える(いま '+Math.min(own,g.n)+'/'+g.n+')',g.lv>1?'全員の好感度を Lv'+g.lv+' 以上(いま最低 Lv'+minLv()+')':'',g.fans?'フォロワー'+fmt(g.fans)+'人以上':'',g.who.filter(id=>!S.owned[id]).map(id=>HM[id]?HM[id].name:id).join('・')].filter(Boolean);
+    return '<div class="gather"><p><strong>集合イベント「？？？」</strong>'+need.join(' ・ ')+'</p><button class="btn ghost" disabled>未解放</button></div>';
+  };
+  const ready=GATHERS.filter(gatherReady),locked=GATHERS.filter(g=>!gatherReady(g));
+  const fresh=ready.filter(g=>!S.seen[g.id]),done=ready.filter(g=>S.seen[g.id]);
+  return sum+'<div class="gathers">'+fresh.map(card).join('')+locked.slice(0,2).map(lock).join('')+done.map(card).join('')+'</div>'+
+    (locked.length>2?'<p class="note">ほかにも、まだ見ぬ集合イベントが '+(locked.length-2)+' 件あります。</p>':'')+
+    '<p class="note">一度クリアすると、いつでも見返せます。2回目以降は、'+GCFG.repeatCooldownMin+'分ごとにごほうびがもらえます。クリアした数だけ、全体の収入が増えます。</p>'+archiveHTML();
+}
+function openScene(id,i){
+  let def,key,main,color;
+  if(GM[id]){openGather(id);return;}
+  else{const h=HM[id];def=h.ev[i];key=id+':'+i;main=id;color=h.c;}
+  sc={lines:def.l,i:0,key:key,cur:main,phase:'lines',choices:null};
+  startScene(def.t,color);
+}
+/* お客さんの絵: 顔を真っ赤にして、汗を描き足す */
+const NPC_OV={
+ shy:'<ellipse cx="35" cy="62" rx="10" ry="6.5" fill="#ff2a4a" opacity=".5"/><ellipse cx="65" cy="62" rx="10" ry="6.5" fill="#ff2a4a" opacity=".5"/><path d="M77 34q5 8 0 12q-5-4 0-12z" fill="#8fdcff"/><path d="M23 40q4 7 0 10q-4-3 0-10z" fill="#8fdcff"/><path d="M80 52q3 5 0 8q-3-3 0-8z" fill="#8fdcff"/>',
+ phone:'<ellipse cx="35" cy="62" rx="9" ry="6" fill="#ff2a4a" opacity=".45"/><ellipse cx="65" cy="62" rx="9" ry="6" fill="#ff2a4a" opacity=".45"/><g transform="rotate(-10 72 76)"><rect x="62" y="58" width="22" height="38" rx="3.5" fill="#2b2b3a"/><rect x="64.5" y="61" width="17" height="30" rx="2" fill="#bfe7ff"/><circle cx="73" cy="59.6" r="1.1" fill="#8aa"/></g><polygon points="80,40 82,47 89,48 83.5,52.5 85.5,59 80,55 74.5,59 76.5,52.5 71,48 78,47" fill="#fff6a8"/><path d="M24 40q4 7 0 10q-4-3 0-10z" fill="#8fdcff"/>',
+ love:'<ellipse cx="35" cy="62" rx="10" ry="6.5" fill="#ff2a4a" opacity=".5"/><ellipse cx="65" cy="62" rx="10" ry="6.5" fill="#ff2a4a" opacity=".5"/><path d="M80 30c-3-5-9 0-5 4l5 4 5-4c4-4-2-9-5-4z" fill="#ff5d8a"/><path d="M18 36c-2-4-7 0-4 3l4 3 4-3c3-3-2-7-4-3z" fill="#ff8fb1"/>',
+ faint:'<ellipse cx="35" cy="62" rx="11" ry="7" fill="#ff2a4a" opacity=".6"/><ellipse cx="65" cy="62" rx="11" ry="7" fill="#ff2a4a" opacity=".6"/><path d="M77 32q5 8 0 12q-5-4 0-12z" fill="#8fdcff"/><path d="M22 34q4 7 0 10q-4-3 0-10z" fill="#8fdcff"/><path d="M82 22l4 3-4 3M16 24l-4 3 4 3" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/>',
+ cry:'<ellipse cx="35" cy="62" rx="9" ry="6" fill="#ff2a4a" opacity=".45"/><ellipse cx="65" cy="62" rx="9" ry="6" fill="#ff2a4a" opacity=".45"/><path d="M36 54q-3 8 0 14q3-6 0-14z" fill="#8fdcff"/><path d="M64 54q-3 8 0 14q3-6 0-14z" fill="#8fdcff"/>'
+};
+function npcSVG(face,mood){const ov=NPC_OV[mood]||NPC_OV.shy;return custH(face).svg.replace(/<\/svg>\s*$/,ov+'</svg>');}
+const blushURL=i=>svgURL('cfb'+i,custH(i).face.replace(/<\/svg>\s*$/,NPC_OV.shy+'</svg>'));
+function startFanScene(e,archive){
+  const own=ownedList(),npc={};
+  Object.keys(e.cast||{}).forEach(k=>{const c=e.cast[k];npc[k]={name:c.name||'お客さん',face:(c.face!=null?c.face:Math.floor(Math.random()*48))};});
+  const nrm=t=>mt(String(t).split('{m}').join(NM()).split('{crowd}').join(fmt(crowdNum())).split('{queue}').join(fmt(crowdNum()*3)));
+  const wid=()=>own.length?own[Math.floor(Math.random()*own.length)].id:'hinata';
+  const fix=ls=>(ls||[]).map(l=>{let sp=l[0];if(sp==='@w')sp=wid();return [sp,nrm(l[1]),l[2]||''];}).filter(l=>l[0]==='n'||l[0]==='m'||l[0]==='ALL'||npc[l[0]]||HM[l[0]]);
+  const ch=(e.choices||[]).map(c=>({t:c.t,res:fix(c.res),fx:{b:{},min:c.min||30,fans:c.fans||0,mote:c.mote||0,buzz:c.buzz||0,tk:c.tk||0,tag:'fair',rush:false}}));
+  sc={lines:fix(e.lines),i:0,key:'fr:'+e.id,cur:own.length?own[0].id:'hinata',phase:'lines',choices:ch.length?ch:null,ev:{id:e.id},npc:npc,fan:true,crowd:true,archive:!!archive,replay:!!(archive&&S.hap.seen[e.id])};
+  startScene(e.title,'#ff7aa2');
+}
+function openArchive(id){
+  const fr=FR.filter(x=>x.id===id)[0];
+  if(fr){startFanScene(fr,true);return;}
+  const e=EVENTS.filter(x=>x.id===id)[0];
+  if(!e||!oldOk(e)){sfx.ng();return;}
+  const d=e.mk?e.mk():e;
+  sc={lines:d.intro,i:0,key:'hap:'+e.id,cur:e.need[0],phase:'lines',choices:d.ch,ev:e,crowd:!!e.harem,archive:true,replay:!!S.hap.seen[e.id]};
+  startScene(e.t,HM[e.need[0]].c);
+}
+function openHap(){
+  const el=eligibleHaps();
+  if(!el.length||S.hap.ready<1){sfx.ng();return;}
+  if(FR.length){
+    let pool=el.filter(e=>e.id!==S.hap.last);if(!pool.length)pool=el;
+    const e=Math.random()<HCFG.pickLatestChance?pool[pool.length-1]:pool[Math.floor(Math.random()*pool.length)];
+    startFanScene(e,false);return;
+  }
+  let pool=el.filter(e=>e.id!==S.hap.last);if(!pool.length)pool=el;
+  const hz=pool.filter(x=>x.harem).slice(-3);
+  const e=(hz.length&&Math.random()<0.45)?hz[Math.floor(Math.random()*hz.length)]:pool[Math.floor(Math.random()*pool.length)];
+  const d=e.mk?e.mk():e;
+  sc={lines:d.intro,i:0,key:'hap:'+e.id,cur:e.need[0],phase:'lines',choices:d.ch,ev:e,crowd:!!e.harem};
+  startScene(e.t,HM[e.need[0]].c);
+}
+function startScene(title,color){
+  $('scene').style.setProperty('--c',color);
+  $('scTitle').textContent=mt(title);
+  $('scChoices').hidden=true;$('scNext').hidden=false;
+  $('modal').hidden=false;
+  scCrowdShow();showLine();$('scNext').focus();
+}
+/* ハーレム大騒動: 在籍する全員が、店長(中央)のまわりを何重にも囲む */
+function scCrowdShow(){
+  const box=$('scCrowd'),st=$('scStage');
+  if(!sc||!sc.crowd){box.hidden=true;box.innerHTML='';st.classList.remove('crowd');return;}
+  st.classList.add('crowd');box.hidden=false;
+  let items=[];
+  if(sc.fan){
+    const n=CFG.lite?56:110;
+    for(let i=0;i<n;i++)items.push({id:'f'+i,url:blushURL((i*7)%48)});
+  }else{
+    let L=ownedList();
+    const cap=CFG.lite?Math.min(GCFG.crowdLite,GCFG.crowdCap):GCFG.crowdCap;
+    if(L.length>cap){
+      const used={};(sc.chs||[]).forEach(c=>c.lines.forEach(l=>{used[l[0]]=1;}));
+      const a=L.filter(h=>used[h.id]),b=L.filter(h=>!used[h.id]);
+      for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=b[i];b[i]=b[j];b[j]=t;}
+      L=a.concat(b).slice(0,cap);
+    }
+    items=L.map(h=>({id:h.id,url:faceURL(h)}));
+  }
+  const n=items.length,W=box.clientWidth||340,Hh=box.clientHeight||280;
+  const fs=n<=20?34:n<=60?28:n<=120?22:n<=200?18:16,cx=W/2,cy=Hh/2;
+  let html='',i=0,k=0;
+  const face=(it,x,y)=>'<span class="scf" data-id="'+it.id+'" style="left:'+x.toFixed(1)+'px;top:'+y.toFixed(1)+'px;width:'+fs+'px;height:'+fs+'px"><img class="fimg" src="'+it.url+'" width="'+fs+'" height="'+fs+'" alt="" decoding="async" draggable="false"></span>';
+  while(i<n&&k<40){
+    const rx=W/2-fs/2-2-k*fs*0.8,ry=Hh/2-fs/2-2-k*fs*0.8;
+    if(rx<fs||ry<fs*0.6)break;
+    const per=Math.max(6,Math.floor(Math.PI*(3*(rx+ry)-Math.sqrt((3*rx+ry)*(rx+3*ry)))/(fs*0.85)));
+    for(let j=0;j<per&&i<n;j++,i++){const a=2*Math.PI*j/per+k*0.5;html+=face(items[i],cx+rx*Math.cos(a),cy+ry*Math.sin(a));}
+    k++;
+  }
+  for(;i<n;i++){const a=Math.random()*6.283,r=0.25+Math.random()*0.5;html+=face(items[i],cx+W*0.4*r*Math.cos(a),cy+Hh*0.4*r*Math.sin(a));}
+  box.innerHTML=html;
+}
+function showLine(){
+  const ln=sc.lines[sc.i],sp=ln[0],tx=ln[1],mood=ln[2]||'',npc=sc.npc&&sc.npc[sp];
+  if(HM[sp])sc.cur=sp;
+  if(sc.crowd&&!sc.fan){const bx=$('scCrowd'),pv=bx.querySelector('.on');if(pv)pv.classList.remove('on');if(HM[sp]){const el=bx.querySelector('[data-id="'+sp+'"]');if(el)el.classList.add('on');}}
+  const hh=HM[sc.cur],lv=Math.max(1,S.owned[sc.cur]||1);
+  const mg=sp==='m'||sp==='ALL'||(sc.crowd&&sp==='n');
+  const art=$('scArt');
+  art.innerHTML=npc?npcSVG(npc.face,mood||'shy'):(mg?mgrSVG(false):av(hh,lv,false));
+  art.className='sc-art';void art.offsetWidth;
+  art.className='sc-art'+(sp==='n'&&!sc.crowd?' dim':'')+(mood==='phone'?' flash':'');
+  $('scSkip').hidden=false;
+  $('scName').textContent=sp==='n'?'':(sp==='m'?NM():(sp==='ALL'?'お客さんたち':(npc?npc.name:HM[sp].name)));
+  const p=$('scText');p.textContent=mt(tx);p.className='sc-text'+(sp==='n'?' n':'');
+  p.style.animation='none';void p.offsetWidth;p.style.animation='';
+  if(HM[sp])sfx.voice(HM[sp]);
+  $('scNext').textContent=sc.i>=sc.lines.length-1?(sc.phase==='lines'&&sc.choices?'選ぶ':(sc.gather&&sc.ci<sc.chs.length-1?'つぎへ':'おわり')):'つぎへ';
+}
+function showChoices(){
+  sc.phase='choice';
+  $('scNext').hidden=true;$('scSkip').hidden=true;
+  const box=$('scChoices');box.hidden=false;
+  box.innerHTML=sc.choices.map((c,i)=>'<button class="btn ghost" data-act="choose" data-i="'+i+'">'+mth(c.t)+'</button>').join('');
+  $('scName').textContent='';
+  const p=$('scText');p.textContent='どうしますか?';p.className='sc-text n';
+}
+function pickChoice(i){
+  if(!sc||sc.phase!=='choice')return;
+  const c=sc.choices[i];if(!c)return;
+  sc.pick=c;sc.lines=c.res;sc.i=0;sc.phase='result';
+  $('scChoices').hidden=true;$('scNext').hidden=false;
+  showLine();$('scNext').focus();
+}
+function finishHap(){
+  if(sc.replay){closeScene();toast('見返しました(ごほうびは、初めて見たときだけです)');render();return;}
+  const e=sc.ev,c=sc.pick,fx=c.fx;
+  Object.keys(fx.b||{}).forEach(id=>{if(S.owned[id])S.bond[id]=Math.min(BOND_MAX*10,(S.bond[id]||0)+fx.b[id]);});
+  const g=Math.max(perSec()*3*fx.min,100*CK*fx.min);gain(g);
+  let msg=(sc.fan?'ファン殺到を乗りきった! +':'ハプニング解決 +')+fmt(g)+' 円';
+  if(!S.hap.seen[e.id]){S.hap.seen[e.id]=true;S.tickets+=1;msg+='・チケット+1';}
+  if(fx.rush){buffUntil=Date.now()+20000;msg+='・常連ラッシュ!';}
+  if(fx.fans){const gf=fx.fans*(10+S.fans*0.005);S.fans+=gf;msg+='・フォロワー+'+fmt(gf);}
+  if(fx.buzz)addBuzz(fx.buzz);
+  if(fx.mote)addMote(fx.mote);
+  if(fx.tk){S.tickets+=fx.tk;msg+='・チケット+'+fx.tk;}
+  if(!sc.archive)S.hap.ready=Math.max(0,S.hap.ready-1);
+  if(!sc.archive)S.hap.last=e.id;
+  S.choice.n++;
+  if(fx.tag==='fair')S.choice.fair++;else S.choice.per[fx.tag]=(S.choice.per[fx.tag]||0)+1;
+  dq('hap',1);
+  closeScene();toast(msg);sfx.coin();
+  render();save();checkAch();
+}
+function nextLine(){
+  if(!sc)return;
+  if(sc.i<sc.lines.length-1){sc.i++;showLine();return;}
+  if(sc.phase==='lines'&&sc.choices){showChoices();return;}
+  if(sc.gather){gatherAdvance();return;}
+  if(sc.phase==='result'){finishHap();return;}
+  const first=!S.seen[sc.key];
+  S.seen[sc.key]=true;
+  let reward=0;
+  if(first){reward=Math.ceil(perSec()*120)+50*CK;gain(reward);}
+  dq('scene',1);
+  closeScene();
+  if(reward){toast('思い出のごほうび +'+fmt(reward)+' 円');sfx.coin();}
+  render();save();checkAch();
+}
+function closeScene(){sc=null;$('modal').hidden=true;$('scCrowd').innerHTML='';}
+
+/* ================= デート ================= */
+function startDate(id,k){
+  if(S.dates.length>=slots()||onDate(id)||!S.owned[id]){sfx.ng();return;}
+  const c=COURSES[k];
+  S.dates.push({id:id,k:k,end:Date.now()+c.sec*1000});dq('date',1);
+  sfx.dStart();toast(given(HM[id])+'が「'+c.n+'」に出かけました');
+  render();save();
+}
+function checkDates(){
+  const now=Date.now(),done=[];
+  S.dates=S.dates.filter(d=>{if(d.end<=now){done.push(d);return false;}return true;});
+  if(!done.length)return;
+  let gsum=0,gn=0;
+  done.forEach(d=>{
+    const h=HM[d.id],c=COURSES[d.k],g=perSec()*c.mult*upMult('date')*(d.f||1);
+    gain(g);
+    S.bond[d.id]=Math.min(BOND_MAX*10,(S.bond[d.id]||0)+c.pt);
+    S.stats.dates++;
+    if(d.f){gsum+=g;gn++;}else toast(given(h)+'とのデート完了 +'+fmt(g)+' 円');
+  });
+  if(gn)toast('全員デートから'+gn+'人が帰ってきました +'+fmt(gsum)+' 円');
+  sfx.dDone();
+  render();save();
+  const h2=HM[done[done.length-1].id];setTimeout(()=>say(h2.id,randVoice(h2)),80);
+}
+
+/* ================= 来店客 ================= */
+let vTimer=null,vHide=null;
+function scheduleVisitor(first){
+  clearTimeout(vTimer);
+  const ms=first?45000:Math.max(20000,(60000+Math.random()*60000)*fupMult('freq')*(trendOn()?0.5:1));
+  vTimer=setTimeout(showVisitor,ms);
+}
+/* ---- お客さま(若い女性)の群れと、殺到イベント ---- */
+let sw=null;
+const CUSTL=['これ、お店の足しにしてください!','マスターさんに貢がせて……!','お布施です、受け取ってください!','指名します!シャンパン入れて!','今月のお小遣い、ぜんぶマスターに!','推しに課金できて幸せ……','これで足りますか?まだ出せます!','お釣りはいらないです!','また貢ぎに来ます!','マスターのためなら、いくらでも!'];
+const custCache={};
+function faceURL(h){const lv=S.owned[h.id]||1;return svgURL(h.id+'|'+lv+'|'+(wearing(h.id)||''),av(h,lv,true));}
+function faceImg(h,sz,cls){return '<img class="'+(cls||'fimg')+'" src="'+faceURL(h)+'" width="'+sz+'" height="'+sz+'" alt="" decoding="async" draggable="false">';}
+const custFaceURL=i=>svgURL('cf'+i,custH(i).face);
+const custBodyURL=i=>svgURL('cb'+i,custH(i).svg);
+function custH(i){
+  if(custCache[i])return custCache[i];
+  const r=seedRand('cust'+i),hue=r()*360,L=[32,46,58,68][Math.floor(r()*4)];
+  const ST=['pony','side','bun','long','twin','bob','short','hime','wave','braid'],AC=['none','ribbon','band','flower','heart','star','leaf','glasses','phones'];
+  const c={name:'お客さま',hair:hsl(hue,L<40?35:62,L),eye:hsl(hue+40,55,38),uni:hsl(hue+160+r()*80,40,52),c:hsl(hue,70,66),ac:hsl(hue+180,70,62),
+    style:ST[Math.floor(r()*ST.length)],acc:AC[Math.floor(r()*AC.length)]};
+  c.svg=avatar(c,4,false);c.face=avatar(c,5,true);
+  return custCache[i]=c;
+}
+const crowdMax=()=>CFG.lite?40:100;
+const crowdN=()=>Math.min(crowdMax(),Math.floor(S.q||0));
+let crowdShown=-1;
+function renderCrowd(){
+  const n=crowdN(),el=$('crowd'),cur=el.childElementCount;
+  crowdShown=n;
+  if(n>cur){let h='';for(let i=cur;i<n;i++)h+='<button class="cust" data-act="cust" data-i="'+i+'" aria-label="並んでいるお客さん"><img class="fimg" src="'+custFaceURL(i%48)+'" width="30" height="30" alt="" decoding="async" draggable="false"></button>';el.insertAdjacentHTML('beforeend',h);}
+  else while(el.childElementCount>n)el.removeChild(el.lastChild);
+}
+function bubbleOn(el,text){
+  const old=el.querySelector('.bubble');if(old)el.removeChild(old);
+  const b=document.createElement('span');b.className='bubble';b.textContent=mt(text);el.appendChild(b);
+  const sr=$('stage').getBoundingClientRect(),br=b.getBoundingClientRect();
+  let dx=0;
+  if(br.left<sr.left+6)dx=sr.left+6-br.left;
+  else if(br.right>sr.right-6)dx=sr.right-6-br.right;
+  if(dx)b.style.setProperty('--dx',dx+'px');
+  setTimeout(()=>{if(b.parentNode)b.parentNode.removeChild(b);},2500);
+}
+function tapCust(e,b){
+  const ci=parseInt(b.getAttribute('data-i'),10)||0,k=1+Math.min(10,Math.floor((S.q||0)/100)),g=tapGain()*0.8*k;
+  gain(g);S.taps++;dq('tap',1);S.fans+=1;addBuzz(0.3);
+  S.q=Math.max(0,(S.q||0)-k);S.stats.served+=k;crowdShown=crowdN();addMote(1.5);
+  floatText(e,b,rate(g));sfx.voice({i:3+ci});
+  bubbleOn(b,(HK.custLine&&HK.custLine())||CUSTL[Math.floor(Math.random()*CUSTL.length)]);
+  b.classList.remove('hop');void b.offsetWidth;b.classList.add('hop');
+  setTimeout(()=>{if(b.parentNode)b.parentNode.removeChild(b);},650); /* 接客した人は列から抜ける */
+  hud();checkAch();
+}
+const SW_MS=15000;
+/* 殺到の規模と、全員から受け取ったときのボーナス(以前より大幅に控えめ) */
+const swSize=()=>Math.min(70,3+Math.floor(ownedList().length/6)+Math.floor(2*Math.log10(1+(S.q||0)))+fupSum('size'));
+const swUnit=()=>perSec()*0.06+tapGain()*0.4; /* 殺到1人あたりの基準額 */
+const swFullBonus=tot=>perSec()*(2+tot*0.06)*Math.pow(upMult('visit'),0.2)*Math.pow(fupMult('rew'),0.25)+tapGain()*tot*0.5;
+function startSwarm(){
+  const n=swSize();
+  sw={end:Date.now()+SW_MS,tot:n,left:n,combo:0,last:0,got:0,fsReady:0};
+  let h='<div class="swbar"><i id="swfill"></i></div><div class="swmsg" id="swmsg">貢ぎ物を持った女の子が殺到!</div>';
+  for(let i=0;i<n;i++){
+    const ci=Math.floor(Math.random()*48);
+    h+='<button class="swc" data-act="swserve" data-i="'+i+'" style="left:'+(3+Math.random()*84).toFixed(1)+'%;top:'+(24+Math.random()*24).toFixed(1)+'%;animation-delay:-'+Math.random().toFixed(2)+'s" aria-label="ファンを接客"><img class="fimg" src="'+custBodyURL(ci)+'" width="46" height="55" alt="" decoding="async" draggable="false"></button>';
+  }
+  h+='<button class="swfs" id="swfs" data-act="swfs">貢ぎ物をまとめて受け取る</button>';
+  $('swarm').innerHTML=h;$('swarm').hidden=false;
+  sfx.vApp();toast('女の子たちが貢ぎに殺到!全員から受け取ろう('+Math.round(SW_MS/1000)+'秒)');
+}
+function serveCount(k){
+  const arr=Array.prototype.slice.call($('swarm').querySelectorAll('.swc'));
+  let n=0;
+  while(n<k&&arr.length){const i=Math.floor(Math.random()*arr.length);const el=arr.splice(i,1)[0];if(el.parentNode)el.parentNode.removeChild(el);n++;}
+  return n;
+}
+function swReward(cnt){
+  const g=swUnit()*(1+0.15*sw.combo)*Math.pow(fupMult('rew'),0.5)*cnt;
+  gain(g);S.taps+=cnt;dq('tap',cnt);sw.left-=cnt;sw.got+=g;S.q=Math.max(0,(S.q||0)-cnt*0.5);addMote(cnt*0.8);
+  S.fans+=cnt*(3+S.fans*0.00004)*(trendOn()?2:1);S.stats.served+=cnt;addBuzz(0.35*cnt);
+  return g;
+}
+function serveSwarm(e,b){
+  if(!sw)return;
+  const now=Date.now();
+  sw.combo=(now-sw.last<1600)?Math.min(sw.combo+1,12):0;sw.last=now;
+  if(b&&b.parentNode)b.parentNode.removeChild(b);
+  const extra=Math.min(sw.left-1,Math.floor(sw.combo/2));
+  const real=1+(extra>0?serveCount(extra):0);
+  const g=swReward(real);
+  floatText(e,b,rate(g)+(sw.combo>=2?' ×'+(sw.combo+1):''));sfx.serve(sw.combo);
+  if(sw.left<=0)finishSwarm(true);else hud();
+}
+function swFanSvc(e,b){
+  if(!sw||Date.now()<sw.fsReady)return;
+  sw.fsReady=Date.now()+2500;
+  sw.combo=Math.min(sw.combo+2,12);sw.last=Date.now();
+  const real=serveCount(Math.min(sw.left,10+Math.floor(sw.tot/6)));
+  if(!real)return;
+  const g=swReward(real);
+  floatText(e,b,rate(g)+' ('+real+'人)');sfx.serve(Math.min(9,sw.combo));
+  if(sw.left<=0)finishSwarm(true);else hud();
+}
+function finishSwarm(full){
+  if(!sw)return;
+  if(!full){const au=fupAuto();if(au>0&&sw.left>0){sw.combo=0;swReward(Math.max(1,Math.floor(sw.left*au)));}}
+  const s0=sw;sw=null;
+  $('swarm').hidden=true;$('swarm').innerHTML='';
+  S.stats.swarms++;dq('visit',1);giftDrop(full?0.6:0.2);
+  if(full){
+    const g=swFullBonus(s0.tot);gain(g);
+    S.fans+=s0.tot*(5+S.fans*0.0002);addBuzz(20);
+    let msg='全員から貢いでもらった!貢ぎボーナス +'+fmt(g)+' 円';
+    if(Math.random()<0.5){S.tickets++;msg+='・チケット+1';}
+    buffUntil=Date.now()+15000;msg+='・常連ラッシュ15秒(収入×2)';
+    toast(msg);sfx.ach();
+  }else{
+    toast('時間切れ。'+(s0.tot-s0.left)+'/'+s0.tot+'人から貢いでもらいました(+'+fmt(s0.got)+' 円)');
+  }
+  scheduleVisitor(false);render();save();checkAch();
+}
+function swTick(){
+  if(!sw)return;
+  const left=sw.end-Date.now();
+  const f=$('swfill');if(f)f.style.width=Math.max(0,left/SW_MS*100)+'%';
+  const m=$('swmsg');if(m)m.textContent='貢ぎ殺到! 残り '+sw.left+'人'+(sw.combo>=2?'(連続 ×'+(sw.combo+1)+')':'');
+  const bt=$('swfs');if(bt){const r=sw.fsReady-Date.now();bt.disabled=r>0;bt.textContent=r>0?'受け取り準備中 '+Math.ceil(r/1000)+'(残り '+sw.left+'人)':'貢ぎ物をまとめて受け取る(残り '+sw.left+'人)';}
+  if(left<=0)finishSwarm(false);
+}
+function showVisitor(){
+  if(document.hidden||sc||sw){scheduleVisitor(false);return;}
+  if(Math.random()<0.8&&ownedList().length>=3){startSwarm();return;}
+  const v=$('visitor');
+  v.innerHTML='<span class="vface">'+custH(200+Math.floor(Math.random()*30)).face+'</span><span>推しに貢ぎに来た!</span>';
+  v.style.left=(8+Math.random()*60)+'%';v.style.top=(14+Math.random()*55)+'%';
+  v.hidden=false;sfx.vApp();
+  clearTimeout(vHide);
+  vHide=setTimeout(()=>{v.hidden=true;scheduleVisitor(false);},9000);
+}
+function clickVisitor(){
+  const v=$('visitor');v.hidden=true;clearTimeout(vHide);
+  const vm=upMult('visit');S.stats.visitors++;dq('visit',1);
+  if(Math.random()<0.6){
+    const g=(5000+Math.random()*5000+perSec()*(6+Math.random()*10)+tapGain()*3)*Math.sqrt(vm);gain(g);
+    toast('推し活の貢ぎ +'+fmt(g)+' 円(チェキ・ドリンク・投げ銭)');sfx.coin();
+  }else{
+    buffUntil=Date.now()+20000;
+    toast('常連ラッシュ!20秒間、収入が2倍');sfx.coin();sfx.ach();
+  }
+  scheduleVisitor(false);hud();
+}
+
+/* ================= 実績 ================= */
+const seenN=()=>Object.keys(S.seen).length;
+const maxBond=()=>H.some(h=>bondRank(h.id)>=BOND_MAX);
+const ACH=[
+{id:'t10',n:'はじめの一杯',d:'タップを10回する',f:()=>S.taps>=10},
+{id:'t500',n:'指がとまらない',d:'タップを500回する',f:()=>S.taps>=500},
+{id:'t5000',n:'連打マスター',d:'タップを5,000回する',f:()=>S.taps>=5000},
+{id:'o3',n:'頼れるスタッフ',d:'3人を採用する',f:()=>ownedList().length>=3},
+{id:'o8',n:'賑やかな店',d:'8人を採用する',f:()=>ownedList().length>=8},
+{id:'o14',n:'立ち見が出る店',d:'14人を採用する',f:()=>ownedList().length>=14},
+{id:'o20',n:'ホール満員御礼',d:'20人を採用する',f:()=>ownedList().length>=20},
+{id:'lmax',n:'ベタ惚れ',d:'誰かの好感度を最大にする',f:()=>ownedList().some(h=>S.owned[h.id]>=MAXLV)},
+{id:'m5',n:'みんなと仲良し',d:'5人以上で、全員をLv5以上にする',f:()=>ownedList().length>=5&&minLv()>=5},
+{id:'s5',n:'思い出アルバム',d:'思い出を5つ見る',f:()=>seenN()>=5},
+{id:'s20',n:'思い出ぎっしり',d:'思い出を20個見る',f:()=>seenN()>=20},
+{id:'s43',n:'コンプリート',d:'すべての思い出を見る',f:()=>seenN()>=N*3+GATHERS.length},
+{id:'d1',n:'はじめてのデート',d:'デートを1回する',f:()=>S.stats.dates>=1},
+{id:'d25',n:'デート上手',d:'デートを25回する',f:()=>S.stats.dates>=25},
+{id:'d150',n:'デート達人',d:'デートを150回する',f:()=>S.stats.dates>=150},
+{id:'b1',n:'ふれあい名人',d:'ふれあいを最大にした子がいる',f:()=>maxBond()},
+{id:'v5',n:'貢がれ上手',d:'貢ぎを5回受け取る',f:()=>S.stats.visitors>=5},
+{id:'v30',n:'千客万来',d:'貢ぎを30回受け取る',f:()=>S.stats.visitors>=30},
+{id:'h1',n:'売上百万円',d:'累計売上が100万円に達する',f:()=>S.total>=1000000},
+{id:'h2',n:'売上一千万円',d:'累計売上が1000万円に達する',f:()=>S.total>=10000000},
+{id:'h3',n:'売上一億円',d:'累計売上が1億円に達する',f:()=>S.total>=100000000},
+{id:'h4',n:'売上十億円',d:'累計売上が10億円に達する',f:()=>S.total>=1000000000},
+{id:'r1',n:'リニューアルオープン',d:'初めてリニューアルする',f:()=>S.stats.renewals>=1},
+{id:'u8',n:'設備投資',d:'メニュー開発を8つ導入する',f:()=>Object.keys(S.upg).length>=8},
+{id:'l3',n:'三日目の常連',d:'3日間ログインする',f:()=>S.login.total>=3},
+{id:'l7',n:'一週間の常連',d:'7日間ログインする',f:()=>S.login.total>=7},
+{id:'l30',n:'一か月の灯',d:'30日間ログインする',f:()=>S.login.total>=30},
+{id:'ls7',n:'皆勤賞',d:'7日連続でログインする',f:()=>S.login.best>=7},
+{id:'q1',n:'日課をこなす',d:'日課を1つ達成する',f:()=>S.stats.quests>=1},
+{id:'q30',n:'日課の達人',d:'日課を30回達成する',f:()=>S.stats.quests>=30},
+{id:'c1',n:'はじめての衣装',d:'衣装を1着手に入れる',f:()=>totalCos()>=1},
+{id:'c20',n:'衣装コレクター',d:'衣装を20着集める',f:()=>totalCos()>=20},
+{id:'c80',n:'衣装コンプリート',d:'すべての衣装を集める',f:()=>totalCos()>=N*COS.length},
+{id:'x1',n:'はじめての選択',d:'ハプニングに答える',f:()=>S.choice.n>=1},
+{id:'x10',n:'修羅場慣れ',d:'ハプニングに10回答える',f:()=>S.choice.n>=10},
+{id:'xall',n:'ハプニング図鑑',d:'すべてのハプニングを見る',f:()=>Object.keys(S.hap.seen).length>=EVENTS.length},
+{id:'e12',n:'絆の証',d:'Lv12の思い出を見る',f:()=>H.some(h=>S.seen[h.id+':2'])},
+{id:'v60',n:'声のコレクター',d:'すべての台詞を聞く',f:()=>heardN()>=N*3},
+{id:'o40',n:'人手が足りない',d:'40人を採用する',f:()=>ownedList().length>=40},
+{id:'o60',n:'商店街の人気店',d:'60人を採用する',f:()=>ownedList().length>=60},
+{id:'o80',n:'満員御礼',d:'80人を採用する',f:()=>ownedList().length>=80},
+{id:'o100',n:'ひだまりの百人',d:'100人を採用する',f:()=>ownedList().length>=100},
+{id:'h5',n:'売上百億円',d:'累計売上が100億円に達する',f:()=>S.total>=10000000000},
+{id:'h6',n:'売上千億円',d:'累計売上が1000億円に達する',f:()=>S.total>=100000000000},
+{id:'h7',n:'売上一兆円',d:'累計売上が1兆円に達する',f:()=>S.total>=1000000000000},
+{id:'h8',n:'売上十兆円',d:'累計売上が10兆円に達する',f:()=>S.total>=10000000000000},
+{id:'p100',n:'おもてなし見習い',d:'おもてなしを100回する',f:()=>S.stats.omt>=100},
+{id:'p1000',n:'おもてなし名人',d:'おもてなしを1,000回する',f:()=>S.stats.omt>=1000},
+{id:'p5000',n:'おもてなしの鬼',d:'おもてなしを5,000回する',f:()=>S.stats.omt>=5000},
+{id:'w10',n:'おもてなし力×10',d:'おもてなし力が10倍に達する',f:()=>omtMult()>=10},
+{id:'w100',n:'おもてなし力×100',d:'おもてなし力が100倍に達する',f:()=>omtMult()>=100},
+{id:'mx10',n:'十人十色の恋',d:'好感度を最大にした子が10人になる',f:()=>ownedList().filter(h=>S.owned[h.id]>=MAXLV).length>=10},
+{id:'u20',n:'投資の鬼',d:'メニュー開発を20個導入する',f:()=>Object.keys(S.upg).length>=20},
+{id:'tp1',n:'一万タップ',d:'タップを10,000回する',f:()=>S.taps>=10000},
+{id:'sw1',n:'はじめての大繁盛',d:'貢ぎ殺到をこなす',f:()=>S.stats.swarms>=1},
+{id:'sw10',n:'行列のできる店',d:'貢ぎ殺到を10回こなす',f:()=>S.stats.swarms>=10},
+{id:'sw50',n:'千客万来の主',d:'貢ぎ殺到を50回こなす',f:()=>S.stats.swarms>=50},
+{id:'sw200',n:'殺到が日常',d:'貢ぎ殺到を200回こなす',f:()=>S.stats.swarms>=200},
+{id:'fn1',n:'地元で話題',d:'フォロワー1,000人',f:()=>S.fans>=1e3},
+{id:'fn2',n:'SNSで拡散',d:'フォロワー1万人',f:()=>S.fans>=1e4},
+{id:'fn3',n:'テレビに映った',d:'フォロワー10万人',f:()=>S.fans>=1e5},
+{id:'fn4',n:'ミリオン店長',d:'フォロワー100万人',f:()=>S.fans>=1e6},
+{id:'fn5',n:'国民的アイドル',d:'フォロワー1,000万人',f:()=>S.fans>=1e7},
+{id:'fn6',n:'世界が注目',d:'フォロワー1億人',f:()=>S.fans>=1e8},
+{id:'tr1',n:'はじめてのトレンド入り',d:'トレンド入りする',f:()=>S.stats.trends>=1},
+{id:'tr10',n:'常連トレンダー',d:'トレンド入りを10回する',f:()=>S.stats.trends>=10},
+{id:'sv1',n:'ファンサ上手',d:'ファンを100人接客する',f:()=>S.stats.served>=100},
+{id:'sv2',n:'ファンサ名人',d:'ファンを10,000人接客する',f:()=>S.stats.served>=1e4},
+{id:'sv3',n:'握手会の主役',d:'ファンを100万人接客する',f:()=>S.stats.served>=1e6},
+{id:'fup9',n:'推し活グッズ充実',d:'推し活の項目を9つ導入する',f:()=>Object.keys(S.fup).length>=9}
+];
+function checkAch(){
+  const names=[];
+  ACH.forEach(a=>{if(!S.ach[a.id]&&a.f()){S.ach[a.id]=true;names.push('実績解放: '+a.n);}});
+  TITLES.forEach(t=>{if(!S.tu[t.id]&&t.f()){S.tu[t.id]=true;if(t.id!=='t0')names.push('称号解放: '+t.n);}});
+  if(names.length){
+    if(names.length<=2)names.forEach(x=>toast(x));
+    else toast('実績・称号を '+names.length+' 個 解放しました(図鑑タブで確認できます)');
+    sfx.ach();render();save();
+  }
+}
+
+/* ================= 操作 ================= */
+let resetArmed=false,resetTimer=null,renewArmed=false,renewTimer=null,importArmed=false,importTimer=null;
+function disarm(){
+  if(resetArmed){resetArmed=false;const b=$('reset');if(b)b.textContent='はじめからやり直す';}
+  if(renewArmed){renewArmed=false;const b=$('renewBtn');if(b)b.textContent='リニューアルする';}
+}
+/* クリック/タップのたびに音(押した瞬間) */
+document.addEventListener('pointerdown',function(){sfx.tap();},true);
+document.addEventListener('click',function(e){
+  if(e.detail===0)sfx.tap(); /* キーボード操作 */
+  const b=e.target.closest('[data-act]');if(!b||b.disabled)return;
+  const act=b.getAttribute('data-act'),id=b.getAttribute('data-id');
+  if(act!=='reset'&&act!=='renew')disarm();
+  if(act==='brew'){
+    const g=tapGain();gain(g);S.taps++;dq('tap',1);addBuzz(0.4);addMote(1.2);puffHearts(b,1);floatText(e,b,rate(g));hud();checkAch();
+  }else if(act==='seat'){
+    if(S.owned[id]){
+      const h=HM[id],g2=tapGain()*1.5*(1+0.08*S.owned[id]);gain(g2);S.taps++;dq('tap',1);addBuzz(0.5);addMote(1);
+      floatText(e,b,rate(g2));say(id,randVoice(h));sfx.voice(h);
+      b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump');hud();checkAch();
+    }else if(nextLocked()===id){
+      const h=HM[id];
+      if(S.hearts>=hireCost(h)){
+        S.hearts-=hireCost(h);S.owned[id]=1;
+        sfx.unlock();toast(h.name+'が'+NM()+'に惚れて、ウェイトレスに志願!採用しました');
+        PG.seat=Math.floor(h.i/PSZ.seat);
+        if(!S.tg['u'+id]){S.tg['u'+id]=true;S.tickets+=1;toast(h.name+'の歓迎ギフト チケット+1');}
+        render();save();checkAch();
+        setTimeout(()=>{say(id,randVoice(h));sfx.voice(h);},350);
+      }
+    }else{
+      sfx.ng();toast('ひとつ前の子を採用すると、マスターに惚れた次の志願者の気配が出てきます。');
+    }
+  }else if(act==='sign'){S.sign=S.sign===id?'':id;sfx.up();toast(S.sign?given(HM[id])+'が看板ウェイトレスになりました':'看板を解除しました');render();save();}else if(act==='up'){
+    const hu=HM[id],lv=S.owned[id],c=upCost(hu,lv);
+    if(S.hearts>=c&&lv<MAXLV){
+      S.hearts-=c;S.owned[id]=lv+1;sfx.up();dq('up',1);S.stats.omt++;
+      const rb=tapGain()*(6+lv);gain(rb);floatText(e,b,rate(rb));
+      if(lv+1===MAXLV&&!S.tg['m'+id]){S.tg['m'+id]=true;S.tickets+=1;toast('好感度が最大に!チケット+1');}
+      else if(lv+1===4||lv+1===8||lv+1===12)toast(given(hu)+'のおもてなし力が上がりました(タップ強化)');
+      hu.ev.forEach(ev=>{if(ev.lv===lv+1)toast(hu.name+'との新しい思い出が解放されました');});
+      GATHERS.forEach(G=>{if(gatherReady(G)&&!S.seen[G.id]&&!G._n){G._n=true;toast('集合イベント「'+G.t+'」が解放されました');}});
+      render();save();checkAch();
+      setTimeout(()=>{say(id,randVoice(hu));sfx.voice(hu);},60);
+    }
+  }else if(act==='buy'){
+    const u=U.filter(x=>x.id===id)[0];
+    if(u&&!uMax(u)&&S.hearts>=uCost(u)){const l=ulv(id);S.hearts-=uCost(u);S.upg[id]=l+1;sfx.buy();toast(u.n+(l?'を強化しました(Lv '+(l+1)+')':'を導入しました'));render();save();checkAch();}
+  }else if(act==='date'){
+    startDate(id,parseInt(b.getAttribute('data-k'),10)||0);
+  }else if(act==='scene'){
+    openScene(id,parseInt(b.getAttribute('data-i'),10)||0);
+  }else if(act==='tab'){
+    setTab(id);
+  }else if(act==='visitor'){
+    clickVisitor();checkAch();
+  }else if(act==='login'){
+    claimLogin();
+  }else if(act==='qclaim'){
+    claimQuest(parseInt(b.getAttribute('data-i'),10));
+  }else if(act==='hap'){
+    openHap();
+  }else if(act==='choose'){
+    pickChoice(parseInt(b.getAttribute('data-i'),10));
+  }else if(act==='wear'){
+    wear(id,b.getAttribute('data-k'));
+  }else if(act==='buycos'){
+    buyCos(id,b.getAttribute('data-k'));
+  }else if(act==='title'){
+    const tt=TITLES.filter(x=>x.id===id)[0];
+    if(tt&&tt.f()){S.title=id;render();save();}
+  }else if(act==='lite'){
+    CFG.lite=!CFG.lite;try{localStorage.setItem('hidamari-lite',CFG.lite?'1':'0');}catch(e){}
+    applyLite();$('crowd').innerHTML='';crowdShown=-1;entKey='';render();
+  }else if(act==='harc'){
+    openArchive(id);
+  }else if(act==='scskip'){
+    if(sc&&sc.phase!=='choice'){sc.i=sc.lines.length-1;showLine();}
+  }else if(act==='hapnote'){
+    CFG.hapNote=!CFG.hapNote;try{localStorage.setItem('hidamari-hapnote',CFG.hapNote?'1':'0');}catch(e){}
+    applyHapNote();
+  }else if(act==='install'){
+    installApp();
+  }else if(act==='export'){
+    exportFile();
+  }else if(act==='copy'){
+    copyCode();
+  }else if(act==='import'){
+    if(!importArmed){
+      importArmed=true;b.textContent='もう一度押すと上書きします';
+      clearTimeout(importTimer);importTimer=setTimeout(()=>{importArmed=false;b.textContent='読み込む';},4000);
+    }else{
+      importArmed=false;b.textContent='読み込む';
+      $('ioMsg').textContent=importText($('ioText').value)?'読み込みました。':'読み込めませんでした。ファイルかコードが正しいか確認してください。';
+    }
+  }else if(act==='cust'){
+    tapCust(e,b);
+  }else if(act==='swserve'){
+    serveSwarm(e,b);
+  }else if(act==='swfs'){
+    swFanSvc(e,b);
+  }else if(act==='mk9'){
+    const m=MENU9.filter(x=>x.id===id)[0];
+    if(m&&!S.mk[id]&&ownedList().length>=m.need&&S.hearts>=m.cost){S.hearts-=m.cost;S.mk[id]=1;sfx.buy();toast('新メニュー「'+m.n+'」を発売!収入がアップしました');render();save();checkAch();}
+  }else if(act==='hms9'){
+    const n=parseInt(id,10);
+    if(HMS9.indexOf(n)>=0&&!S.hms[n]&&ownedList().length>=n){S.hms[n]=1;S.tickets+=n/10;sfx.ach();toast(n+'人達成!チケット+'+(n/10)+'・収入+3%');render();save();checkAch();}
+  }else if(act==='buyf'){
+    const fu=FUP.filter(x=>x.id===id)[0];
+    if(fu&&!fMax(fu)&&S.hearts>=fCost(fu)){const l=flv(id);S.hearts-=fCost(fu);S.fup[id]=l+1;sfx.buy();toast(fu.n+(l?'を強化しました(Lv '+(l+1)+')':'を導入しました'));render();save();checkAch();}
+  }else if(act==='buyb'){
+    const bz=BZ.filter(x=>x.id===id)[0];
+    if(bz&&!bMax(bz)&&S.hearts>=bCost(bz)){const l=blv(id);S.hearts-=bCost(bz);S.biz[id]=l+1;sfx.buy();toast(bz.n+(l?'を強化しました(Lv '+(l+1)+')':'を導入しました'));render();save();checkAch();}
+  }else if(act==='buyp'){
+    const q=PK.filter(x=>x.id===id)[0];
+    if(q&&!pkMax(q)&&starBank()>=pkCost(q)){S.spent+=pkCost(q);S.sperk[id]=pk(id)+1;sfx.buy();toast('星の特典「'+q.n+'」を強化しました(Lv '+pk(id)+')');render();save();checkAch();}
+  }else if(act==='page'){
+    const pk=b.getAttribute('data-k'),pd=parseInt(b.getAttribute('data-d'),10)||0;
+    PG[pk]=Math.max(0,(PG[pk]||0)+pd);
+    if(pk==='seat')renderSeats();else renderPanel(tab);
+    hud();
+  }else if(act==='bulk'){
+    bulkUp();
+  }else if(act==='sound'){
+    S.sound=!S.sound;
+    if(S.sound)sfx.tap();
+    render();save();
+  }else if(act==='renew'){
+    if(pendingStars()<1)return;
+    if(!renewArmed){
+      renewArmed=true;b.textContent='もう一度押すと実行します';
+      clearTimeout(renewTimer);renewTimer=setTimeout(()=>{renewArmed=false;b.textContent='リニューアルする';},4000);
+    }else{
+      renewArmed=false;
+      const p=pendingStars();
+      S.stars+=p;S.stats.renewals++;S.hearts=START*Math.pow(2,pk('p_cash'));S.run=0;S.q=2;S.owned={hinata:1};
+      for(let k=1;k<=2*pk('p_crew')&&k<H.length;k++)S.owned[H[k].id]=1;
+      S.upg={};S.fup={};S.biz={};S.mk={};S.dates=[];S.mote=0;S.buzz=0;S.tickets+=2;PG.seat=0;PG.card=0;PG.date=0;PG.cos=0;PG.zk=0;
+      GATHERS.forEach(G=>{G._n=false;});
+      sfx.renew();toast('リニューアルオープン!星を '+p+' 個もらいました');
+      render();save();checkAch();
+    }
+  }else if(act==='reset'){
+    if(!resetArmed){
+      resetArmed=true;b.textContent='もう一度押すと全部消えます';
+      clearTimeout(resetTimer);resetTimer=setTimeout(()=>{resetArmed=false;b.textContent='はじめからやり直す';},4000);
+    }else{
+      resetArmed=false;const snd=S.sound;S=fresh();S.sound=snd;PG.seat=0;PG.card=0;PG.date=0;PG.cos=0;PG.zk=0;save();render();toast('ひなたと二人きりの店に戻りました。');
+    }
+  }
+});
+$('scNext').addEventListener('click',nextLine);
+$('ioFile').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('ioText').value=String(r.result||'');$('ioMsg').textContent='ファイルを読み込みました。「読み込む」を押すと反映されます。';};r.readAsText(f);});
+$('scClose').addEventListener('click',closeScene);
+$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeScene();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sc)closeScene();});
+
+/* ================= ループ ================= */
+let hudT=false,last=performance.now(),slow=0;
+setInterval(()=>{
+  const now=performance.now(),dt=Math.min((now-last)/1000,1);last=now;
+  const gr=perSec();gain(gr*dt);payCosts(gr,dt);queueTick(dt);moteTick(dt);autoTick(dt);
+  fanTick(dt);
+  checkDates();
+  swTick();
+  hudT=!hudT;if(hudT&&!document.hidden)hud();
+  if(++slow>=10){slow=0;if(ensureDay())render();if(dirty){dirty=false;render();}else if(tab==='biz')renderPanel('biz');$('t-gather').classList.toggle('dot',GATHERS.some(g=>!S.seen[g.id]&&gatherReady(g)));hapTick();checkMiles();checkAch();}
+},100);
+setInterval(save,5000);
+setInterval(()=>{
+  if(sc)return;
+  const els=document.querySelectorAll('.seat[data-seat]');if(!els.length)return;
+  const h=HM[els[Math.floor(Math.random()*els.length)].getAttribute('data-seat')];
+  if(h&&S.owned[h.id]&&!onDate(h.id))say(h.id,randVoice(h));
+},7000);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
+
+/* 留守のあいだの収入(半分、最大8時間)。終わったデートは自動で精算されます */
+(function(){
+  const el=(Date.now()-(S.t||Date.now()))/1000;
+  if(el>60){
+    const oc=Math.min(el,(8+pk('p_off'))*3600),oe=Math.min(1,0.5+0.04*pk('p_off'));
+    const g=Math.max(0,netPS())*oc*oe;
+    S.q=(S.q||0)+Math.max(0,(lamH()-muH())/TS*oc*oe);
+    S.fans+=fanRate()*oc*oe;
+    if(g>=1){gain(g);setTimeout(()=>toast('おかえりなさい。留守のあいだに '+fmt(g)+' 円貯まりました'),400);}
+    if(el>300&&eligibleHaps().length)S.hap.ready=Math.min(3,S.hap.ready+Math.floor(el/300));
+  }
+})();
+
+/* ===== v9 拡張: ホール拡張(新メニュー/貢ぎ物コレクション/人数ご褒美/売上ランキング) ===== */
+const MENU9=[['ブレンドコーヒー',3],['季節のパンケーキ',6],['とろけるプリン',9],['ふわふわオムライス',12],['ナポリタン',15],['手作りクッキー',18],['フルーツサンド',21],['抹茶パフェ',24],['ひだまりカレー',27],['クリームソーダ',30],['ホットサンド',34],['苺のショートケーキ',38],['限定モンブラン',42],['ハニートースト',46],['特製ビーフシチュー',50],['ミニコース',55],['アフタヌーンティー',60],['夜のデザートワイン',65],['シャンパンタワー',70],['季節の特別コース',75],['王室のティーセット',80],['ひだまりフルコース',85],['伝説のスイーツ',92],['マスター特製・愛のスペシャル',100],['ひだまり黄金パフェ',108],['星降る夜のコース',116],['祝祭の大皿',124],['王宮の晩餐会',132],['永遠のひだまりブレンド',140],['百五十人分の愛のフルコース',150],['ひだまり星空コース',160],['黄金の朝食セット',170],['桜色の宴',180],['月夜のティーセット',190],['伝説の海鮮丼',200],['虹色のスイーツ塔',210],['神々のスペシャル',220],['世界一のひだまりランチ',230],['宇宙の果てのカレー',240],['二百五十人分の愛のフルコース',250],['白銀の冬メニュー',260],['千年のレシピ',270],['奇跡のブレンド',280],['ひだまり大宴会コース',290],['三百人分の愛のフルコース',300]].map(function(m){return {id:'mk'+m[1],n:m[0],need:m[1],cost:R2(0.4*HC(m[1]))};});
+const GIFT9=['ブランドの財布','花束','高級チョコレート','ラブレター','手編みのマフラー','大きなぬいぐるみ','腕時計','香水','ネックレス','商品券','シャンパン','金のコーヒーカップ','宝石箱','ペアのマグカップ','バラの花束','古い懐中時計','手作りクッキー缶','星のペンダント','限定フィギュア','お店の合鍵'];
+const HMS9=[10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300];
+const cnt9=o=>Object.keys(o).length;
+function extraMult(){return Math.pow(1.03,cnt9(S.mk))*(1+0.005*cnt9(S.gift))*Math.pow(1.03,cnt9(S.hms));}
+function giftDrop(p){if(Math.random()>=p)return;const left=GIFT9.filter(function(g){return !S.gift[g];});if(!left.length)return;const g=left[Math.floor(Math.random()*left.length)];S.gift[g]=1;toast('女の子から貢ぎ物「'+g+'」をもらいました(収入+0.5%)');}
+function hallPanel(){
+  const n=ownedList().length;
+  const st='<div class="sum"><span>ハーレム度 <b>'+n+'/'+N+'人</b></span><span>毎秒(利益) <b>'+rate(Math.max(0,netPS()))+' 円</b></span><span>拡張ボーナス <b>×'+extraMult().toFixed(2)+'</b></span><span>新メニュー <b>'+cnt9(S.mk)+'/'+MENU9.length+'</b></span><span>貢ぎ物 <b>'+cnt9(S.gift)+'/'+GIFT9.length+'</b></span></div>';
+  const top=ownedList().map(function(h){return {h:h,v:h.inc*S.owned[h.id]*heroMult(h.id)};}).sort(function(a,b){return b.v-a.v;}).slice(0,5).map(function(r,i){
+    return '<article class="card row"><div><h3>'+(i+1)+'位 '+r.h.name+(S.sign===r.h.id?' ★看板':'')+'</h3><div class="role">Lv '+S.owned[r.h.id]+' ・ '+rate(r.v)+' 円/秒(個人)</div></div></article>';}).join('');
+  const mk=MENU9.map(function(m){const has=S.mk[m.id];
+    return '<article class="card row'+(has?' done':'')+'"><div><h3>'+m.n+'</h3><div class="role">全体の収入 ×1.03 ・ '+m.need+'人採用で解放</div></div>'+
+      (has?'<button class="btn" disabled>発売中</button>':n<m.need?'<button class="btn" disabled>あと'+(m.need-n)+'人</button>':'<button class="btn" data-act="mk9" data-id="'+m.id+'" data-cost="'+m.cost+'">開発 '+HRT+fmt(m.cost)+'</button>')+'</article>';}).join('');
+  const gf='<p class="note">'+GIFT9.map(function(g){return S.gift[g]?g:'？？？';}).join(' / ')+'</p>';
+  const ms=HMS9.map(function(k){const has=S.hms[k];
+    return '<article class="card row'+(has?' done':'')+'"><div><h3>'+k+'人のウェイトレス</h3><div class="role">報酬 チケット+'+(k/10)+' ・ 収入 ×1.03</div></div>'+
+      (has?'<button class="btn" disabled>受け取り済み</button>':n<k?'<button class="btn" disabled>あと'+(k-n)+'人</button>':'<button class="btn" data-act="hms9" data-id="'+k+'">受け取る</button>')+'</article>';}).join('');
+  return st+'<p class="note">マスターに惚れて集まったウェイトレスたちのお店を、さらに育てましょう。貢ぎ物は、殺到イベントで女の子たちからもらえることがあります。</p>'+
+    '<h2>稼ぎ頭ランキング</h2><div class="list">'+(top||'<p class="note">まだいません</p>')+'</div><h2>新メニュー開発</h2><div class="list">'+mk+'</div><h2>貢ぎ物コレクション</h2>'+gf+'<h2>人数ご褒美</h2><div class="list">'+ms+'</div>';
+}
+const totalLv=()=>U.reduce((a,u)=>a+ulv(u.id),0)+FUP.reduce((a,u)=>a+flv(u.id),0)+BZ.reduce((a,b)=>a+blv(b.id),0);
+ACH.push({id:'fr1',n:'はじめてのファン殺到',d:'ファン殺到のハプニングを経験する',f:()=>FR.some(e=>S.hap.seen[e.id])},{id:'fr5',n:'シャッター音の雨',d:'ファン殺到のハプニングを5種類経験する',f:()=>FR.filter(e=>S.hap.seen[e.id]).length>=5},{id:'frall',n:'世界中から愛されて',d:'ファン殺到のハプニングをすべて経験する',f:()=>FR.length>0&&FR.every(e=>S.hap.seen[e.id])},{id:'hr1',n:'囲まれる店長',d:'ハーレム大騒動を経験する',f:()=>EVENTS.some(e=>e.harem&&S.hap.seen[e.id])},{id:'hr9',n:'逃げ場なし',d:'ハーレム大騒動をすべて経験する',f:()=>EVENTS.filter(e=>e.harem).every(e=>S.hap.seen[e.id])},{id:'ul50',n:'強化の鬼',d:'強化レベルの合計が50に達する',f:()=>totalLv()>=50},{id:'ul200',n:'強化の権化',d:'強化レベルの合計が200に達する',f:()=>totalLv()>=200},{id:'ul1000',n:'終わらない投資',d:'強化レベルの合計が1,000に達する',f:()=>totalLv()>=1000},{id:'pk10',n:'星の恩恵',d:'星の特典を合計10回強化する',f:()=>PK.reduce((a,q)=>a+pk(q.id),0)>=10},{id:'w300',n:'三百人のひだまり',d:'300人全員を採用する',f:()=>ownedList().length>=N},{id:'w250',n:'二百五十人のひだまり',d:'250人を採用する',f:()=>ownedList().length>=250},{id:'w200',n:'二百人のウェイトレス',d:'200人を採用する',f:()=>ownedList().length>=200},{id:'mt1',n:'はじめてのモテモテ',d:'モテモテタイムを発動する',f:()=>S.stats.motes>=1},{id:'mt10',n:'モテモテが日常',d:'モテモテタイムを10回発動する',f:()=>S.stats.motes>=10},{id:'mq1',n:'行列ができた',d:'行列が1,000人に達する',f:()=>S.stats.qbest>=1e3},{id:'mq2',n:'地平線までの行列',d:'行列が10万人に達する',f:()=>S.stats.qbest>=1e5},{id:'mq3',n:'行列が国境を越えた',d:'行列が1,000万人に達する',f:()=>S.stats.qbest>=1e7},{id:'w150',n:'百五十人のひだまり',d:'150人を採用する',f:()=>ownedList().length>=150},{id:'w60',n:'ハーレム喫茶',d:'60人を採用する',f:()=>ownedList().length>=60},{id:'w80',n:'店中ウェイトレス',d:'80人を採用する',f:()=>ownedList().length>=80},{id:'w100',n:'百人のウェイトレス',d:'100人全員を採用する',f:()=>ownedList().length>=100},
+ {id:'mk5',n:'メニュー開発室',d:'新メニューを5つ発売する',f:()=>cnt9(S.mk)>=5},{id:'mk12',n:'名物メニュー',d:'新メニューを12個発売する',f:()=>cnt9(S.mk)>=12},{id:'mk24',n:'メニューコンプリート',d:'新メニューを全て発売する',f:()=>cnt9(S.mk)>=MENU9.length},
+ {id:'gf5',n:'貢がれ体質',d:'貢ぎ物を5個もらう',f:()=>cnt9(S.gift)>=5},{id:'gf10',n:'貢ぎ物の山',d:'貢ぎ物を10個もらう',f:()=>cnt9(S.gift)>=10},{id:'gf20',n:'貢ぎ物コンプリート',d:'貢ぎ物を全てもらう',f:()=>cnt9(S.gift)>=GIFT9.length},
+ {id:'hm5',n:'ご褒美上手',d:'人数ご褒美を5つ受け取る',f:()=>cnt9(S.hms)>=5},{id:'hm10',n:'ご褒美コンプリート',d:'人数ご褒美を全て受け取る',f:()=>cnt9(S.hms)>=HMS9.length},{id:'sg1',n:'看板ウェイトレス',d:'看板ウェイトレスを決める',f:()=>!!S.sign});
+
+window.HIDAMARI={S:()=>S,H:H,HM:HM,N:N,ACH:ACH,MOTER:MOTER,BOND_MAX:BOND_MAX,$:$,esc:esc,mt:mt,NM:NM,fmt:fmt,rate:rate,given:given,dkey:dkey,
+  ownedList:ownedList,onDate:onDate,bondRank:bondRank,perSec:perSec,tapGain:tapGain,gain:gain,toast:toast,say:say,feedPush:feedPush,puffHearts:puffHearts,
+  moteOn:moteOn,moteScore:moteScore,moteRank:moteRank,addMote:addMote,custH:custH,av:av,avatar:avatar,mgrSVG:mgrSVG,
+  sfx:sfx,ac:ac,tone:tone,noise:noise,bell:bell,noteHz:noteHz,setBuff:ms=>{buffUntil=Math.max(buffUntil,Date.now()+ms);},
+  save:save,render:render,checkAch:checkAch,slots:slots,COURSES:COURSES,dq:dq};
+ensureDay();
+$('mgrsvg').innerHTML=mgrSVG(true);
+$('nameIn').value=S.name||'';
+$('nameIn').addEventListener('input',e=>{S.name=String(e.target.value).slice(0,12);updName();});
+$('nameIn').addEventListener('change',e=>{S.name=String(e.target.value).trim().slice(0,12);e.target.value=S.name;save();render();toast('店長の名前を「'+NM()+'」にしました');});
+updName();
+render();
+for(let i=0;i<4;i++)feedPush(randPost(),false);
+checkMiles();
+checkAch();
+scheduleVisitor(true);
+setTimeout(()=>{if(!S.tg.namehint){S.tg.namehint=true;toast('店長の名前は、画面上部の欄からいつでも変えられます');save();}},2500);
+/* ---- アプリ化(ホーム画面・デスクトップへのインストール) ---- */
+let installEv=null;
+const isStandalone=()=>(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+function iconURL(sz){
+  const c=document.createElement('canvas');c.width=c.height=sz;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,sz,sz);g.addColorStop(0,'#ff7aa2');g.addColorStop(1,'#ffc66b');
+  x.fillStyle=g;x.fillRect(0,0,sz,sz);
+  x.fillStyle='#fff';x.font='700 '+Math.round(sz*0.62)+'px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('ひ',sz/2,sz/2+sz*0.03);
+  return c.toDataURL('image/png');
+}
+function setupPWA(){
+  try{
+    const add=(tag,attrs)=>{const e=document.createElement(tag);Object.keys(attrs).forEach(k=>e.setAttribute(k,attrs[k]));document.head.appendChild(e);};
+    add('meta',{name:'theme-color',content:'#1a1530'});
+    add('meta',{name:'apple-mobile-web-app-capable',content:'yes'});
+    add('meta',{name:'mobile-web-app-capable',content:'yes'});
+    add('meta',{name:'apple-mobile-web-app-title',content:'ひだまり喫茶'});
+    add('link',{rel:'apple-touch-icon',href:iconURL(180)});
+    const url=location.href.split('#')[0];
+    const man={name:'ひだまり喫茶',short_name:'ひだまり',start_url:url,scope:url.replace(/[^\/]*$/,''),display:'standalone',background_color:'#1a1530',theme_color:'#1a1530',lang:'ja',icons:[{src:iconURL(192),sizes:'192x192',type:'image/png',purpose:'any'},{src:iconURL(512),sizes:'512x512',type:'image/png',purpose:'any'}]};
+    if(/^https?:$/.test(location.protocol))add('link',{rel:'manifest',href:URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/manifest+json'}))}); /* file:// では読み込めないため、公開先(https)でのみ有効 */
+  }catch(e){}
+}
+function updInstall(){
+  const b=$('installBtn'),n=$('installNote');if(!b)return;
+  if(isStandalone()){b.disabled=true;b.textContent='インストール済み(アプリとして起動中)';n.textContent='';return;}
+  b.disabled=false;b.textContent='アプリとしてインストール';
+  n.textContent=installEv?'このブラウザから、そのままインストールできます。':'';
+}
+async function installApp(){
+  if(isStandalone())return;
+  if(installEv){
+    const ev=installEv;installEv=null;
+    try{ev.prompt();const r=await ev.userChoice;toast(r&&r.outcome==='accepted'?'インストールを開始しました':'インストールをキャンセルしました');}catch(e){}
+    updInstall();return;
+  }
+  const ua=navigator.userAgent||'';let msg;
+  if(location.protocol==='file:')msg='このファイルをそのまま開いている場合は、アプリ化できません。https で公開した場所(GitHub Pages など)から開いてください。';
+  else if(/iPhone|iPad|iPod/.test(ua))msg='Safari で開き、共有ボタン→「ホーム画面に追加」を選んでください。';
+  else if(/Android/.test(ua))msg='ブラウザのメニュー(︙)→「アプリをインストール」または「ホーム画面に追加」を選んでください。';
+  else msg='Chrome や Edge では、アドレスバー右側のインストールアイコン、またはメニュー→「インストール」から追加できます。';
+  $('installNote').textContent=msg;
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEv=e;updInstall();});
+window.addEventListener('appinstalled',()=>{installEv=null;toast('アプリとしてインストールしました');updInstall();});
+setupPWA();updInstall();
+function applyHapNote(){const b=$('hapNoteBtn');if(b){b.textContent='通知: '+(CFG.hapNote?'オン':'オフ');b.classList.toggle('ghost',!CFG.hapNote);}}
+applyHapNote();
+function applyLite(){
+  document.body.classList.toggle('lite',CFG.lite);
+  const b=$('liteBtn');if(b){b.textContent='軽量モード: '+(CFG.lite?'オン':'オフ');b.classList.toggle('ghost',!CFG.lite);}
+}
+applyLite();
+/* 軽量モード中は、拡張ファイルなどが画面に浮かべる小さな顔アイコンを表示しない */
+(function(){
+  const SAFE='#modal,#seats,#crowd,#ent,#swarm,#toasts,#feed,.panel,nav,header,#visitor,.counter,.hap,#hap,#scCrowd';
+  function floating(el){
+    if(!CFG.lite||el.nodeType!==1||el.closest(SAFE))return false;
+    if(!el.querySelector('svg,img')&&el.tagName!=='IMG'&&el.tagName!=='svg')return false;
+    if(el.querySelector('button,input,a'))return false;
+    const cs=getComputedStyle(el);
+    if(cs.position!=='absolute'&&cs.position!=='fixed')return false;
+    const r=el.getBoundingClientRect();
+    return r.width<=96&&r.height<=96;
+  }
+  new MutationObserver(ms=>{ms.forEach(m=>{m.addedNodes.forEach(n=>{if(floating(n)&&n.parentNode)n.parentNode.removeChild(n);});});}).observe(document.body,{childList:true,subtree:true});
+})();
+/* ---- プレゼントの絵文字(🎁)を、どこで生成されても表示しない ---- */
+(function(){
+  const GIFT=/\u{1F381}/gu,HAS=/\u{1F381}/u,KEEP=/^(BUTTON|A|LABEL|INPUT|TEXTAREA|SELECT|BODY|HTML)$/;
+  function scrubText(t){
+    if(!HAS.test(t.nodeValue))return;
+    const only=!t.nodeValue.replace(GIFT,'').trim(),p=t.parentNode;
+    t.nodeValue=t.nodeValue.replace(GIFT,'');
+    if(only&&p&&p.nodeType===1&&!p.id&&p.children.length===0&&!KEEP.test(p.tagName))p.parentNode&&p.parentNode.removeChild(p);
+  }
+  function scrub(n){
+    if(n.nodeType===3){scrubText(n);return;}
+    if(n.nodeType!==1||!n.textContent||!HAS.test(n.textContent))return;
+    const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT),list=[];
+    while(w.nextNode())list.push(w.currentNode);
+    list.forEach(scrubText);
+  }
+  function scrubCss(){
+    Array.prototype.forEach.call(document.styleSheets,sh=>{
+      let rules;try{rules=sh.cssRules;}catch(e){return;}
+      Array.prototype.forEach.call(rules||[],r=>{if(r.style&&HAS.test(r.style.content||''))r.style.setProperty('content','none');});
+    });
+  }
+  scrub(document.body);scrubCss();
+  new MutationObserver(ms=>{ms.forEach(m=>{
+    if(m.type==='characterData')scrubText(m.target);
+    else m.addedNodes.forEach(scrub);
+  });}).observe(document.body,{childList:true,subtree:true,characterData:true});
+  new MutationObserver(()=>scrubCss()).observe(document.head,{childList:true,subtree:true,characterData:true});
+  setTimeout(scrubCss,1500);window.addEventListener('load',scrubCss);
+})();
+setTimeout(()=>{if(S.login.total>=3&&Date.now()-(S.lastExport||0)>7*86400000)toast('セーブの書き出しをおすすめします(データタブ)');},3000);
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+setTimeout(()=>{if(S.owned.hinata)say('hinata',randVoice(HM.hinata));},700);
+})();
+</script>
+<script src="hidamari_harem.js" defer></script>
+<script src="hidamari_harem2.js" defer></script>
+</body>
+</html>
