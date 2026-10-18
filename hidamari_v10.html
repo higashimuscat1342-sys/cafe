@@ -192,6 +192,9 @@ input[type=file]{color:var(--mute);font-size:.82rem;max-width:100%}
 .sc-art{height:min(260px,38vh);display:flex;justify-content:center;align-items:flex-end;overflow:hidden}
 .sc-art svg{height:100%;width:auto;max-width:100%}
 .sc-art.dim svg{opacity:.35}
+.sc-hr{display:flex;gap:8px;align-items:center}
+.sc-art.flash{animation:camflash .55s ease-out}
+@keyframes camflash{0%{box-shadow:inset 0 0 0 0 #fff}18%{box-shadow:inset 0 0 90px 50px #ffffffcc}100%{box-shadow:inset 0 0 0 0 #fff0}}
 .sc-box{background:#120f26;border-top:1px solid var(--line);padding:14px 18px 18px;display:grid;gap:8px;min-height:170px;align-content:start}
 .sc-name{font:400 .85rem/1.2 var(--f-display);color:var(--c);min-height:1.2em}
 .sc-text{margin:0;font-size:1rem;line-height:1.8;min-height:3.6em;animation:pop .25s ease}
@@ -308,6 +311,9 @@ body.lite .stage.moting{box-shadow:none}
     <p class="note">ホーム画面やデスクトップに追加すると、ブラウザのバーのない、アプリのような画面で遊べます。</p>
     <div class="acts"><button class="btn" id="installBtn" data-act="install">アプリとしてインストール</button></div>
     <p class="note" id="installNote" aria-live="polite"></p>
+    <h2>ハプニングの通知</h2>
+    <p class="note">ハプニングが起こったとき、画面に通知を出して知らせるかどうかを選びます。オフでも、ステージのボタンから、いつでも見られます。</p>
+    <div class="acts"><button class="btn ghost" id="hapNoteBtn" data-act="hapnote">通知: オフ</button></div>
     <h2>軽量モード</h2>
     <p class="note">行列の顔の数や動きを減らして、動作を軽くします。重いと感じたらオンにしてください。</p>
     <div class="acts"><button class="btn ghost" id="liteBtn" data-act="lite">軽量モード: オン</button></div>
@@ -331,7 +337,7 @@ body.lite .stage.moting{box-shadow:none}
 
 <div class="modal" id="modal" hidden>
   <div class="scene" id="scene" role="dialog" aria-modal="true" aria-labelledby="scTitle">
-    <div class="sc-head"><span id="scTitle"></span><button class="x" id="scClose" aria-label="閉じる">×</button></div>
+    <div class="sc-head"><span id="scTitle"></span><span class="sc-hr"><button class="btn ghost small" id="scSkip" data-act="scskip">スキップ</button><button class="x" id="scClose" aria-label="閉じる">×</button></span></div>
     <div class="sc-stage" id="scStage"><div class="sc-crowd" id="scCrowd" hidden></div><div class="sc-art" id="scArt"></div></div>
     <div class="sc-box">
       <div class="sc-name" id="scName"></div>
@@ -345,10 +351,11 @@ body.lite .stage.moting{box-shadow:none}
 
 <script src="hidamari_roster.js"></script>
 <script src="hidamari_gather.js"></script>
+<script src="hidamari_hap.js"></script>
 <script>
 (function(){
 'use strict';
-const CFG={lite:(function(){try{return localStorage.getItem('hidamari-lite')!=='0';}catch(e){return true;}})()};
+const CFG={hapNote:(function(){try{return localStorage.getItem('hidamari-hapnote')==='1';}catch(e){return false;}})(),lite:(function(){try{return localStorage.getItem('hidamari-lite')!=='0';}catch(e){return true;}})()};
 /* 顔アイコンは、1つずつSVGを埋め込まずに、画像(Blob URL)を使い回して軽くする */
 const FIMG={};
 function svgURL(key,svg){let u=FIMG[key];if(!u){u=FIMG[key]=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));}return u;}
@@ -1055,8 +1062,8 @@ const sfx={
 /* ================= 描画 ================= */
 const $=id=>document.getElementById(id);
 const av=(h,lv,crop)=>avatar(h,lv,crop,wearing(h.id));
-const PG={seat:0,card:0,date:0,cos:0,zk:0};
-const PSZ={seat:12,card:12,date:10,cos:10,zk:20};
+const PG={seat:0,card:0,date:0,cos:0,zk:0,arch:0};
+const PSZ={seat:12,card:12,date:10,cos:10,zk:20,arch:10};
 function pageSlice(list,key){
   const n=Math.max(1,Math.ceil(list.length/PSZ[key]));
   PG[key]=Math.max(0,Math.min(PG[key],n-1));
@@ -1093,7 +1100,7 @@ function cardHTML(h){
 }
 function heroinePanel(){
   const ng=GATHERS.filter(G=>gatherReady(G)&&!S.seen[G.id]).length;
-  const g=ng?'<div class="gather"><p><strong>集合イベントが '+ng+' 件、解放されています</strong>みんなが集まる特別なイベントです。</p><button class="btn new" data-act="tab" data-id="gather">集合タブへ</button></div>':'';
+  const g=(ng?'<div class="gather"><p><strong>集合イベントが '+ng+' 件、解放されています</strong>みんなが集まる特別なイベントです。</p><button class="btn new" data-act="tab" data-id="gather">集合タブへ</button></div>':'')+'<p class="note">ヒロインたちのハプニングや思い出の場面は、「集合」タブで、いつでも見られます。</p>';
   const owned=ownedList(),mu=minUp();
   const page=pageSlice(owned,'card');
   return '<div class="gathers">'+g+'</div>'+
@@ -1358,12 +1365,19 @@ function zukanPanel(){
 }
 
 /* ================= ハプニング ================= */
-const eligibleHaps=()=>EVENTS.filter(e=>e.need.every(id=>S.owned[id])&&(!e.nOwned||ownedList().length>=e.nOwned));
+/* ハプニング = ファンの殺到(データは hidamari_hap.js)。ヒロインの場面は「集合」タブのハプニング集で、いつでも見られる */
+const HD=(window.HIDAMARI_HAP&&window.HIDAMARI_HAP.events)?window.HIDAMARI_HAP:null;
+const FR=(HD?HD.events:[]).filter(e=>e&&e.id).sort((a,b)=>((a.need&&a.need.fans)||0)-((b.need&&b.need.fans)||0));
+const HCFG=Object.assign({crowdBase:5,pickLatestChance:0.55},(HD&&HD.config)||{});
+const frOk=e=>S.fans>=((e.need&&e.need.fans)||0);
+const crowdNum=()=>Math.floor(HCFG.crowdBase+Math.pow(Math.max(0,S.fans),0.55));
+const oldOk=e=>e.need.every(id=>S.owned[id])&&(!e.nOwned||ownedList().length>=e.nOwned);
+const eligibleHaps=()=>FR.length?FR.filter(frOk):EVENTS.filter(oldOk);
 function hapTick(){
   const now=Date.now();
   if(!S.hap.next)S.hap.next=now+240000;
   if(now>=S.hap.next){
-    if(S.hap.ready<3&&eligibleHaps().length){S.hap.ready++;toast('ハプニング発生!店の様子を見に行きましょう');sfx.vApp();}
+    if(S.hap.ready<3&&eligibleHaps().length){S.hap.ready++;if(CFG.hapNote){toast('ハプニング発生!店の様子を見に行きましょう');sfx.vApp();}}
     S.hap.next=now+(200+Math.random()*160)*1000;
   }
 }
@@ -1529,6 +1543,15 @@ function finishGather(){
   toast('集合イベント「'+title+'」'+(first?'クリア!':'おしまい')+'  '+msg.join('・'));sfx.coin();
   render();save();checkAch();
 }
+function archiveHTML(){
+  const fr=FR.filter(frOk).map(e=>({id:e.id,t:e.title,tag:'ファン殺到',seen:!!S.hap.seen[e.id]}));
+  const old=EVENTS.filter(oldOk).map(e=>({id:e.id,t:e.t,tag:e.harem?'ヒロインに囲まれて':'ウェイトレスたちの一日',seen:!!S.hap.seen[e.id]}));
+  const all=fr.concat(old).sort((a,b)=>(a.seen?1:0)-(b.seen?1:0));
+  if(!all.length)return '';
+  const PS=PSZ.arch,p=Math.max(0,Math.min(PG.arch,Math.ceil(all.length/PS)-1));
+  const rows=all.slice(p*PS,(p+1)*PS).map(x=>'<div class="gather"><p><strong>'+x.t+(x.seen?'<span class="gtag ok">見た</span>':'<span class="gtag new">NEW</span>')+'</strong>'+x.tag+'</p><button class="btn'+(x.seen?' ghost':' new')+'" data-act="harc" data-id="'+x.id+'">'+(x.seen?'もう一度見る':'見る')+'</button></div>').join('');
+  return '<h2>ハプニング集</h2><p class="note">ハプニングの場面は、ここから、好きなときに見られます。初めて見るときだけ、ごほうびがもらえます。</p>'+pagerHTML('arch',all.length)+'<div class="gathers">'+rows+'</div>'+pagerHTML('arch',all.length);
+}
 function gatherPanel(){
   if(!GATHERS.length)return '<p class="note">集合イベントのデータ(hidamari_gather.js)を読み込めませんでした。このHTMLと同じフォルダに置いてあるか、確認してください。</p>';
   const own=ownedList().length,cleared=GATHERS.filter(g=>S.seen[g.id]).length,photos=Object.keys(S.photos||{}).length;
@@ -1551,7 +1574,7 @@ function gatherPanel(){
   const fresh=ready.filter(g=>!S.seen[g.id]),done=ready.filter(g=>S.seen[g.id]);
   return sum+'<div class="gathers">'+fresh.map(card).join('')+locked.slice(0,2).map(lock).join('')+done.map(card).join('')+'</div>'+
     (locked.length>2?'<p class="note">ほかにも、まだ見ぬ集合イベントが '+(locked.length-2)+' 件あります。</p>':'')+
-    '<p class="note">一度クリアすると、いつでも見返せます。2回目以降は、'+GCFG.repeatCooldownMin+'分ごとにごほうびがもらえます。クリアした数だけ、全体の収入が増えます。</p>';
+    '<p class="note">一度クリアすると、いつでも見返せます。2回目以降は、'+GCFG.repeatCooldownMin+'分ごとにごほうびがもらえます。クリアした数だけ、全体の収入が増えます。</p>'+archiveHTML();
 }
 function openScene(id,i){
   let def,key,main,color;
@@ -1560,9 +1583,43 @@ function openScene(id,i){
   sc={lines:def.l,i:0,key:key,cur:main,phase:'lines',choices:null};
   startScene(def.t,color);
 }
+/* お客さんの絵: 顔を真っ赤にして、汗を描き足す */
+const NPC_OV={
+ shy:'<ellipse cx="35" cy="62" rx="10" ry="6.5" fill="#ff2a4a" opacity=".5"/><ellipse cx="65" cy="62" rx="10" ry="6.5" fill="#ff2a4a" opacity=".5"/><path d="M77 34q5 8 0 12q-5-4 0-12z" fill="#8fdcff"/><path d="M23 40q4 7 0 10q-4-3 0-10z" fill="#8fdcff"/><path d="M80 52q3 5 0 8q-3-3 0-8z" fill="#8fdcff"/>',
+ phone:'<ellipse cx="35" cy="62" rx="9" ry="6" fill="#ff2a4a" opacity=".45"/><ellipse cx="65" cy="62" rx="9" ry="6" fill="#ff2a4a" opacity=".45"/><g transform="rotate(-10 72 76)"><rect x="62" y="58" width="22" height="38" rx="3.5" fill="#2b2b3a"/><rect x="64.5" y="61" width="17" height="30" rx="2" fill="#bfe7ff"/><circle cx="73" cy="59.6" r="1.1" fill="#8aa"/></g><polygon points="80,40 82,47 89,48 83.5,52.5 85.5,59 80,55 74.5,59 76.5,52.5 71,48 78,47" fill="#fff6a8"/><path d="M24 40q4 7 0 10q-4-3 0-10z" fill="#8fdcff"/>',
+ love:'<ellipse cx="35" cy="62" rx="10" ry="6.5" fill="#ff2a4a" opacity=".5"/><ellipse cx="65" cy="62" rx="10" ry="6.5" fill="#ff2a4a" opacity=".5"/><path d="M80 30c-3-5-9 0-5 4l5 4 5-4c4-4-2-9-5-4z" fill="#ff5d8a"/><path d="M18 36c-2-4-7 0-4 3l4 3 4-3c3-3-2-7-4-3z" fill="#ff8fb1"/>',
+ faint:'<ellipse cx="35" cy="62" rx="11" ry="7" fill="#ff2a4a" opacity=".6"/><ellipse cx="65" cy="62" rx="11" ry="7" fill="#ff2a4a" opacity=".6"/><path d="M77 32q5 8 0 12q-5-4 0-12z" fill="#8fdcff"/><path d="M22 34q4 7 0 10q-4-3 0-10z" fill="#8fdcff"/><path d="M82 22l4 3-4 3M16 24l-4 3 4 3" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/>',
+ cry:'<ellipse cx="35" cy="62" rx="9" ry="6" fill="#ff2a4a" opacity=".45"/><ellipse cx="65" cy="62" rx="9" ry="6" fill="#ff2a4a" opacity=".45"/><path d="M36 54q-3 8 0 14q3-6 0-14z" fill="#8fdcff"/><path d="M64 54q-3 8 0 14q3-6 0-14z" fill="#8fdcff"/>'
+};
+function npcSVG(face,mood){const ov=NPC_OV[mood]||NPC_OV.shy;return custH(face).svg.replace(/<\/svg>\s*$/,ov+'</svg>');}
+const blushURL=i=>svgURL('cfb'+i,custH(i).face.replace(/<\/svg>\s*$/,NPC_OV.shy+'</svg>'));
+function startFanScene(e,archive){
+  const own=ownedList(),npc={};
+  Object.keys(e.cast||{}).forEach(k=>{const c=e.cast[k];npc[k]={name:c.name||'お客さん',face:(c.face!=null?c.face:Math.floor(Math.random()*48))};});
+  const nrm=t=>mt(String(t).split('{m}').join(NM()).split('{crowd}').join(fmt(crowdNum())).split('{queue}').join(fmt(crowdNum()*3)));
+  const wid=()=>own.length?own[Math.floor(Math.random()*own.length)].id:'hinata';
+  const fix=ls=>(ls||[]).map(l=>{let sp=l[0];if(sp==='@w')sp=wid();return [sp,nrm(l[1]),l[2]||''];}).filter(l=>l[0]==='n'||l[0]==='m'||l[0]==='ALL'||npc[l[0]]||HM[l[0]]);
+  const ch=(e.choices||[]).map(c=>({t:c.t,res:fix(c.res),fx:{b:{},min:c.min||30,fans:c.fans||0,mote:c.mote||0,buzz:c.buzz||0,tk:c.tk||0,tag:'fair',rush:false}}));
+  sc={lines:fix(e.lines),i:0,key:'fr:'+e.id,cur:own.length?own[0].id:'hinata',phase:'lines',choices:ch.length?ch:null,ev:{id:e.id},npc:npc,fan:true,crowd:true,archive:!!archive,replay:!!(archive&&S.hap.seen[e.id])};
+  startScene(e.title,'#ff7aa2');
+}
+function openArchive(id){
+  const fr=FR.filter(x=>x.id===id)[0];
+  if(fr){startFanScene(fr,true);return;}
+  const e=EVENTS.filter(x=>x.id===id)[0];
+  if(!e||!oldOk(e)){sfx.ng();return;}
+  const d=e.mk?e.mk():e;
+  sc={lines:d.intro,i:0,key:'hap:'+e.id,cur:e.need[0],phase:'lines',choices:d.ch,ev:e,crowd:!!e.harem,archive:true,replay:!!S.hap.seen[e.id]};
+  startScene(e.t,HM[e.need[0]].c);
+}
 function openHap(){
   const el=eligibleHaps();
   if(!el.length||S.hap.ready<1){sfx.ng();return;}
+  if(FR.length){
+    let pool=el.filter(e=>e.id!==S.hap.last);if(!pool.length)pool=el;
+    const e=Math.random()<HCFG.pickLatestChance?pool[pool.length-1]:pool[Math.floor(Math.random()*pool.length)];
+    startFanScene(e,false);return;
+  }
   let pool=el.filter(e=>e.id!==S.hap.last);if(!pool.length)pool=el;
   const hz=pool.filter(x=>x.harem).slice(-3);
   const e=(hz.length&&Math.random()<0.45)?hz[Math.floor(Math.random()*hz.length)]:pool[Math.floor(Math.random()*pool.length)];
@@ -1582,37 +1639,47 @@ function scCrowdShow(){
   const box=$('scCrowd'),st=$('scStage');
   if(!sc||!sc.crowd){box.hidden=true;box.innerHTML='';st.classList.remove('crowd');return;}
   st.classList.add('crowd');box.hidden=false;
-  let L=ownedList();
-  const cap=CFG.lite?Math.min(GCFG.crowdLite,GCFG.crowdCap):GCFG.crowdCap;
-  if(L.length>cap){
-    const used={};(sc.chs||[]).forEach(c=>c.lines.forEach(l=>{used[l[0]]=1;}));
-    const a=L.filter(h=>used[h.id]),b=L.filter(h=>!used[h.id]);
-    for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=b[i];b[i]=b[j];b[j]=t;}
-    L=a.concat(b).slice(0,cap);
+  let items=[];
+  if(sc.fan){
+    const n=CFG.lite?56:110;
+    for(let i=0;i<n;i++)items.push({id:'f'+i,url:blushURL((i*7)%48)});
+  }else{
+    let L=ownedList();
+    const cap=CFG.lite?Math.min(GCFG.crowdLite,GCFG.crowdCap):GCFG.crowdCap;
+    if(L.length>cap){
+      const used={};(sc.chs||[]).forEach(c=>c.lines.forEach(l=>{used[l[0]]=1;}));
+      const a=L.filter(h=>used[h.id]),b=L.filter(h=>!used[h.id]);
+      for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=b[i];b[i]=b[j];b[j]=t;}
+      L=a.concat(b).slice(0,cap);
+    }
+    items=L.map(h=>({id:h.id,url:faceURL(h)}));
   }
-  const n=L.length,W=box.clientWidth||340,Hh=box.clientHeight||280;
+  const n=items.length,W=box.clientWidth||340,Hh=box.clientHeight||280;
   const fs=n<=20?34:n<=60?28:n<=120?22:n<=200?18:16,cx=W/2,cy=Hh/2;
   let html='',i=0,k=0;
-  const face=(h,x,y)=>'<span class="scf" data-id="'+h.id+'" style="left:'+x.toFixed(1)+'px;top:'+y.toFixed(1)+'px;width:'+fs+'px;height:'+fs+'px">'+faceImg(h,fs)+'</span>';
+  const face=(it,x,y)=>'<span class="scf" data-id="'+it.id+'" style="left:'+x.toFixed(1)+'px;top:'+y.toFixed(1)+'px;width:'+fs+'px;height:'+fs+'px"><img class="fimg" src="'+it.url+'" width="'+fs+'" height="'+fs+'" alt="" decoding="async" draggable="false"></span>';
   while(i<n&&k<40){
     const rx=W/2-fs/2-2-k*fs*0.8,ry=Hh/2-fs/2-2-k*fs*0.8;
     if(rx<fs||ry<fs*0.6)break;
     const per=Math.max(6,Math.floor(Math.PI*(3*(rx+ry)-Math.sqrt((3*rx+ry)*(rx+3*ry)))/(fs*0.85)));
-    for(let j=0;j<per&&i<n;j++,i++){const a=2*Math.PI*j/per+k*0.5;html+=face(L[i],cx+rx*Math.cos(a),cy+ry*Math.sin(a));}
+    for(let j=0;j<per&&i<n;j++,i++){const a=2*Math.PI*j/per+k*0.5;html+=face(items[i],cx+rx*Math.cos(a),cy+ry*Math.sin(a));}
     k++;
   }
-  for(;i<n;i++){const a=Math.random()*6.283,r=0.25+Math.random()*0.5;html+=face(L[i],cx+W*0.4*r*Math.cos(a),cy+Hh*0.4*r*Math.sin(a));}
+  for(;i<n;i++){const a=Math.random()*6.283,r=0.25+Math.random()*0.5;html+=face(items[i],cx+W*0.4*r*Math.cos(a),cy+Hh*0.4*r*Math.sin(a));}
   box.innerHTML=html;
 }
 function showLine(){
-  const ln=sc.lines[sc.i],sp=ln[0],tx=ln[1];
+  const ln=sc.lines[sc.i],sp=ln[0],tx=ln[1],mood=ln[2]||'',npc=sc.npc&&sc.npc[sp];
   if(HM[sp])sc.cur=sp;
-  if(sc.crowd){const bx=$('scCrowd'),pv=bx.querySelector('.on');if(pv)pv.classList.remove('on');if(HM[sp]){const el=bx.querySelector('[data-id="'+sp+'"]');if(el)el.classList.add('on');}}
+  if(sc.crowd&&!sc.fan){const bx=$('scCrowd'),pv=bx.querySelector('.on');if(pv)pv.classList.remove('on');if(HM[sp]){const el=bx.querySelector('[data-id="'+sp+'"]');if(el)el.classList.add('on');}}
   const hh=HM[sc.cur],lv=Math.max(1,S.owned[sc.cur]||1);
-  const mg=sp==='m'||(sc.crowd&&sp==='n');
-  $('scArt').innerHTML=mg?mgrSVG(false):av(hh,lv,false);
-  $('scArt').className='sc-art'+(sp==='n'&&!sc.crowd?' dim':'');
-  $('scName').textContent=sp==='n'?'':(sp==='m'?NM():HM[sp].name);
+  const mg=sp==='m'||sp==='ALL'||(sc.crowd&&sp==='n');
+  const art=$('scArt');
+  art.innerHTML=npc?npcSVG(npc.face,mood||'shy'):(mg?mgrSVG(false):av(hh,lv,false));
+  art.className='sc-art';void art.offsetWidth;
+  art.className='sc-art'+(sp==='n'&&!sc.crowd?' dim':'')+(mood==='phone'?' flash':'');
+  $('scSkip').hidden=false;
+  $('scName').textContent=sp==='n'?'':(sp==='m'?NM():(sp==='ALL'?'お客さんたち':(npc?npc.name:HM[sp].name)));
   const p=$('scText');p.textContent=mt(tx);p.className='sc-text'+(sp==='n'?' n':'');
   p.style.animation='none';void p.offsetWidth;p.style.animation='';
   if(HM[sp])sfx.voice(HM[sp]);
@@ -1620,7 +1687,7 @@ function showLine(){
 }
 function showChoices(){
   sc.phase='choice';
-  $('scNext').hidden=true;
+  $('scNext').hidden=true;$('scSkip').hidden=true;
   const box=$('scChoices');box.hidden=false;
   box.innerHTML=sc.choices.map((c,i)=>'<button class="btn ghost" data-act="choose" data-i="'+i+'">'+mth(c.t)+'</button>').join('');
   $('scName').textContent='';
@@ -1634,17 +1701,19 @@ function pickChoice(i){
   showLine();$('scNext').focus();
 }
 function finishHap(){
+  if(sc.replay){closeScene();toast('見返しました(ごほうびは、初めて見たときだけです)');render();return;}
   const e=sc.ev,c=sc.pick,fx=c.fx;
   Object.keys(fx.b||{}).forEach(id=>{if(S.owned[id])S.bond[id]=Math.min(BOND_MAX*10,(S.bond[id]||0)+fx.b[id]);});
   const g=Math.max(perSec()*3*fx.min,100*CK*fx.min);gain(g);
-  let msg='ハプニング解決 +'+fmt(g)+' 円';
+  let msg=(sc.fan?'ファン殺到を乗りきった! +':'ハプニング解決 +')+fmt(g)+' 円';
   if(!S.hap.seen[e.id]){S.hap.seen[e.id]=true;S.tickets+=1;msg+='・チケット+1';}
   if(fx.rush){buffUntil=Date.now()+20000;msg+='・常連ラッシュ!';}
   if(fx.fans){const gf=fx.fans*(10+S.fans*0.005);S.fans+=gf;msg+='・フォロワー+'+fmt(gf);}
   if(fx.buzz)addBuzz(fx.buzz);
   if(fx.mote)addMote(fx.mote);
   if(fx.tk){S.tickets+=fx.tk;msg+='・チケット+'+fx.tk;}
-  S.hap.ready=Math.max(0,S.hap.ready-1);S.hap.last=e.id;
+  if(!sc.archive)S.hap.ready=Math.max(0,S.hap.ready-1);
+  if(!sc.archive)S.hap.last=e.id;
   S.choice.n++;
   if(fx.tag==='fair')S.choice.fair++;else S.choice.per[fx.tag]=(S.choice.per[fx.tag]||0)+1;
   dq('hap',1);
@@ -2006,6 +2075,13 @@ document.addEventListener('click',function(e){
   }else if(act==='lite'){
     CFG.lite=!CFG.lite;try{localStorage.setItem('hidamari-lite',CFG.lite?'1':'0');}catch(e){}
     applyLite();$('crowd').innerHTML='';crowdShown=-1;entKey='';render();
+  }else if(act==='harc'){
+    openArchive(id);
+  }else if(act==='scskip'){
+    if(sc&&sc.phase!=='choice'){sc.i=sc.lines.length-1;showLine();}
+  }else if(act==='hapnote'){
+    CFG.hapNote=!CFG.hapNote;try{localStorage.setItem('hidamari-hapnote',CFG.hapNote?'1':'0');}catch(e){}
+    applyHapNote();
   }else if(act==='install'){
     installApp();
   }else if(act==='export'){
@@ -2138,7 +2214,7 @@ function hallPanel(){
     '<h2>稼ぎ頭ランキング</h2><div class="list">'+(top||'<p class="note">まだいません</p>')+'</div><h2>新メニュー開発</h2><div class="list">'+mk+'</div><h2>貢ぎ物コレクション</h2>'+gf+'<h2>人数ご褒美</h2><div class="list">'+ms+'</div>';
 }
 const totalLv=()=>U.reduce((a,u)=>a+ulv(u.id),0)+FUP.reduce((a,u)=>a+flv(u.id),0)+BZ.reduce((a,b)=>a+blv(b.id),0);
-ACH.push({id:'hr1',n:'囲まれる店長',d:'ハーレム大騒動を経験する',f:()=>EVENTS.some(e=>e.harem&&S.hap.seen[e.id])},{id:'hr9',n:'逃げ場なし',d:'ハーレム大騒動をすべて経験する',f:()=>EVENTS.filter(e=>e.harem).every(e=>S.hap.seen[e.id])},{id:'ul50',n:'強化の鬼',d:'強化レベルの合計が50に達する',f:()=>totalLv()>=50},{id:'ul200',n:'強化の権化',d:'強化レベルの合計が200に達する',f:()=>totalLv()>=200},{id:'ul1000',n:'終わらない投資',d:'強化レベルの合計が1,000に達する',f:()=>totalLv()>=1000},{id:'pk10',n:'星の恩恵',d:'星の特典を合計10回強化する',f:()=>PK.reduce((a,q)=>a+pk(q.id),0)>=10},{id:'w300',n:'三百人のひだまり',d:'300人全員を採用する',f:()=>ownedList().length>=N},{id:'w250',n:'二百五十人のひだまり',d:'250人を採用する',f:()=>ownedList().length>=250},{id:'w200',n:'二百人のウェイトレス',d:'200人を採用する',f:()=>ownedList().length>=200},{id:'mt1',n:'はじめてのモテモテ',d:'モテモテタイムを発動する',f:()=>S.stats.motes>=1},{id:'mt10',n:'モテモテが日常',d:'モテモテタイムを10回発動する',f:()=>S.stats.motes>=10},{id:'mq1',n:'行列ができた',d:'行列が1,000人に達する',f:()=>S.stats.qbest>=1e3},{id:'mq2',n:'地平線までの行列',d:'行列が10万人に達する',f:()=>S.stats.qbest>=1e5},{id:'mq3',n:'行列が国境を越えた',d:'行列が1,000万人に達する',f:()=>S.stats.qbest>=1e7},{id:'w150',n:'百五十人のひだまり',d:'150人を採用する',f:()=>ownedList().length>=150},{id:'w60',n:'ハーレム喫茶',d:'60人を採用する',f:()=>ownedList().length>=60},{id:'w80',n:'店中ウェイトレス',d:'80人を採用する',f:()=>ownedList().length>=80},{id:'w100',n:'百人のウェイトレス',d:'100人全員を採用する',f:()=>ownedList().length>=100},
+ACH.push({id:'fr1',n:'はじめてのファン殺到',d:'ファン殺到のハプニングを経験する',f:()=>FR.some(e=>S.hap.seen[e.id])},{id:'fr5',n:'シャッター音の雨',d:'ファン殺到のハプニングを5種類経験する',f:()=>FR.filter(e=>S.hap.seen[e.id]).length>=5},{id:'frall',n:'世界中から愛されて',d:'ファン殺到のハプニングをすべて経験する',f:()=>FR.length>0&&FR.every(e=>S.hap.seen[e.id])},{id:'hr1',n:'囲まれる店長',d:'ハーレム大騒動を経験する',f:()=>EVENTS.some(e=>e.harem&&S.hap.seen[e.id])},{id:'hr9',n:'逃げ場なし',d:'ハーレム大騒動をすべて経験する',f:()=>EVENTS.filter(e=>e.harem).every(e=>S.hap.seen[e.id])},{id:'ul50',n:'強化の鬼',d:'強化レベルの合計が50に達する',f:()=>totalLv()>=50},{id:'ul200',n:'強化の権化',d:'強化レベルの合計が200に達する',f:()=>totalLv()>=200},{id:'ul1000',n:'終わらない投資',d:'強化レベルの合計が1,000に達する',f:()=>totalLv()>=1000},{id:'pk10',n:'星の恩恵',d:'星の特典を合計10回強化する',f:()=>PK.reduce((a,q)=>a+pk(q.id),0)>=10},{id:'w300',n:'三百人のひだまり',d:'300人全員を採用する',f:()=>ownedList().length>=N},{id:'w250',n:'二百五十人のひだまり',d:'250人を採用する',f:()=>ownedList().length>=250},{id:'w200',n:'二百人のウェイトレス',d:'200人を採用する',f:()=>ownedList().length>=200},{id:'mt1',n:'はじめてのモテモテ',d:'モテモテタイムを発動する',f:()=>S.stats.motes>=1},{id:'mt10',n:'モテモテが日常',d:'モテモテタイムを10回発動する',f:()=>S.stats.motes>=10},{id:'mq1',n:'行列ができた',d:'行列が1,000人に達する',f:()=>S.stats.qbest>=1e3},{id:'mq2',n:'地平線までの行列',d:'行列が10万人に達する',f:()=>S.stats.qbest>=1e5},{id:'mq3',n:'行列が国境を越えた',d:'行列が1,000万人に達する',f:()=>S.stats.qbest>=1e7},{id:'w150',n:'百五十人のひだまり',d:'150人を採用する',f:()=>ownedList().length>=150},{id:'w60',n:'ハーレム喫茶',d:'60人を採用する',f:()=>ownedList().length>=60},{id:'w80',n:'店中ウェイトレス',d:'80人を採用する',f:()=>ownedList().length>=80},{id:'w100',n:'百人のウェイトレス',d:'100人全員を採用する',f:()=>ownedList().length>=100},
  {id:'mk5',n:'メニュー開発室',d:'新メニューを5つ発売する',f:()=>cnt9(S.mk)>=5},{id:'mk12',n:'名物メニュー',d:'新メニューを12個発売する',f:()=>cnt9(S.mk)>=12},{id:'mk24',n:'メニューコンプリート',d:'新メニューを全て発売する',f:()=>cnt9(S.mk)>=MENU9.length},
  {id:'gf5',n:'貢がれ体質',d:'貢ぎ物を5個もらう',f:()=>cnt9(S.gift)>=5},{id:'gf10',n:'貢ぎ物の山',d:'貢ぎ物を10個もらう',f:()=>cnt9(S.gift)>=10},{id:'gf20',n:'貢ぎ物コンプリート',d:'貢ぎ物を全てもらう',f:()=>cnt9(S.gift)>=GIFT9.length},
  {id:'hm5',n:'ご褒美上手',d:'人数ご褒美を5つ受け取る',f:()=>cnt9(S.hms)>=5},{id:'hm10',n:'ご褒美コンプリート',d:'人数ご褒美を全て受け取る',f:()=>cnt9(S.hms)>=HMS9.length},{id:'sg1',n:'看板ウェイトレス',d:'看板ウェイトレスを決める',f:()=>!!S.sign});
@@ -2206,6 +2282,8 @@ async function installApp(){
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEv=e;updInstall();});
 window.addEventListener('appinstalled',()=>{installEv=null;toast('アプリとしてインストールしました');updInstall();});
 setupPWA();updInstall();
+function applyHapNote(){const b=$('hapNoteBtn');if(b){b.textContent='通知: '+(CFG.hapNote?'オン':'オフ');b.classList.toggle('ghost',!CFG.hapNote);}}
+applyHapNote();
 function applyLite(){
   document.body.classList.toggle('lite',CFG.lite);
   const b=$('liteBtn');if(b){b.textContent='軽量モード: '+(CFG.lite?'オン':'オフ');b.classList.toggle('ghost',!CFG.lite);}
